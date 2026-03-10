@@ -50,7 +50,10 @@ export function formatCurrency(amount) {
 
 export function formatDate(dateStr) {
   if (!dateStr) return '—'
-  return new Date(dateStr).toLocaleDateString('en-PH', {
+  // Parse as local date to avoid UTC timezone shift (e.g. Mar 20 showing as Mar 19)
+  const [year, month, day] = String(dateStr).slice(0, 10).split('-').map(Number)
+  const date = new Date(year, month - 1, day)
+  return date.toLocaleDateString('en-PH', {
     year: 'numeric', month: 'short', day: 'numeric'
   })
 }
