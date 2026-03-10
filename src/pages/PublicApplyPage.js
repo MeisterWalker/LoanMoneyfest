@@ -122,7 +122,7 @@ export default function PublicApplyPage() {
 
       <div style={{ maxWidth: 560, margin: '0 auto', padding: '32px 20px' }}>
         {/* Progress steps */}
-        <div style={{ display: 'flex', alignItems: 'center', marginBottom: 32 }}>
+        <div style={{ display: 'flex', alignItems: 'center', marginBottom: 32, position: 'relative', zIndex: 1 }}>
           {['Personal Info', 'Trustee', 'Loan Details'].map((label, i) => {
             const num = i + 1
             const done = step > num
@@ -130,7 +130,7 @@ export default function PublicApplyPage() {
             return (
               <div key={i} style={{ display: 'flex', alignItems: 'center', flex: i < 2 ? 1 : 'none' }}>
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
-                  <div style={{ width: 32, height: 32, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: 13, background: done ? '#22C55E' : active ? '#3B82F6' : 'rgba(255,255,255,0.05)', color: done || active ? '#fff' : '#4B5580', border: `2px solid ${done ? '#22C55E' : active ? '#3B82F6' : 'rgba(255,255,255,0.1)'}`, transition: 'all 0.2s' }}>
+                  <div style={{ width: 32, height: 32, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: 13, fontFamily: 'Space Grotesk, sans-serif', background: done ? '#22C55E' : active ? '#3B82F6' : 'rgba(255,255,255,0.05)', color: done || active ? '#fff' : '#4B5580', border: `2px solid ${done ? '#22C55E' : active ? '#3B82F6' : 'rgba(255,255,255,0.1)'}`, transition: 'all 0.2s', flexShrink: 0, lineHeight: '32px', textAlign: 'center' }}>
                     {done ? '✓' : num}
                   </div>
                   <div style={{ fontSize: 11, color: active ? '#F0F4FF' : '#4B5580', fontWeight: active ? 600 : 400, whiteSpace: 'nowrap' }}>{label}</div>
