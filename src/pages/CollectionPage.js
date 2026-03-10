@@ -34,6 +34,14 @@ function getInstallmentDates(loan) {
   return dates
 }
 
+function toLocalDateKey(date) {
+  // Format as YYYY-MM-DD using local time, not UTC — avoids timezone shift
+  const y = date.getFullYear()
+  const m = String(date.getMonth() + 1).padStart(2, '0')
+  const d = String(date.getDate()).padStart(2, '0')
+  return `${y}-${m}-${d}`
+}
+
 function buildSchedule(loans, borrowers) {
   const events = []
   for (const loan of loans) {
@@ -48,7 +56,7 @@ function buildSchedule(loans, borrowers) {
       const isPast = date < today && !isPaid
       events.push({
         date,
-        dateKey: date.toISOString().slice(0, 10),
+        dateKey: toLocalDateKey(date), // use local time, not UTC
         loan,
         borrower,
         installmentNum,
