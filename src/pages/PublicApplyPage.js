@@ -348,7 +348,6 @@ export default function PublicApplyPage() {
           <h3 style={{ fontFamily: 'Space Grotesk', fontWeight: 700, fontSize: 16, color: '#F0F4FF', marginBottom: 16, textAlign: 'center' }}>
             💳 Accepted Payment Methods
           </h3>
-          <p style={{ fontSize: 12, color: '#4B5580', textAlign: 'center', marginBottom: 16 }}>When paying your installments, you may use any of the following:</p>
           <div style={{ background: '#141B2D', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 14, overflow: 'hidden' }}>
             {[
               { logo: '/cash-logo.png', label: 'Physical Cash', fee: 'Free', freebie: true },
