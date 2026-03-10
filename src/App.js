@@ -14,6 +14,7 @@ import ForecastPage from './pages/ForecastPage'
 import CollectionPage from './pages/CollectionPage'
 import ApplicationsPage from './pages/ApplicationsPage'
 import PublicApplyPage from './pages/PublicApplyPage'
+import NotificationBell from './components/NotificationBell'
 import './index.css'
 
 function ProtectedRoute({ children }) {
@@ -29,6 +30,7 @@ function AppLayout({ children }) {
       <main style={{ flex: 1, overflowY: 'auto', minHeight: '100vh' }}>
         {children}
       </main>
+      <NotificationBell />
     </div>
   )
 }
