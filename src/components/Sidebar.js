@@ -58,13 +58,7 @@ export default function Sidebar() {
       {/* Logo */}
       <div style={{ padding: '24px 20px 20px', borderBottom: '1px solid var(--card-border)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <div style={{
-            width: 36, height: 36, borderRadius: 10,
-            background: 'linear-gradient(135deg, var(--blue), var(--purple))',
-            display: 'flex', alignItems: 'center', justifyContent: 'center'
-          }}>
-            <img src="/favicon-96x96.png" alt="Loan Manifest" style={{ width: 20, height: 20, objectFit: 'contain' }} />
-          </div>
+          <img src="/favicon-96x96.png" alt="Loan Manifest" style={{ width: 36, height: 36, objectFit: 'contain' }} />
           <div>
             <div style={{ fontFamily: 'Space Grotesk, sans-serif', fontWeight: 800, fontSize: 15, letterSpacing: '-0.02em', color: 'var(--text-primary)' }}>
               Loan Manifest

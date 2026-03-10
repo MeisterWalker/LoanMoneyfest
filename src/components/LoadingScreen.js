@@ -95,8 +95,8 @@ export default function LoadingScreen({ onComplete }) {
             src="/favicon-96x96.png"
             alt="Loan Manifest"
             style={{
-              width: 40,
-              height: 40,
+              width: 52,
+              height: 52,
               objectFit: 'contain',
               animation: phase === 'spin' ? 'pesoBounce 1.6s ease-in-out infinite' : 'none'
             }}
