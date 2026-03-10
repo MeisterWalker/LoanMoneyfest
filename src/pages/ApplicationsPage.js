@@ -106,6 +106,28 @@ function ApplicationCard({ app, onApprove, onReject }) {
                 Purpose: <span style={{ color: '#CBD5F0' }}>{app.loan_purpose}</span>
               </div>
             )}
+            {app.release_method ? (
+              <div style={{ marginTop: 10, display: 'flex', alignItems: 'center', gap: 10, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 10, padding: '10px 14px' }}>
+                <img
+                  src={app.release_method === 'GCash' ? '/gcash-logo.png' : app.release_method === 'RCBC' ? '/rcbc-logo.png' : app.release_method === 'Other Bank Transfer' ? '/bank-logo.png' : '/cash-logo.png'}
+                  alt={app.release_method}
+                  style={{ width: 32, height: 32, objectFit: 'contain', flexShrink: 0 }}
+                />
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 11, color: '#4B5580', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Preferred Release Method</div>
+                  <div style={{ fontSize: 13, fontWeight: 700, color: '#F0F4FF', marginTop: 2 }}>{app.release_method}</div>
+                </div>
+                {(app.release_method === 'Physical Cash' || app.release_method === 'RCBC') ? (
+                  <span style={{ fontSize: 11, color: '#22C55E', background: 'rgba(34,197,94,0.08)', border: '1px solid rgba(34,197,94,0.2)', borderRadius: 20, padding: '3px 10px', whiteSpace: 'nowrap' }}>✓ No fee</span>
+                ) : (
+                  <span style={{ fontSize: 11, color: '#F59E0B', background: 'rgba(245,158,11,0.08)', border: '1px solid rgba(245,158,11,0.2)', borderRadius: 20, padding: '3px 10px', whiteSpace: 'nowrap' }}>Fee applies</span>
+                )}
+              </div>
+            ) : (
+              <div style={{ marginTop: 10, padding: '10px 14px', background: 'rgba(239,68,68,0.06)', border: '1px solid rgba(239,68,68,0.15)', borderRadius: 10, fontSize: 12, color: '#EF4444' }}>
+                ⚠️ No release method specified
+              </div>
+            )}
           </div>
 
           {/* Reject reason if rejected */}

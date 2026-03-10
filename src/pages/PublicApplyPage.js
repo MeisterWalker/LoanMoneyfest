@@ -35,18 +35,47 @@ export default function PublicApplyPage() {
 
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }))
 
+  const isGibberish = (val) => {
+    const v = val.trim()
+    if (v.length < 2) return true
+    // Reject if more than 40% are repeated characters (e.g. "asdasd", "aaaa")
+    const freq = {}
+    for (const c of v.toLowerCase()) freq[c] = (freq[c] || 0) + 1
+    const maxFreq = Math.max(...Object.values(freq))
+    if (maxFreq / v.length > 0.5) return true
+    // Must contain at least one space (full names) or be a valid single word
+    return false
+  }
+
+  const isValidPHPhone = (val) => /^(09|\+639)\d{9}$/.test(val.replace(/\s/g, ''))
+  const isValidEmail = (val) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)
+  const isValidName = (val) => {
+    const v = val.trim()
+    if (v.length < 3) return false
+    if (!/[a-zA-Z]/.test(v)) return false
+    if (isGibberish(v)) return false
+    return true
+  }
+
   const validateStep1 = () => {
     if (!form.full_name.trim()) return 'Full name is required'
+    if (!isValidName(form.full_name)) return 'Please enter a valid full name (e.g. Juan dela Cruz)'
     if (!form.department) return 'Department is required'
     if (!form.phone.trim()) return 'Phone number is required'
-    if (!form.email.trim() || !form.email.includes('@')) return 'Valid email is required'
+    if (!isValidPHPhone(form.phone)) return 'Enter a valid PH phone number (e.g. 09XX XXX XXXX)'
+    if (!form.email.trim()) return 'Email address is required'
+    if (!isValidEmail(form.email)) return 'Enter a valid email address'
+    if (form.address.trim() && form.address.trim().length < 5) return 'Please enter a valid home address'
     return null
   }
 
   const validateStep2 = () => {
     if (!form.trustee_name.trim()) return 'Trustee name is required'
+    if (!isValidName(form.trustee_name)) return 'Please enter a valid trustee name'
     if (!form.trustee_phone.trim()) return 'Trustee phone is required'
+    if (!isValidPHPhone(form.trustee_phone)) return 'Enter a valid PH phone number for trustee'
     if (!form.trustee_relationship.trim()) return 'Trustee relationship is required'
+    if (form.trustee_relationship.trim().length < 3) return 'Please enter a valid relationship (e.g. Spouse, Sibling)'
     return null
   }
 
@@ -345,10 +374,9 @@ export default function PublicApplyPage() {
 
         {/* Payment Methods */}
         <div style={{ marginTop: 40 }}>
-          <h3 style={{ fontFamily: 'Space Grotesk', fontWeight: 700, fontSize: 16, color: '#F0F4FF', marginBottom: 4, textAlign: 'center' }}>
+          <h3 style={{ fontFamily: 'Space Grotesk', fontWeight: 700, fontSize: 16, color: '#F0F4FF', marginBottom: 16, textAlign: 'center' }}>
             💳 Accepted Payment Methods
           </h3>
-          <p style={{ fontSize: 12, color: '#4B5580', textAlign: 'center', marginBottom: 16 }}>When paying your installments, you may use any of the following:</p>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
             {[
               { logo: '/cash-logo.png', label: 'Physical Cash', fee: '✓ Free', desc: 'Pay in person. No fees.', freebie: true, border: 'rgba(34,197,94,0.25)' },
