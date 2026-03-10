@@ -177,7 +177,7 @@ export default function PublicApplyPage() {
                   <label style={labelStyle}>Full Name *</label>
                   <input value={form.full_name} onChange={e => set('full_name', e.target.value)} placeholder="Juan dela Cruz" style={inputStyle} />
                 </div>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, gridTemplateRows: 'auto auto' }}>
                   <div>
                     <label style={labelStyle}>Department *</label>
                     <select value={form.department} onChange={e => set('department', e.target.value)} style={{ ...inputStyle, cursor: 'pointer' }}>
@@ -268,19 +268,22 @@ export default function PublicApplyPage() {
                   </p>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                     {[
-                      { value: 'Physical Cash', label: '💵 Physical Cash', desc: 'Receive your loan in cash. No transaction fee.', fee: null, feeColor: '#22C55E' },
-                      { value: 'GCash', label: '💙 GCash', desc: 'Sent to your GCash number.', fee: 'Fee: ₱15 or 1% (whichever is higher)', feeColor: '#F59E0B' },
-                      { value: 'RCBC', label: '🏦 RCBC Bank Transfer', desc: 'Transferred to your RCBC account.', fee: 'Free if RCBC to RCBC', feeColor: '#22C55E' },
-                      { value: 'Other Bank Transfer', label: '🏛️ Other Bank Transfer', desc: 'Instapay/PESONet to any non-RCBC bank.', fee: 'Fee: ₱25 (Instapay) or ₱10 (PESONet)', feeColor: '#F59E0B' },
+                      { value: 'Physical Cash', logo: '/cash-logo.png', desc: 'Receive your loan in cash. No transaction fee.', fee: null },
+                      { value: 'GCash', logo: '/gcash-logo.png', desc: 'Sent to your GCash number.', fee: 'Fee: ₱15 or 1% (whichever is higher)' },
+                      { value: 'RCBC', logo: '/rcbc-logo.png', desc: 'Transferred to your RCBC account. Free if RCBC to RCBC.', fee: null },
+                      { value: 'Other Bank Transfer', logo: '/bank-logo.png', desc: 'Instapay/PESONet to any non-RCBC bank.', fee: 'Fee: ₱15–₱50 (varies per bank)' },
                     ].map(opt => (
                       <button key={opt.value} onClick={() => set('release_method', opt.value)} style={{ padding: '12px 14px', borderRadius: 10, border: `2px solid ${form.release_method === opt.value ? '#3B82F6' : 'rgba(255,255,255,0.07)'}`, background: form.release_method === opt.value ? 'rgba(59,130,246,0.1)' : 'rgba(255,255,255,0.02)', cursor: 'pointer', textAlign: 'left', transition: 'all 0.15s', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 10 }}>
-                        <div>
-                          <div style={{ fontWeight: 700, fontSize: 13, color: form.release_method === opt.value ? '#F0F4FF' : '#7A8AAA' }}>{opt.label}</div>
-                          <div style={{ fontSize: 11, color: '#4B5580', marginTop: 2 }}>{opt.desc}</div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                          <img src={opt.logo} alt={opt.value} style={{ height: 28, width: 40, objectFit: 'contain', flexShrink: 0 }} />
+                          <div>
+                            <div style={{ fontWeight: 700, fontSize: 13, color: form.release_method === opt.value ? '#F0F4FF' : '#7A8AAA' }}>{opt.value}</div>
+                            <div style={{ fontSize: 11, color: '#4B5580', marginTop: 2 }}>{opt.desc}</div>
+                          </div>
                         </div>
                         <div style={{ textAlign: 'right', flexShrink: 0 }}>
                           {opt.fee
-                            ? <div style={{ fontSize: 11, color: opt.feeColor, fontWeight: 600 }}>{opt.fee}</div>
+                            ? <div style={{ fontSize: 11, color: '#F59E0B', fontWeight: 600 }}>{opt.fee}</div>
                             : <div style={{ fontSize: 11, color: '#22C55E', fontWeight: 600 }}>✓ No fee</div>
                           }
                         </div>
@@ -346,16 +349,18 @@ export default function PublicApplyPage() {
             💳 Accepted Payment Methods
           </h3>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-            {/* GCash */}
-            <div style={{ background: '#141B2D', border: '1px solid rgba(0,163,255,0.25)', borderRadius: 14, padding: '18px 20px', textAlign: 'center' }}>
-              <img src="/gcash-logo.png" alt="GCash" style={{ height: 40, objectFit: 'contain', marginBottom: 10 }} />
-              <div style={{ fontSize: 12, color: '#7A8AAA', lineHeight: 1.6 }}>Send your installment payment via GCash. Account details will be provided upon loan approval.</div>
-            </div>
-            {/* RCBC */}
-            <div style={{ background: '#141B2D', border: '1px solid rgba(220,38,38,0.25)', borderRadius: 14, padding: '18px 20px', textAlign: 'center' }}>
-              <img src="/rcbc-logo.png" alt="RCBC" style={{ height: 40, objectFit: 'contain', marginBottom: 10 }} />
-              <div style={{ fontSize: 12, color: '#7A8AAA', lineHeight: 1.6 }}>Bank transfer via RCBC. Account details will be provided upon loan approval.</div>
-            </div>
+            {[
+              { logo: '/cash-logo.png', label: 'Physical Cash', desc: 'Receive loan in cash directly. No fees.', border: 'rgba(34,197,94,0.25)' },
+              { logo: '/gcash-logo.png', label: 'GCash', desc: 'Send installment via GCash. Details upon approval.', border: 'rgba(0,163,255,0.25)' },
+              { logo: '/rcbc-logo.png', label: 'RCBC', desc: 'Bank transfer via RCBC. Free for RCBC to RCBC.', border: 'rgba(220,38,38,0.25)' },
+              { logo: '/bank-logo.png', label: 'Other Bank', desc: 'Instapay/PESONet. Fee: ₱15–₱50 varies per bank.', border: 'rgba(139,92,246,0.25)' },
+            ].map((item, i) => (
+              <div key={i} style={{ background: '#141B2D', border: `1px solid ${item.border}`, borderRadius: 14, padding: '18px 20px', textAlign: 'center' }}>
+                <img src={item.logo} alt={item.label} style={{ height: 40, objectFit: 'contain', marginBottom: 10 }} />
+                <div style={{ fontFamily: 'Space Grotesk', fontWeight: 700, fontSize: 13, color: '#F0F4FF', marginBottom: 4 }}>{item.label}</div>
+                <div style={{ fontSize: 12, color: '#7A8AAA', lineHeight: 1.6 }}>{item.desc}</div>
+              </div>
+            ))}
           </div>
           <div style={{ marginTop: 10, padding: '10px 14px', background: 'rgba(245,158,11,0.06)', border: '1px solid rgba(245,158,11,0.2)', borderRadius: 9, fontSize: 12, color: '#F59E0B', textAlign: 'center' }}>
             ⚠️ Always send proof of payment to your admin after every transaction.
@@ -368,110 +373,58 @@ export default function PublicApplyPage() {
             ❓ Frequently Asked Questions
           </h3>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-            {[
-              {
-                q: 'What are the accepted payment methods and fees?',
-                a: 'We accept the following payment methods for loan repayments:'
-              },
-              {
-                q: 'Who can apply for a loan?',
-                a: 'This lending program is exclusively available to active employees of MySource Solutions. You must be currently employed and in good standing to be eligible. Applicants from outside the company will not be processed.'
-              },
-              {
-                q: 'How much can I borrow?',
-                a: 'First-time borrowers are approved for ₱5,000. Your limit increases as you build a good repayment history — up to ₱10,000 over time.'
-              },
-              {
-                q: 'How is the interest calculated?',
-                a: 'We use a flat 8% interest rate on the principal. For example, a ₱5,000 loan has a total repayment of ₱5,400, split into 4 installments of ₱1,350 each.'
-              },
-              {
-                q: 'When are payments due?',
-                a: 'Payments are collected every 5th and 20th of the month — that\'s 2 payments per month for 2 months until your loan is fully paid.'
-              },
-              {
-                q: 'Can I apply for another loan while I have an existing one?',
-                a: 'No. You must fully settle your current loan before applying for a new one. No rollovers or extensions are allowed.'
-              },
-              {
-                q: 'What happens if I miss a payment?',
-                a: 'Missed payments will negatively affect your credit score and may freeze your loan limit increase. Consistent late payments may result in your loan being flagged as defaulted.'
-              },
-              {
-                q: 'How will my loan be released and are there fees?',
-                a: 'Once approved, your loan will be released via your chosen method. Here is the fee breakdown:'
-              },
-              {
-                q: 'How long does approval take?',
-                a: 'Applications are reviewed manually by the admin. You will be contacted once your application has been approved or rejected.'
-              },
-              {
-                q: 'Who can I contact for questions?',
-                a: 'For any inquiries, you may reach out to the following admins via Microsoft Teams chat:'
-              },
-            ].map((item, i) => (
-              <FAQItem key={i} question={item.q} answer={item.a}>
-                {item.q === 'How will my loan be released and are there fees?' && (
-                  <div style={{ marginTop: 10, display: 'flex', flexDirection: 'column', gap: 8 }}>
-                    {[
-                      { method: '💵 Physical Cash', fee: 'Free — no deductions', freebie: true },
-                      { method: '💙 GCash', fee: '₱15 or 1% (whichever is higher)', freebie: false },
-                      { method: '🏦 RCBC to RCBC', fee: 'Free — same bank transfer', freebie: true },
-                      { method: '🏛️ Other Bank (Instapay)', fee: '₱25 per transaction', freebie: false },
-                      { method: '🏛️ Other Bank (PESONet)', fee: '₱10 per transaction', freebie: false },
-                    ].map((row, ri) => (
-                      <div key={ri} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '9px 12px', background: 'rgba(255,255,255,0.03)', border: `1px solid ${row.freebie ? 'rgba(34,197,94,0.15)' : 'rgba(255,255,255,0.06)'}`, borderRadius: 8 }}>
-                        <span style={{ fontSize: 13, color: '#CBD5F0' }}>{row.method}</span>
-                        <span style={{ fontSize: 12, fontWeight: 700, color: row.freebie ? '#22C55E' : '#F59E0B', background: row.freebie ? 'rgba(34,197,94,0.08)' : 'rgba(245,158,11,0.08)', padding: '3px 10px', borderRadius: 20, border: `1px solid ${row.freebie ? 'rgba(34,197,94,0.2)' : 'rgba(245,158,11,0.2)'}` }}>
-                          {row.fee}
-                        </span>
-                      </div>
-                    ))}
-                    <div style={{ fontSize: 12, color: '#4B5580', marginTop: 4, lineHeight: 1.6 }}>
-                      ⚠️ Applicable fees are deducted from your approved loan amount before release. You will receive the net amount after deduction.
+
+            <FAQItem question="Who can apply for a loan?" answer="This lending program is exclusively available to active employees of MySource Solutions. You must be currently employed and in good standing to be eligible. Applicants from outside the company will not be processed." />
+
+            <FAQItem question="How much can I borrow?" answer="First-time borrowers are approved for ₱5,000. Your limit increases as you build a good repayment history — up to ₱10,000 over time." />
+
+            <FAQItem question="How is the interest calculated?" answer="We use a flat 8% interest rate on the principal. For example, a ₱5,000 loan has a total repayment of ₱5,400, split into 4 installments of ₱1,350 each." />
+
+            <FAQItem question="When are payments due?" answer="Payments are collected every 5th and 20th of the month — that's 2 payments per month for 2 months until your loan is fully paid." />
+
+            <FAQItem question="Can I apply for another loan while I have an existing one?" answer="No. You must fully settle your current loan before applying for a new one. No rollovers or extensions are allowed." />
+
+            <FAQItem question="What happens if I miss a payment?" answer="Missed payments will negatively affect your credit score and may freeze your loan limit increase. Consistent late payments may result in your loan being flagged as defaulted." />
+
+            <FAQItem question="How will my loan be released and are there fees?" answer="Once approved, your loan will be released via your chosen method. Here is the fee breakdown:">
+              <div style={{ marginTop: 10, display: 'flex', flexDirection: 'column', gap: 8 }}>
+                {[
+                  { method: '💵 Physical Cash', fee: 'Free — no deductions', freebie: true },
+                  { method: '💙 GCash', fee: '₱15 or 1% (whichever is higher)', freebie: false },
+                  { method: '🏦 RCBC to RCBC', fee: 'Free — same bank transfer', freebie: true },
+                  { method: '🏛️ Other Bank (Instapay/PESONet)', fee: '₱15–₱50 (varies per bank)', freebie: false },
+                ].map((row, ri) => (
+                  <div key={ri} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '9px 12px', background: 'rgba(255,255,255,0.03)', border: `1px solid ${row.freebie ? 'rgba(34,197,94,0.15)' : 'rgba(255,255,255,0.06)'}`, borderRadius: 8 }}>
+                    <span style={{ fontSize: 13, color: '#CBD5F0' }}>{row.method}</span>
+                    <span style={{ fontSize: 12, fontWeight: 700, color: row.freebie ? '#22C55E' : '#F59E0B', background: row.freebie ? 'rgba(34,197,94,0.08)' : 'rgba(245,158,11,0.08)', padding: '3px 10px', borderRadius: 20, border: `1px solid ${row.freebie ? 'rgba(34,197,94,0.2)' : 'rgba(245,158,11,0.2)'}` }}>
+                      {row.fee}
+                    </span>
+                  </div>
+                ))}
+                <div style={{ fontSize: 12, color: '#4B5580', marginTop: 4, lineHeight: 1.6 }}>
+                  ⚠️ Fees are deducted from your approved loan amount before release.
+                </div>
+              </div>
+            </FAQItem>
+
+            <FAQItem question="How long does approval take?" answer="Applications are reviewed manually by the admin. You will be contacted once your application has been approved or rejected." />
+
+            <FAQItem question="Who can I contact for questions?" answer="For any inquiries, you may reach out to the following admins via Microsoft Teams chat:">
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 10 }}>
+                {[{ name: 'John Paul Lacaron' }, { name: 'Charlou John Ramil' }].map((person, pi) => (
+                  <div key={pi} style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'rgba(59,130,246,0.07)', border: '1px solid rgba(59,130,246,0.2)', borderRadius: 9, padding: '10px 12px' }}>
+                    <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'linear-gradient(135deg,#3B82F6,#8B5CF6)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'Space Grotesk', fontWeight: 800, fontSize: 13, color: '#fff', flexShrink: 0 }}>
+                      {person.name.charAt(0)}
+                    </div>
+                    <div>
+                      <div style={{ fontWeight: 700, color: '#F0F4FF', fontSize: 13 }}>{person.name}</div>
+                      <div style={{ fontSize: 11, color: '#3B82F6' }}>📱 Microsoft Teams</div>
                     </div>
                   </div>
-                )}
-                {item.q === 'What are the accepted payment methods and fees?' && (
-                  <div style={{ marginTop: 10, display: 'flex', flexDirection: 'column', gap: 8 }}>
-                    {[
-                      { method: '💵 Physical Cash', fee: 'Free', freebie: true },
-                      { method: '💙 GCash', fee: '₱15 or 1% (whichever is higher)', freebie: false },
-                      { method: '🏦 RCBC to RCBC', fee: 'Free', freebie: true },
-                      { method: '🏛️ Other Bank (Instapay)', fee: '₱25 per transaction', freebie: false },
-                      { method: '🏛️ Other Bank (PESONet)', fee: '₱10 per transaction', freebie: false },
-                    ].map((row, ri) => (
-                      <div key={ri} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '9px 12px', background: 'rgba(255,255,255,0.03)', border: `1px solid ${row.freebie ? 'rgba(34,197,94,0.15)' : 'rgba(255,255,255,0.06)'}`, borderRadius: 8 }}>
-                        <span style={{ fontSize: 13, color: '#CBD5F0' }}>{row.method}</span>
-                        <span style={{ fontSize: 12, fontWeight: 700, color: row.freebie ? '#22C55E' : '#F59E0B', background: row.freebie ? 'rgba(34,197,94,0.08)' : 'rgba(245,158,11,0.08)', padding: '3px 10px', borderRadius: 20, border: `1px solid ${row.freebie ? 'rgba(34,197,94,0.2)' : 'rgba(245,158,11,0.2)'}` }}>
-                          {row.fee}
-                        </span>
-                      </div>
-                    ))}
-                    <div style={{ fontSize: 12, color: '#4B5580', marginTop: 4 }}>
-                      ⚠️ Transaction fees are deducted from your approved loan amount before release.
-                    </div>
-                  </div>
-                )}
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 10 }}>
-                    {[
-                      { name: 'John Paul Lacaron', role: 'Admin' },
-                      { name: 'Charlou John Ramil', role: 'Admin' },
-                    ].map((person, pi) => (
-                      <div key={pi} style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'rgba(59,130,246,0.07)', border: '1px solid rgba(59,130,246,0.2)', borderRadius: 9, padding: '10px 12px' }}>
-                        <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'linear-gradient(135deg,#3B82F6,#8B5CF6)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'Space Grotesk', fontWeight: 800, fontSize: 13, color: '#fff', flexShrink: 0 }}>
-                          {person.name.charAt(0)}
-                        </div>
-                        <div>
-                          <div style={{ fontWeight: 700, color: '#F0F4FF', fontSize: 13 }}>{person.name}</div>
-                          <div style={{ fontSize: 11, color: '#3B82F6' }}>📱 Microsoft Teams</div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </FAQItem>
-            ))}
+                ))}
+              </div>
+            </FAQItem>
+
           </div>
         </div>
       </div>
