@@ -370,6 +370,10 @@ export default function PublicApplyPage() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             {[
               {
+                q: 'What are the accepted payment methods and fees?',
+                a: 'We accept the following payment methods for loan repayments:'
+              },
+              {
                 q: 'Who can apply for a loan?',
                 a: 'This lending program is exclusively available to active employees of MySource Solutions. You must be currently employed and in good standing to be eligible. Applicants from outside the company will not be processed.'
               },
@@ -394,6 +398,10 @@ export default function PublicApplyPage() {
                 a: 'Missed payments will negatively affect your credit score and may freeze your loan limit increase. Consistent late payments may result in your loan being flagged as defaulted.'
               },
               {
+                q: 'How will my loan be released and are there fees?',
+                a: 'Once approved, your loan will be released via your chosen method. Here is the fee breakdown:'
+              },
+              {
                 q: 'How long does approval take?',
                 a: 'Applications are reviewed manually by the admin. You will be contacted once your application has been approved or rejected.'
               },
@@ -403,7 +411,48 @@ export default function PublicApplyPage() {
               },
             ].map((item, i) => (
               <FAQItem key={i} question={item.q} answer={item.a}>
-                {item.q === 'Who can I contact for questions?' && (
+                {item.q === 'How will my loan be released and are there fees?' && (
+                  <div style={{ marginTop: 10, display: 'flex', flexDirection: 'column', gap: 8 }}>
+                    {[
+                      { method: '💵 Physical Cash', fee: 'Free — no deductions', freebie: true },
+                      { method: '💙 GCash', fee: '₱15 or 1% (whichever is higher)', freebie: false },
+                      { method: '🏦 RCBC to RCBC', fee: 'Free — same bank transfer', freebie: true },
+                      { method: '🏛️ Other Bank (Instapay)', fee: '₱25 per transaction', freebie: false },
+                      { method: '🏛️ Other Bank (PESONet)', fee: '₱10 per transaction', freebie: false },
+                    ].map((row, ri) => (
+                      <div key={ri} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '9px 12px', background: 'rgba(255,255,255,0.03)', border: `1px solid ${row.freebie ? 'rgba(34,197,94,0.15)' : 'rgba(255,255,255,0.06)'}`, borderRadius: 8 }}>
+                        <span style={{ fontSize: 13, color: '#CBD5F0' }}>{row.method}</span>
+                        <span style={{ fontSize: 12, fontWeight: 700, color: row.freebie ? '#22C55E' : '#F59E0B', background: row.freebie ? 'rgba(34,197,94,0.08)' : 'rgba(245,158,11,0.08)', padding: '3px 10px', borderRadius: 20, border: `1px solid ${row.freebie ? 'rgba(34,197,94,0.2)' : 'rgba(245,158,11,0.2)'}` }}>
+                          {row.fee}
+                        </span>
+                      </div>
+                    ))}
+                    <div style={{ fontSize: 12, color: '#4B5580', marginTop: 4, lineHeight: 1.6 }}>
+                      ⚠️ Applicable fees are deducted from your approved loan amount before release. You will receive the net amount after deduction.
+                    </div>
+                  </div>
+                )}
+                {item.q === 'What are the accepted payment methods and fees?' && (
+                  <div style={{ marginTop: 10, display: 'flex', flexDirection: 'column', gap: 8 }}>
+                    {[
+                      { method: '💵 Physical Cash', fee: 'Free', freebie: true },
+                      { method: '💙 GCash', fee: '₱15 or 1% (whichever is higher)', freebie: false },
+                      { method: '🏦 RCBC to RCBC', fee: 'Free', freebie: true },
+                      { method: '🏛️ Other Bank (Instapay)', fee: '₱25 per transaction', freebie: false },
+                      { method: '🏛️ Other Bank (PESONet)', fee: '₱10 per transaction', freebie: false },
+                    ].map((row, ri) => (
+                      <div key={ri} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '9px 12px', background: 'rgba(255,255,255,0.03)', border: `1px solid ${row.freebie ? 'rgba(34,197,94,0.15)' : 'rgba(255,255,255,0.06)'}`, borderRadius: 8 }}>
+                        <span style={{ fontSize: 13, color: '#CBD5F0' }}>{row.method}</span>
+                        <span style={{ fontSize: 12, fontWeight: 700, color: row.freebie ? '#22C55E' : '#F59E0B', background: row.freebie ? 'rgba(34,197,94,0.08)' : 'rgba(245,158,11,0.08)', padding: '3px 10px', borderRadius: 20, border: `1px solid ${row.freebie ? 'rgba(34,197,94,0.2)' : 'rgba(245,158,11,0.2)'}` }}>
+                          {row.fee}
+                        </span>
+                      </div>
+                    ))}
+                    <div style={{ fontSize: 12, color: '#4B5580', marginTop: 4 }}>
+                      ⚠️ Transaction fees are deducted from your approved loan amount before release.
+                    </div>
+                  </div>
+                )}
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 10 }}>
                     {[
                       { name: 'John Paul Lacaron', role: 'Admin' },
