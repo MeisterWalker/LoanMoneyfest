@@ -394,13 +394,16 @@ export default function PublicApplyPage() {
             <FAQItem question="How will my loan be released and are there fees?" answer="Once approved, your loan will be released via your chosen method. Here is the fee breakdown:">
               <div style={{ marginTop: 10, display: 'flex', flexDirection: 'column', gap: 8 }}>
                 {[
-                  { method: '💵 Physical Cash', fee: 'Free — no deductions', freebie: true },
-                  { method: '💙 GCash', fee: '₱15 or 1% (whichever is higher)', freebie: false },
-                  { method: '🏦 RCBC to RCBC', fee: 'Free — same bank transfer', freebie: true },
-                  { method: '🏛️ Other Bank (Instapay/PESONet)', fee: 'Borrower covers transfer fee', freebie: false },
+                  { logo: '/cash-logo.png', method: 'Physical Cash', fee: 'Free — no deductions', freebie: true },
+                  { logo: '/gcash-logo.png', method: 'GCash', fee: '₱15 or 1% (whichever is higher)', freebie: false },
+                  { logo: '/rcbc-logo.png', method: 'RCBC to RCBC', fee: 'Free — same bank transfer', freebie: true },
+                  { logo: '/bank-logo.png', method: 'Other Bank (Instapay/PESONet)', fee: 'Borrower covers transfer fee', freebie: false },
                 ].map((row, ri) => (
                   <div key={ri} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '9px 12px', background: 'rgba(255,255,255,0.03)', border: `1px solid ${row.freebie ? 'rgba(34,197,94,0.15)' : 'rgba(255,255,255,0.06)'}`, borderRadius: 8 }}>
-                    <span style={{ fontSize: 13, color: '#CBD5F0' }}>{row.method}</span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                      <img src={row.logo} alt={row.method} style={{ width: 28, height: 28, objectFit: 'contain', flexShrink: 0 }} />
+                      <span style={{ fontSize: 13, color: '#CBD5F0' }}>{row.method}</span>
+                    </div>
                     <span style={{ fontSize: 12, fontWeight: 700, color: row.freebie ? '#22C55E' : '#F59E0B', background: row.freebie ? 'rgba(34,197,94,0.08)' : 'rgba(245,158,11,0.08)', padding: '3px 10px', borderRadius: 20, border: `1px solid ${row.freebie ? 'rgba(34,197,94,0.2)' : 'rgba(245,158,11,0.2)'}` }}>
                       {row.fee}
                     </span>
