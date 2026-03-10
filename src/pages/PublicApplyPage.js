@@ -4,6 +4,23 @@ import { supabase } from '../lib/supabase'
 const DEPARTMENTS = ['Minto Money', 'Greyhound']
 const LOAN_AMOUNTS = [5000, 7000, 9000, 10000]
 
+function FAQItem({ question, answer }) {
+  const [open, setOpen] = useState(false)
+  return (
+    <div style={{ background: '#141B2D', border: `1px solid ${open ? 'rgba(59,130,246,0.3)' : 'rgba(255,255,255,0.06)'}`, borderRadius: 12, overflow: 'hidden', transition: 'border 0.2s' }}>
+      <button onClick={() => setOpen(o => !o)} style={{ width: '100%', padding: '14px 18px', background: 'transparent', border: 'none', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
+        <span style={{ fontFamily: 'Space Grotesk', fontWeight: 600, fontSize: 14, color: '#F0F4FF', textAlign: 'left' }}>{question}</span>
+        <span style={{ color: open ? '#3B82F6' : '#4B5580', fontSize: 18, flexShrink: 0, transition: 'transform 0.2s', transform: open ? 'rotate(45deg)' : 'rotate(0deg)' }}>+</span>
+      </button>
+      {open && (
+        <div style={{ padding: '0 18px 14px', fontSize: 13, color: '#7A8AAA', lineHeight: 1.7, borderTop: '1px solid rgba(255,255,255,0.04)' }}>
+          {answer}
+        </div>
+      )}
+    </div>
+  )
+}
+
 export default function PublicApplyPage() {
   const [step, setStep] = useState(1)
   const [submitted, setSubmitted] = useState(false)
@@ -282,6 +299,67 @@ export default function PublicApplyPage() {
         <p style={{ textAlign: 'center', fontSize: 12, color: '#4B5580', marginTop: 20 }}>
           Your information is kept private and secure. For inquiries contact your department admin.
         </p>
+
+        {/* Payment Methods */}
+        <div style={{ marginTop: 40 }}>
+          <h3 style={{ fontFamily: 'Space Grotesk', fontWeight: 700, fontSize: 16, color: '#F0F4FF', marginBottom: 16, textAlign: 'center' }}>
+            💳 Accepted Payment Methods
+          </h3>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+            {/* GCash */}
+            <div style={{ background: '#141B2D', border: '1px solid rgba(0,163,255,0.25)', borderRadius: 14, padding: '18px 20px', textAlign: 'center' }}>
+              <div style={{ fontSize: 32, marginBottom: 8 }}>💙</div>
+              <div style={{ fontFamily: 'Space Grotesk', fontWeight: 800, fontSize: 18, color: '#00A3FF', marginBottom: 4 }}>GCash</div>
+              <div style={{ fontSize: 12, color: '#7A8AAA', lineHeight: 1.6 }}>Send your installment payment via GCash. Account details will be provided upon loan approval.</div>
+            </div>
+            {/* RCBC */}
+            <div style={{ background: '#141B2D', border: '1px solid rgba(220,38,38,0.25)', borderRadius: 14, padding: '18px 20px', textAlign: 'center' }}>
+              <div style={{ fontSize: 32, marginBottom: 8 }}>🏦</div>
+              <div style={{ fontFamily: 'Space Grotesk', fontWeight: 800, fontSize: 18, color: '#EF4444', marginBottom: 4 }}>RCBC</div>
+              <div style={{ fontSize: 12, color: '#7A8AAA', lineHeight: 1.6 }}>Bank transfer via RCBC. Account details will be provided upon loan approval.</div>
+            </div>
+          </div>
+          <div style={{ marginTop: 10, padding: '10px 14px', background: 'rgba(245,158,11,0.06)', border: '1px solid rgba(245,158,11,0.2)', borderRadius: 9, fontSize: 12, color: '#F59E0B', textAlign: 'center' }}>
+            ⚠️ Always send proof of payment to your admin after every transaction.
+          </div>
+        </div>
+
+        {/* FAQ */}
+        <div style={{ marginTop: 40, marginBottom: 40 }}>
+          <h3 style={{ fontFamily: 'Space Grotesk', fontWeight: 700, fontSize: 16, color: '#F0F4FF', marginBottom: 16, textAlign: 'center' }}>
+            ❓ Frequently Asked Questions
+          </h3>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+            {[
+              {
+                q: 'How much can I borrow?',
+                a: 'First-time borrowers are approved for ₱5,000. Your limit increases as you build a good repayment history — up to ₱10,000 over time.'
+              },
+              {
+                q: 'How is the interest calculated?',
+                a: 'We use a flat 8% interest rate on the principal. For example, a ₱5,000 loan has a total repayment of ₱5,400, split into 4 installments of ₱1,350 each.'
+              },
+              {
+                q: 'When are payments due?',
+                a: 'Payments are collected every 5th and 20th of the month — that\'s 2 payments per month for 2 months until your loan is fully paid.'
+              },
+              {
+                q: 'Can I apply for another loan while I have an existing one?',
+                a: 'No. You must fully settle your current loan before applying for a new one. No rollovers or extensions are allowed.'
+              },
+              {
+                q: 'What happens if I miss a payment?',
+                a: 'Missed payments will negatively affect your credit score and may freeze your loan limit increase. Consistent late payments may result in your loan being flagged as defaulted.'
+              },
+              {
+                q: 'How long does approval take?',
+                a: 'Applications are reviewed manually by the admin. You will be contacted once your application has been approved or rejected.'
+              },
+            ].map((item, i) => (
+              <FAQItem key={i} question={item.q} answer={item.a} />
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   )
