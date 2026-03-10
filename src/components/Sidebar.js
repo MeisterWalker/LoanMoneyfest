@@ -1,7 +1,7 @@
-import { ClipboardList,  NavLink, useNavigate } from 'react-router-dom'
+import { NavLink, useNavigate } from 'react-router-dom'
 import {
   LayoutDashboard, Users, FileText, TrendingUp,
-  Calendar, History, Settings, LogOut
+  Calendar, History, Settings, LogOut, ClipboardList
 } from 'lucide-react'
 
 function LedgerIcon({ size = 20 }) {
@@ -22,12 +22,13 @@ import { useAuth } from '../context/AuthContext'
 import { useToast } from './Toast'
 
 const navItems = [
-  { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
-  { to: '/borrowers', icon: Users, label: 'Borrowers' },
-  { to: '/loans', icon: FileText, label: 'Loans' },
-  { to: '/collection', icon: Calendar, label: 'Collection Schedule' },
-  { to: '/forecast', icon: TrendingUp, label: 'Profit Forecast' },
-  { to: '/audit', icon: History, label: 'Audit History' },
+  { to: '/admin/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
+  { to: '/admin/borrowers', icon: Users, label: 'Borrowers' },
+  { to: '/admin/loans', icon: FileText, label: 'Loans' },
+  { to: '/admin/collection', icon: Calendar, label: 'Collection Schedule' },
+  { to: '/admin/forecast', icon: TrendingUp, label: 'Profit Forecast' },
+  { to: '/admin/audit', icon: History, label: 'Audit History' },
+  { to: '/admin/applications', icon: ClipboardList, label: 'Applications' },
 ]
 
 export default function Sidebar() {
