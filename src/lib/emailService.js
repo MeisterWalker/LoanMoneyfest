@@ -1,4 +1,4 @@
-const APP_NAME = 'Loan Moneyfest'
+const APP_NAME = 'LoanMoneyfest'
 
 function generateReminderHTML({ borrowerName, installmentNum, amount, dueDate, loanAmount, remainingBalance, daysUntilDue, customMessages, customFooter }) {
   const urgencyColor = daysUntilDue === 0 ? '#EF4444' : daysUntilDue === 1 ? '#F59E0B' : '#3B82F6'
@@ -32,7 +32,7 @@ function generateReminderHTML({ borrowerName, installmentNum, amount, dueDate, l
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Payment Reminder — Loan Moneyfest</title>
+  <title>Payment Reminder — LoanMoneyfest</title>
 </head>
 <body style="margin:0;padding:0;background:#0B0F1A;font-family:'Segoe UI',Arial,sans-serif;">
 
@@ -248,7 +248,7 @@ function generateApprovalHTML({ borrowerName, accessCode, loanAmount, releaseDat
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Loan Approved — Loan Moneyfest</title>
+  <title>Loan Approved — LoanMoneyfest</title>
 </head>
 <body style="margin:0;padding:0;background:#0B0F1A;font-family:'Segoe UI',Arial,sans-serif;">
   <table width="100%" cellpadding="0" cellspacing="0" style="background:#0B0F1A;padding:40px 20px;">
@@ -351,7 +351,7 @@ function generateApprovalHTML({ borrowerName, accessCode, loanAmount, releaseDat
 
 export async function sendApprovalEmail({ to, borrowerName, accessCode, loanAmount, releaseDate, installmentAmount, totalRepayment }) {
   if (!to || !to.includes('@')) return { success: false, error: 'Invalid email' }
-  const portalUrl = 'https://loan-manifest.vercel.app/portal'
+  const portalUrl = 'https://loan-moneyfest.vercel.app/portal'
   try {
     const SUPABASE_URL = 'https://swwedyfgbqhtavxmbmhv.supabase.co'
     const SUPABASE_ANON_KEY = process.env.REACT_APP_SUPABASE_ANON_KEY
@@ -375,11 +375,11 @@ export async function sendApprovalEmail({ to, borrowerName, accessCode, loanAmou
 
 export async function sendPendingEmail({ to, borrowerName, accessCode, loanAmount }) {
   if (!to || !to.includes('@')) return { success: false, error: 'Invalid email' }
-  const portalUrl = 'https://loan-manifest.vercel.app/portal'
+  const portalUrl = 'https://loan-moneyfest.vercel.app/portal'
   const html = `
 <!DOCTYPE html>
 <html lang="en">
-<head><meta charset="UTF-8" /><title>Application Received — Loan Moneyfest</title></head>
+<head><meta charset="UTF-8" /><title>Application Received — LoanMoneyfest</title></head>
 <body style="margin:0;padding:0;background:#0B0F1A;font-family:'Segoe UI',Arial,sans-serif;">
   <table width="100%" cellpadding="0" cellspacing="0" style="background:#0B0F1A;padding:40px 20px;">
     <tr><td align="center">
