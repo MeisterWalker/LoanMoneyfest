@@ -351,7 +351,7 @@ function generateApprovalHTML({ borrowerName, accessCode, loanAmount, releaseDat
 
 export async function sendApprovalEmail({ to, borrowerName, accessCode, loanAmount, releaseDate, installmentAmount, totalRepayment }) {
   if (!to || !to.includes('@')) return { success: false, error: 'Invalid email' }
-  const portalUrl = 'https://loan-moneyfest.vercel.app/portal'
+  const portalUrl = 'https://loanmoneyfest.vercel.app/portal'
   try {
     const SUPABASE_URL = 'https://swwedyfgbqhtavxmbmhv.supabase.co'
     const SUPABASE_ANON_KEY = process.env.REACT_APP_SUPABASE_ANON_KEY
@@ -375,7 +375,7 @@ export async function sendApprovalEmail({ to, borrowerName, accessCode, loanAmou
 
 export async function sendPendingEmail({ to, borrowerName, accessCode, loanAmount }) {
   if (!to || !to.includes('@')) return { success: false, error: 'Invalid email' }
-  const portalUrl = 'https://loan-moneyfest.vercel.app/portal'
+  const portalUrl = 'https://loanmoneyfest.vercel.app/portal'
   const html = `
 <!DOCTYPE html>
 <html lang="en">
