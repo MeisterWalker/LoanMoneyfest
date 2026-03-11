@@ -191,6 +191,92 @@ function ApplicationCard({ app, onApprove, onReject }) {
   )
 }
 
+
+function ProofReviewSection({ supabase, user, logAudit }) {
+  const [proofs, setProofs] = useState([])
+  const [expanded, setExpanded] = useState(false)
+  const { toast } = useToast()
+
+  const fetchProofs = async () => {
+    const { data } = await supabase
+      .from('payment_proofs')
+      .select('*, borrowers(full_name, access_code), loans(loan_amount, installment_amount)')
+      .eq('status', 'Pending')
+      .order('created_at', { ascending: false })
+    setProofs(data || [])
+  }
+
+  useEffect(() => { fetchProofs() }, [])
+
+  const handleConfirm = async (proof) => {
+    await supabase.from('payment_proofs').update({ status: 'Confirmed', reviewed_by: user?.email, reviewed_at: new Date().toISOString() }).eq('id', proof.id)
+    await logAudit({ action_type: 'PAYMENT_PROOF_CONFIRMED', module: 'Applications', description: `Payment proof confirmed for ${proof.borrowers?.full_name} — Installment ${proof.installment_number}`, changed_by: user?.email })
+    toast('Payment proof confirmed', 'success')
+    fetchProofs()
+  }
+
+  const handleReject = async (proof) => {
+    await supabase.from('payment_proofs').update({ status: 'Rejected', reviewed_by: user?.email, reviewed_at: new Date().toISOString() }).eq('id', proof.id)
+    await logAudit({ action_type: 'PAYMENT_PROOF_REJECTED', module: 'Applications', description: `Payment proof rejected for ${proof.borrowers?.full_name} — Installment ${proof.installment_number}`, changed_by: user?.email })
+    toast('Payment proof rejected', 'success')
+    fetchProofs()
+  }
+
+  const getFileUrl = (path) => {
+    const { data } = supabase.storage.from('payment-proofs').getPublicUrl(path)
+    return data?.publicUrl
+  }
+
+  if (proofs.length === 0) return null
+
+  return (
+    <div style={{ background: '#141B2D', border: '1px solid rgba(245,158,11,0.25)', borderRadius: 14, padding: '18px 20px', marginBottom: 24 }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer' }} onClick={() => setExpanded(e => !e)}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <div style={{ width: 32, height: 32, borderRadius: 9, background: 'rgba(245,158,11,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <Image size={15} color="#F59E0B" />
+          </div>
+          <div>
+            <div style={{ fontFamily: 'Space Grotesk', fontWeight: 700, fontSize: 14, color: '#F0F4FF' }}>Payment Proofs to Review</div>
+            <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>{proofs.length} pending confirmation</div>
+          </div>
+          <span style={{ background: '#F59E0B', color: '#000', fontSize: 11, fontWeight: 800, borderRadius: 20, padding: '2px 10px' }}>{proofs.length}</span>
+        </div>
+        <div style={{ color: 'var(--text-muted)' }}>{expanded ? '▲' : '▼'}</div>
+      </div>
+
+      {expanded && (
+        <div style={{ marginTop: 16, display: 'flex', flexDirection: 'column', gap: 10 }}>
+          {proofs.map(proof => (
+            <div key={proof.id} style={{ background: '#0B0F1A', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 12, padding: '14px 16px', display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap' }}>
+              <div style={{ flex: 1, minWidth: 200 }}>
+                <div style={{ fontSize: 13, fontWeight: 700, color: '#F0F4FF' }}>{proof.borrowers?.full_name}</div>
+                <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 2 }}>Installment {proof.installment_number} of 4 · ₱{Number(proof.loans?.installment_amount).toLocaleString('en-PH', { minimumFractionDigits: 2 })}</div>
+                {proof.notes && <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 4, fontStyle: 'italic' }}>"{proof.notes}"</div>}
+                <div style={{ fontSize: 11, color: '#4B5580', marginTop: 4 }}>{new Date(proof.created_at).toLocaleDateString('en-PH', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</div>
+              </div>
+              <div style={{ display: 'flex', gap: 8, flexShrink: 0 }}>
+                <a href={getFileUrl(proof.file_path)} target="_blank" rel="noreferrer"
+                  style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '7px 12px', borderRadius: 8, background: 'rgba(59,130,246,0.1)', border: '1px solid rgba(59,130,246,0.2)', color: '#3B82F6', fontSize: 12, fontWeight: 600, textDecoration: 'none' }}>
+                  <ExternalLink size={12} /> View
+                </a>
+                <button onClick={() => handleConfirm(proof)}
+                  style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '7px 12px', borderRadius: 8, border: 'none', background: 'rgba(34,197,94,0.15)', color: '#22C55E', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}>
+                  ✓ Confirm
+                </button>
+                <button onClick={() => handleReject(proof)}
+                  style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '7px 12px', borderRadius: 8, border: 'none', background: 'rgba(239,68,68,0.1)', color: '#EF4444', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}>
+                  ✗ Reject
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
 export default function ApplicationsPage() {
   const [applications, setApplications] = useState([])
   const [loading, setLoading] = useState(true)
@@ -207,7 +293,10 @@ export default function ApplicationsPage() {
   useEffect(() => { fetchData() }, [fetchData])
 
   const handleApprove = async (app) => {
-    // 1. Create borrower
+    // 1. Generate unique access code
+    const accessCode = 'LM-' + Math.random().toString(36).substring(2, 6).toUpperCase()
+
+    // 2. Create borrower with access code
     const { data: borrower, error: bErr } = await supabase.from('borrowers').insert({
       full_name: app.full_name, department: app.department,
       tenure_years: app.tenure_years, phone: app.phone,
@@ -218,12 +307,13 @@ export default function ApplicationsPage() {
       loan_limit: 5000, loan_limit_level: 1,
       loan_limit_override: false, clean_loans: 0,
       loyalty_badge: 'New', at_risk: false,
+      access_code: accessCode,
       admin_notes: `Applied via loan application form. Loan purpose: ${app.loan_purpose || 'Not specified'}`
     }).select().single()
 
     if (bErr) { toast('Failed to create borrower', 'error'); return }
 
-    // 2. Calculate release date (next upcoming 5th or 20th)
+    // 3. Calculate release date (next upcoming 5th or 20th)
     const today = new Date()
     const day = today.getDate()
     const month = today.getMonth()
@@ -232,10 +322,11 @@ export default function ApplicationsPage() {
     if (day <= 5) releaseDate = new Date(year, month, 5)
     else if (day <= 20) releaseDate = new Date(year, month, 20)
     else releaseDate = new Date(year, month + 1, 5)
-    const releaseDateStr = releaseDate.toISOString().slice(0, 10)
+    const releaseDateStr = releaseDate.getFullYear() + '-' + String(releaseDate.getMonth()+1).padStart(2,'0') + '-' + String(releaseDate.getDate()).padStart(2,'0')
+    const releaseDateDisplay = releaseDate.toLocaleDateString('en-PH', { month: 'long', day: 'numeric', year: 'numeric' })
 
-    // 3. Create loan
-    const loanAmount = app.loan_amount
+    // 4. Create loan
+    const loanAmount = Number(app.loan_amount)
     const totalRepayment = loanAmount * 1.08
     const installmentAmount = totalRepayment / 4
 
@@ -249,13 +340,26 @@ export default function ApplicationsPage() {
 
     if (lErr) { toast('Borrower created but loan failed', 'error'); return }
 
-    // 4. Update application status
+    // 5. Update application status
     await supabase.from('applications').update({ status: 'Approved' }).eq('id', app.id)
 
-    // 5. Log audit
-    await logAudit({ action_type: 'APPLICATION_APPROVED', module: 'Applications', description: `Application approved for ${app.full_name} — ₱${loanAmount.toLocaleString()} loan created`, changed_by: user?.email })
+    // 6. Send approval email with access code
+    if (app.email) {
+      await sendApprovalEmail({
+        to: app.email,
+        borrowerName: app.full_name,
+        accessCode,
+        loanAmount,
+        totalRepayment,
+        installmentAmount,
+        releaseDate: releaseDateDisplay
+      })
+    }
 
-    toast(`✅ Approved! ${app.full_name} added as borrower with ₱${loanAmount.toLocaleString()} loan`, 'success')
+    // 7. Log audit
+    await logAudit({ action_type: 'APPLICATION_APPROVED', module: 'Applications', description: `Application approved for ${app.full_name} — ₱${loanAmount.toLocaleString()} loan created. Access code: ${accessCode}`, changed_by: user?.email })
+
+    toast(`✅ Approved! Access code ${accessCode} sent to ${app.email || app.full_name}`, 'success')
     fetchData()
   }
 
@@ -292,7 +396,10 @@ export default function ApplicationsPage() {
 
       {/* Filter tabs */}
       <div style={{ display: 'flex', gap: 6, background: 'rgba(255,255,255,0.03)', borderRadius: 10, padding: 4, marginBottom: 24, width: 'fit-content' }}>
-        {['Pending', 'Approved', 'Rejected', 'All'].map(f => (
+        {/* Payment Proofs Section */}
+      <ProofReviewSection supabase={supabase} user={user} logAudit={logAudit} />
+
+      {['Pending', 'Approved', 'Rejected', 'All'].map(f => (
           <button key={f} onClick={() => setFilter(f)} style={{ padding: '7px 16px', borderRadius: 7, border: 'none', cursor: 'pointer', fontSize: 13, fontWeight: 600, background: filter === f ? '#3B82F6' : 'transparent', color: filter === f ? '#fff' : '#4B5580', transition: 'all 0.15s' }}>
             {f} {f === 'Pending' && pendingCount > 0 ? `(${pendingCount})` : ''}
           </button>

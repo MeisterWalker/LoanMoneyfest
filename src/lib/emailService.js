@@ -240,3 +240,135 @@ export async function sendBulkReminders({ events, daysAhead = 2 }) {
 
   return results
 }
+
+function generateApprovalHTML({ borrowerName, accessCode, loanAmount, releaseDate, installmentAmount, totalRepayment, portalUrl }) {
+  return `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Loan Approved — Loan Manifest</title>
+</head>
+<body style="margin:0;padding:0;background:#0B0F1A;font-family:'Segoe UI',Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#0B0F1A;padding:40px 20px;">
+    <tr>
+      <td align="center">
+        <table width="100%" style="max-width:560px;" cellpadding="0" cellspacing="0">
+
+          <!-- HEADER -->
+          <tr>
+            <td style="background:linear-gradient(135deg,#0d1226 0%,#141B2D 60%,#1a1040 100%);border-radius:16px 16px 0 0;padding:32px 36px;border-bottom:1px solid rgba(34,197,94,0.3);">
+              <div style="display:inline-block;width:42px;height:42px;background:linear-gradient(135deg,#3B82F6,#8B5CF6);border-radius:10px;text-align:center;line-height:42px;font-size:20px;margin-bottom:12px;">💼</div>
+              <div style="font-size:26px;font-weight:900;color:#F0F4FF;letter-spacing:-1px;margin-bottom:2px;">
+                Loan<span style="background:linear-gradient(90deg,#60a5fa,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">Manifest</span>
+              </div>
+              <div style="font-size:12px;color:#4B5580;letter-spacing:0.08em;text-transform:uppercase;">Workplace Lending System</div>
+            </td>
+          </tr>
+
+          <!-- APPROVED BANNER -->
+          <tr>
+            <td style="background:#141B2D;padding:28px 36px 0;">
+              <div style="background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.3);border-radius:12px;padding:20px;text-align:center;margin-bottom:24px;">
+                <div style="font-size:36px;margin-bottom:8px;">🎉</div>
+                <div style="font-size:20px;font-weight:900;color:#22C55E;margin-bottom:4px;">Loan Approved!</div>
+                <div style="font-size:14px;color:#8892B0;">Hi <strong style="color:#F0F4FF;">${borrowerName}</strong>, your loan application has been approved.</div>
+              </div>
+            </td>
+          </tr>
+
+          <!-- LOAN DETAILS -->
+          <tr>
+            <td style="background:#141B2D;padding:0 36px 24px;">
+              <div style="background:#0B0F1A;border:1px solid #1E2640;border-radius:12px;overflow:hidden;">
+                <div style="padding:14px 20px;border-bottom:1px solid #1E2640;font-size:12px;color:#4B5580;text-transform:uppercase;letter-spacing:0.06em;">Loan Details</div>
+                <table width="100%" cellpadding="0" cellspacing="0" style="padding:4px 0;">
+                  <tr>
+                    <td style="font-size:13px;color:#4B5580;padding:10px 20px;border-bottom:1px solid #1E2640;">Loan Amount</td>
+                    <td align="right" style="font-size:13px;font-weight:700;color:#22C55E;padding:10px 20px;border-bottom:1px solid #1E2640;">₱${Number(loanAmount).toLocaleString('en-PH', { minimumFractionDigits: 2 })}</td>
+                  </tr>
+                  <tr>
+                    <td style="font-size:13px;color:#4B5580;padding:10px 20px;border-bottom:1px solid #1E2640;">Total Repayment (8% interest)</td>
+                    <td align="right" style="font-size:13px;font-weight:700;color:#F0F4FF;padding:10px 20px;border-bottom:1px solid #1E2640;">₱${Number(totalRepayment).toLocaleString('en-PH', { minimumFractionDigits: 2 })}</td>
+                  </tr>
+                  <tr>
+                    <td style="font-size:13px;color:#4B5580;padding:10px 20px;border-bottom:1px solid #1E2640;">Per Installment (4 payments)</td>
+                    <td align="right" style="font-size:13px;font-weight:700;color:#8B5CF6;padding:10px 20px;border-bottom:1px solid #1E2640;">₱${Number(installmentAmount).toLocaleString('en-PH', { minimumFractionDigits: 2 })}</td>
+                  </tr>
+                  <tr>
+                    <td style="font-size:13px;color:#4B5580;padding:10px 20px;">Expected Release Date</td>
+                    <td align="right" style="font-size:13px;font-weight:700;color:#F59E0B;padding:10px 20px;">${releaseDate}</td>
+                  </tr>
+                </table>
+              </div>
+            </td>
+          </tr>
+
+          <!-- ACCESS CODE -->
+          <tr>
+            <td style="background:#141B2D;padding:0 36px 24px;">
+              <div style="background:linear-gradient(135deg,#0f1729,#1a1040);border:2px solid rgba(139,92,246,0.4);border-radius:14px;padding:24px;text-align:center;">
+                <div style="font-size:12px;text-transform:uppercase;letter-spacing:0.1em;color:#4B5580;margin-bottom:10px;">Your Portal Access Code</div>
+                <div style="font-size:36px;font-weight:900;letter-spacing:8px;color:#F0F4FF;font-family:monospace;margin-bottom:10px;">${accessCode}</div>
+                <div style="font-size:12px;color:#4B5580;margin-bottom:16px;">Use this code to access your borrower portal</div>
+                <a href="${portalUrl}" style="display:inline-block;background:linear-gradient(135deg,#3B82F6,#8B5CF6);color:#fff;text-decoration:none;padding:12px 28px;border-radius:10px;font-size:14px;font-weight:700;letter-spacing:0.02em;">View My Loan Portal →</a>
+              </div>
+            </td>
+          </tr>
+
+          <!-- INSTRUCTIONS -->
+          <tr>
+            <td style="background:#141B2D;padding:0 36px 28px;">
+              <div style="background:rgba(59,130,246,0.07);border-left:3px solid #3B82F6;border-radius:0 8px 8px 0;padding:14px 16px;">
+                <p style="font-size:13px;color:#8892B0;margin:0;line-height:1.7;">
+                  📌 <strong style="color:#CBD5F0;">How to use your portal:</strong><br/>
+                  1. Visit the portal link above<br/>
+                  2. Enter your access code: <strong style="color:#F0F4FF;">${accessCode}</strong><br/>
+                  3. View your loan balance, schedule, and upload payment proof<br/>
+                  4. Payments are due every <strong style="color:#F0F4FF;">5th and 20th</strong> of the month
+                </p>
+              </div>
+            </td>
+          </tr>
+
+          <!-- FOOTER -->
+          <tr>
+            <td style="background:#0d1226;border-top:1px solid #1E2640;border-radius:0 0 16px 16px;padding:24px 36px;text-align:center;">
+              <p style="font-size:13px;color:#CBD5F0;margin:0 0 4px;font-weight:600;">From LM Management</p>
+              <p style="font-size:11px;color:#4B5580;margin:0;">MySource Solutions · Workplace Lending Program</p>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+  `
+}
+
+export async function sendApprovalEmail({ to, borrowerName, accessCode, loanAmount, releaseDate, installmentAmount, totalRepayment }) {
+  if (!to || !to.includes('@')) return { success: false, error: 'Invalid email' }
+  const portalUrl = 'https://loan-manifest.vercel.app/portal'
+  try {
+    const SUPABASE_URL = 'https://swwedyfgbqhtavxmbmhv.supabase.co'
+    const SUPABASE_ANON_KEY = process.env.REACT_APP_SUPABASE_ANON_KEY
+    const response = await fetch(`${SUPABASE_URL}/functions/v1/send-email`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` },
+      body: JSON.stringify({
+        to,
+        subject: `🎉 Your Loan is Approved — Access Code: ${accessCode}`,
+        html: generateApprovalHTML({ borrowerName, accessCode, loanAmount, releaseDate, installmentAmount, totalRepayment, portalUrl })
+      })
+    })
+    const data = await response.json()
+    if (!response.ok) return { success: false, error: data.message || 'Failed' }
+    return { success: true }
+  } catch (err) {
+    return { success: false, error: err.message }
+  }
+}
+

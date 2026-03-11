@@ -14,6 +14,7 @@ import ForecastPage from './pages/ForecastPage'
 import CollectionPage from './pages/CollectionPage'
 import ApplicationsPage from './pages/ApplicationsPage'
 import PublicApplyPage from './pages/PublicApplyPage'
+import BorrowerPortalPage from './pages/BorrowerPortalPage'
 import NotificationBell from './components/NotificationBell'
 import './index.css'
 
@@ -42,6 +43,7 @@ function AppRoutes() {
       {/* ── Public routes ── */}
       <Route path="/"              element={<PublicApplyPage />} />
       <Route path="/apply"         element={<PublicApplyPage />} />
+      <Route path="/portal"        element={<BorrowerPortalPage />} />
 
       {/* ── Admin auth ── */}
       <Route path="/admin"         element={user ? <Navigate to="/admin/dashboard" replace /> : <LoginPage />} />

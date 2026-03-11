@@ -120,6 +120,33 @@ function BorrowerCard({ borrower, departments, onEdit, onDelete }) {
                 </div>
               </div>
             )}
+            <div style={{ gridColumn: '1 / -1' }}>
+              <div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Portal Access Code</div>
+              {borrower.access_code ? (
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <div style={{ fontFamily: 'monospace', fontSize: 18, fontWeight: 900, letterSpacing: 6, color: '#F0F4FF', background: 'rgba(139,92,246,0.08)', border: '1px solid rgba(139,92,246,0.25)', borderRadius: 8, padding: '8px 16px' }}>
+                    {borrower.access_code}
+                  </div>
+                  <button
+                    onClick={() => { navigator.clipboard.writeText(borrower.access_code); }}
+                    title="Copy code"
+                    style={{ background: 'rgba(139,92,246,0.1)', border: '1px solid rgba(139,92,246,0.2)', borderRadius: 7, padding: '6px 12px', color: '#8B5CF6', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}
+                  >
+                    Copy
+                  </button>
+                  <a
+                    href={'https://loan-manifest.vercel.app/portal'}
+                    target="_blank"
+                    rel="noreferrer"
+                    style={{ background: 'rgba(59,130,246,0.1)', border: '1px solid rgba(59,130,246,0.2)', borderRadius: 7, padding: '6px 12px', color: '#3B82F6', fontSize: 12, fontWeight: 600, textDecoration: 'none' }}
+                  >
+                    Open Portal ↗
+                  </a>
+                </div>
+              ) : (
+                <div style={{ fontSize: 13, color: 'var(--text-muted)' }}>No access code assigned</div>
+              )}
+            </div>
           </div>
         </div>
       )}
