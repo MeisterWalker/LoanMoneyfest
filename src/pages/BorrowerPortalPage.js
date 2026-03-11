@@ -149,21 +149,7 @@ function UploadModal({ installmentNum, loan, borrower, onClose, onUploaded }) {
           </button>
         </div>
       </div>
-      {/* Bottom Tab Navigation */}
-      <div style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: '#141B2D', borderTop: '1px solid rgba(255,255,255,0.08)', display: 'flex', zIndex: 100, paddingBottom: 'env(safe-area-inset-bottom)' }}>
-        {[
-          { icon: '🏠', label: 'Home', pg: 'home' },
-          { icon: '🧾', label: 'History', pg: 'payment-history' },
-          { icon: '💳', label: 'Methods', pg: 'payment-methods' },
-          { icon: '👤', label: 'Profile', pg: 'profile' },
-        ].map(tab => (
-          <button key={tab.pg} onClick={() => setPage(tab.pg)} style={{ flex: 1, padding: '10px 4px 8px', background: 'transparent', border: 'none', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3 }}>
-            <div style={{ fontSize: 20, lineHeight: 1, filter: page === tab.pg ? 'none' : 'grayscale(1) opacity(0.4)' }}>{tab.icon}</div>
-            <div style={{ fontSize: 10, fontWeight: page === tab.pg ? 700 : 400, color: page === tab.pg ? '#a78bfa' : '#4B5580', letterSpacing: '0.02em' }}>{tab.label}</div>
-            {page === tab.pg && <div style={{ width: 4, height: 4, borderRadius: '50%', background: '#a78bfa' }} />}
-          </button>
-        ))}
-      </div>
+
 
     </div>
   )
@@ -402,7 +388,7 @@ export default function BorrowerPortalPage() {
         <button onClick={() => setPage('home')} style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 8, padding: '7px 14px', color: '#F0F4FF', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>← Back</button>
         <div style={{ fontFamily: 'Space Grotesk', fontWeight: 700, fontSize: 16, color: '#F0F4FF' }}>My Profile</div>
       </div>
-      <div style={{ maxWidth: 480, margin: '0 auto', padding: '24px 20px 100px 20px' }}>
+      <div style={{ maxWidth: 480, margin: '0 auto', padding: '24px 20px' }}>
 
         {/* Avatar + Name */}
         <div style={{ background: '#141B2D', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 16, padding: 24, marginBottom: 16, textAlign: 'center' }}>
@@ -499,21 +485,7 @@ export default function BorrowerPortalPage() {
         </div>
 
       </div>
-      {/* Bottom Tab Navigation */}
-      <div style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: '#141B2D', borderTop: '1px solid rgba(255,255,255,0.08)', display: 'flex', zIndex: 100, paddingBottom: 'env(safe-area-inset-bottom)' }}>
-        {[
-          { icon: '🏠', label: 'Home', pg: 'home' },
-          { icon: '🧾', label: 'History', pg: 'payment-history' },
-          { icon: '💳', label: 'Methods', pg: 'payment-methods' },
-          { icon: '👤', label: 'Profile', pg: 'profile' },
-        ].map(tab => (
-          <button key={tab.pg} onClick={() => setPage(tab.pg)} style={{ flex: 1, padding: '10px 4px 8px', background: 'transparent', border: 'none', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3 }}>
-            <div style={{ fontSize: 20, lineHeight: 1, filter: page === tab.pg ? 'none' : 'grayscale(1) opacity(0.4)' }}>{tab.icon}</div>
-            <div style={{ fontSize: 10, fontWeight: page === tab.pg ? 700 : 400, color: page === tab.pg ? '#a78bfa' : '#4B5580', letterSpacing: '0.02em' }}>{tab.label}</div>
-            {page === tab.pg && <div style={{ width: 4, height: 4, borderRadius: '50%', background: '#a78bfa' }} />}
-          </button>
-        ))}
-      </div>
+
     </div>
   )
 
@@ -524,7 +496,7 @@ export default function BorrowerPortalPage() {
         <button onClick={() => setPage('home')} style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 8, padding: '7px 14px', color: '#F0F4FF', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>← Back</button>
         <div style={{ fontFamily: 'Space Grotesk', fontWeight: 700, fontSize: 16, color: '#F0F4FF' }}>Payment History</div>
       </div>
-      <div style={{ maxWidth: 480, margin: '0 auto', padding: '24px 20px 100px 20px' }}>
+      <div style={{ maxWidth: 480, margin: '0 auto', padding: '24px 20px' }}>
 
         {allLoans.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '60px 20px' }}>
@@ -602,21 +574,7 @@ export default function BorrowerPortalPage() {
           </div>
         )}
       </div>
-      {/* Bottom Tab Navigation */}
-      <div style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: '#141B2D', borderTop: '1px solid rgba(255,255,255,0.08)', display: 'flex', zIndex: 100, paddingBottom: 'env(safe-area-inset-bottom)' }}>
-        {[
-          { icon: '🏠', label: 'Home', pg: 'home' },
-          { icon: '🧾', label: 'History', pg: 'payment-history' },
-          { icon: '💳', label: 'Methods', pg: 'payment-methods' },
-          { icon: '👤', label: 'Profile', pg: 'profile' },
-        ].map(tab => (
-          <button key={tab.pg} onClick={() => setPage(tab.pg)} style={{ flex: 1, padding: '10px 4px 8px', background: 'transparent', border: 'none', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3 }}>
-            <div style={{ fontSize: 20, lineHeight: 1, filter: page === tab.pg ? 'none' : 'grayscale(1) opacity(0.4)' }}>{tab.icon}</div>
-            <div style={{ fontSize: 10, fontWeight: page === tab.pg ? 700 : 400, color: page === tab.pg ? '#a78bfa' : '#4B5580', letterSpacing: '0.02em' }}>{tab.label}</div>
-            {page === tab.pg && <div style={{ width: 4, height: 4, borderRadius: '50%', background: '#a78bfa' }} />}
-          </button>
-        ))}
-      </div>
+
     </div>
   )
 
@@ -702,7 +660,9 @@ export default function BorrowerPortalPage() {
         </div>
       </div>
 
-      <div style={{ maxWidth: 640, margin: '0 auto', padding: '24px 20px 100px 20px' }}>
+
+
+      <div style={{ maxWidth: 640, margin: '0 auto', padding: '24px 20px' }}>
 
         {uploadSuccess && (
           <div style={{ background: 'rgba(34,197,94,0.1)', border: '1px solid rgba(34,197,94,0.3)', borderRadius: 12, padding: '14px 18px', marginBottom: 20, display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -903,21 +863,7 @@ export default function BorrowerPortalPage() {
           onUploaded={handleUploaded}
         />
       )}
-      {/* Bottom Tab Navigation */}
-      <div style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: '#141B2D', borderTop: '1px solid rgba(255,255,255,0.08)', display: 'flex', zIndex: 100, paddingBottom: 'env(safe-area-inset-bottom)' }}>
-        {[
-          { icon: '🏠', label: 'Home', pg: 'home' },
-          { icon: '🧾', label: 'History', pg: 'payment-history' },
-          { icon: '💳', label: 'Methods', pg: 'payment-methods' },
-          { icon: '👤', label: 'Profile', pg: 'profile' },
-        ].map(tab => (
-          <button key={tab.pg} onClick={() => setPage(tab.pg)} style={{ flex: 1, padding: '10px 4px 8px', background: 'transparent', border: 'none', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3 }}>
-            <div style={{ fontSize: 20, lineHeight: 1, filter: page === tab.pg ? 'none' : 'grayscale(1) opacity(0.4)' }}>{tab.icon}</div>
-            <div style={{ fontSize: 10, fontWeight: page === tab.pg ? 700 : 400, color: page === tab.pg ? '#a78bfa' : '#4B5580', letterSpacing: '0.02em' }}>{tab.label}</div>
-            {page === tab.pg && <div style={{ width: 4, height: 4, borderRadius: '50%', background: '#a78bfa' }} />}
-          </button>
-        ))}
-      </div>
+
 
     </div>
   )
