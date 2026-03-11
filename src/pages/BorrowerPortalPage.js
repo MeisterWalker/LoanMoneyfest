@@ -169,16 +169,6 @@ export default function BorrowerPortalPage() {
   const [pendingApp, setPendingApp] = useState(null)
   const [allLoans, setAllLoans] = useState([])
 
-  // Auto-restore session on page refresh
-  useEffect(() => {
-    const saved = localStorage.getItem('lm_portal_code')
-    if (saved) {
-      setCode(saved)
-      setInputCode(saved)
-      fetchPortalData(saved)
-    }
-  }, [fetchPortalData])
-
   const fetchPortalData = useCallback(async (accessCode) => {
     setLoading(true)
     setError('')
@@ -228,6 +218,16 @@ export default function BorrowerPortalPage() {
     setError('Invalid access code. Please check and try again.')
     setLoading(false)
   }, [])
+
+  // Auto-restore session on page refresh
+  useEffect(() => {
+    const saved = localStorage.getItem('lm_portal_code')
+    if (saved) {
+      setCode(saved)
+      setInputCode(saved)
+      fetchPortalData(saved)
+    }
+  }, [fetchPortalData])
 
   const handleLogin = async () => {
     if (!inputCode.trim()) { setError('Please enter your access code'); return }
