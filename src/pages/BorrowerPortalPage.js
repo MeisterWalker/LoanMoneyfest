@@ -163,8 +163,9 @@ export default function BorrowerPortalPage() {
   const [error, setError] = useState('')
   const [uploadModal, setUploadModal] = useState(null)
   const [uploadSuccess, setUploadSuccess] = useState(false)
-  const [page, setPage] = useState('home') // 'home' | 'payment-methods'
+  const [page, setPage] = useState('home') // 'home' | 'payment-methods' | 'profile' | 'payment-history'
   const [pendingApp, setPendingApp] = useState(null)
+  const [allLoans, setAllLoans] = useState([])
 
   const fetchPortalData = useCallback(async (accessCode) => {
     setLoading(true)
@@ -179,13 +180,11 @@ export default function BorrowerPortalPage() {
       .single()
 
     if (b) {
-      const { data: l } = await supabase
+      const { data: allL } = await supabase
         .from('loans')
         .select('*')
         .eq('borrower_id', b.id)
         .order('created_at', { ascending: false })
-        .limit(1)
-        .single()
 
       const { data: p } = await supabase
         .from('payment_proofs')
@@ -194,7 +193,8 @@ export default function BorrowerPortalPage() {
         .order('created_at', { ascending: false })
 
       setBorrower(b)
-      setLoan(l || null)
+      setAllLoans(allL || [])
+      setLoan(allL?.[0] || null)
       setProofs(p || [])
       setLoading(false)
       return
@@ -379,6 +379,201 @@ export default function BorrowerPortalPage() {
   )
 
   // Payment Methods page
+  // ── PROFILE PAGE ──────────────────────────────────────────────
+  if (borrower && page === 'profile') return (
+    <div style={{ minHeight: '100vh', background: '#0B0F1A', fontFamily: 'DM Sans, sans-serif' }}>
+      <div style={{ background: 'linear-gradient(135deg,#0d1226,#141B2D)', borderBottom: '1px solid rgba(139,92,246,0.2)', padding: '16px 20px', display: 'flex', alignItems: 'center', gap: 12 }}>
+        <button onClick={() => setPage('home')} style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 8, padding: '7px 14px', color: '#F0F4FF', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>← Back</button>
+        <div style={{ fontFamily: 'Space Grotesk', fontWeight: 700, fontSize: 16, color: '#F0F4FF' }}>My Profile</div>
+      </div>
+      <div style={{ maxWidth: 480, margin: '0 auto', padding: '24px 20px' }}>
+
+        {/* Avatar + Name */}
+        <div style={{ background: '#141B2D', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 16, padding: 24, marginBottom: 16, textAlign: 'center' }}>
+          <div style={{ width: 72, height: 72, borderRadius: '50%', background: 'linear-gradient(135deg,#3B82F6,#8B5CF6)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 28, fontWeight: 900, color: '#fff', margin: '0 auto 14px', fontFamily: 'Space Grotesk' }}>
+            {borrower.full_name?.charAt(0).toUpperCase()}
+          </div>
+          <div style={{ fontFamily: 'Space Grotesk', fontWeight: 800, fontSize: 20, color: '#F0F4FF', marginBottom: 4 }}>{borrower.full_name}</div>
+          <div style={{ fontSize: 13, color: '#7A8AAA', marginBottom: 12 }}>{borrower.department}</div>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.3)', borderRadius: 20, padding: '4px 14px' }}>
+            <span style={{ fontSize: 14 }}>
+              {borrower.loyalty_badge === 'New' ? '🌱' : borrower.loyalty_badge === 'Regular' ? '⭐' : borrower.loyalty_badge === 'Trusted' ? '💎' : '👑'}
+            </span>
+            <span style={{ fontSize: 12, fontWeight: 700, color: '#F59E0B' }}>{borrower.loyalty_badge || 'New'} Borrower</span>
+          </div>
+        </div>
+
+        {/* Credit Score */}
+        <div style={{ background: '#141B2D', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 16, padding: 24, marginBottom: 16 }}>
+          <div style={{ fontFamily: 'Space Grotesk', fontWeight: 700, fontSize: 14, color: '#F0F4FF', marginBottom: 16 }}>Credit Score</div>
+          {(() => {
+            const score = borrower.credit_score || 750
+            const pct = ((score - 300) / (850 - 300)) * 100
+            const color = score >= 750 ? '#22C55E' : score >= 650 ? '#F59E0B' : '#EF4444'
+            const label = score >= 750 ? 'Excellent' : score >= 700 ? 'Good' : score >= 650 ? 'Fair' : 'Poor'
+            return (
+              <div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 10 }}>
+                  <div style={{ fontFamily: 'Space Grotesk', fontWeight: 900, fontSize: 48, color, lineHeight: 1 }}>{score}</div>
+                  <div style={{ textAlign: 'right' }}>
+                    <div style={{ fontSize: 14, fontWeight: 700, color }}>{label}</div>
+                    <div style={{ fontSize: 11, color: '#4B5580' }}>out of 850</div>
+                  </div>
+                </div>
+                <div style={{ height: 10, background: '#1E2640', borderRadius: 5, overflow: 'hidden', marginBottom: 8 }}>
+                  <div style={{ height: '100%', width: pct + '%', background: `linear-gradient(90deg,#EF4444,#F59E0B,#22C55E)`, borderRadius: 5, transition: 'width 1s ease' }} />
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10, color: '#4B5580' }}>
+                  <span>300 Poor</span><span>650 Fair</span><span>750 Good</span><span>850 Excellent</span>
+                </div>
+              </div>
+            )
+          })()}
+        </div>
+
+        {/* Loan Limit Level */}
+        <div style={{ background: '#141B2D', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 16, padding: 24, marginBottom: 16 }}>
+          <div style={{ fontFamily: 'Space Grotesk', fontWeight: 700, fontSize: 14, color: '#F0F4FF', marginBottom: 16 }}>Loan Limit Level</div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 8, marginBottom: 16 }}>
+            {[
+              { level: 1, amount: 'P5,000', loans: 0 },
+              { level: 2, amount: 'P7,000', loans: 1 },
+              { level: 3, amount: 'P9,000', loans: 2 },
+              { level: 4, amount: 'P10,000', loans: 3 },
+            ].map(l => {
+              const current = (borrower.loan_limit_level || 1) === l.level
+              const unlocked = (borrower.loan_limit_level || 1) >= l.level
+              return (
+                <div key={l.level} style={{ background: current ? 'rgba(139,92,246,0.15)' : unlocked ? 'rgba(34,197,94,0.07)' : 'rgba(255,255,255,0.02)', border: `1px solid ${current ? 'rgba(139,92,246,0.4)' : unlocked ? 'rgba(34,197,94,0.2)' : 'rgba(255,255,255,0.05)'}`, borderRadius: 10, padding: '10px 8px', textAlign: 'center' }}>
+                  <div style={{ fontSize: 10, fontWeight: 700, color: current ? '#8B5CF6' : unlocked ? '#22C55E' : '#4B5580', marginBottom: 4 }}>LVL {l.level}</div>
+                  <div style={{ fontSize: 11, fontWeight: 800, color: current ? '#F0F4FF' : unlocked ? '#CBD5F0' : '#4B5580' }}>{l.amount}</div>
+                  {current && <div style={{ fontSize: 9, color: '#8B5CF6', marginTop: 3 }}>Current</div>}
+                  {!current && unlocked && <div style={{ fontSize: 9, color: '#22C55E', marginTop: 3 }}>Unlocked</div>}
+                  {!unlocked && <div style={{ fontSize: 9, color: '#4B5580', marginTop: 3 }}>{l.loans} clean loans</div>}
+                </div>
+              )
+            })}
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', padding: '12px 16px', background: 'rgba(255,255,255,0.02)', borderRadius: 10 }}>
+            <div style={{ fontSize: 13, color: '#7A8AAA' }}>Current Limit</div>
+            <div style={{ fontSize: 13, fontWeight: 800, color: '#22C55E' }}>P{Number(borrower.loan_limit || 5000).toLocaleString()}</div>
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', padding: '12px 16px', background: 'rgba(255,255,255,0.02)', borderRadius: 10, marginTop: 6 }}>
+            <div style={{ fontSize: 13, color: '#7A8AAA' }}>Clean Loans Completed</div>
+            <div style={{ fontSize: 13, fontWeight: 800, color: '#8B5CF6' }}>{borrower.clean_loans || 0} of 3 needed for max</div>
+          </div>
+        </div>
+
+        {/* Personal Details */}
+        <div style={{ background: '#141B2D', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 16, padding: 24 }}>
+          <div style={{ fontFamily: 'Space Grotesk', fontWeight: 700, fontSize: 14, color: '#F0F4FF', marginBottom: 16 }}>Personal Details</div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+            {[
+              { label: 'Email', value: borrower.email },
+              { label: 'Phone', value: borrower.phone },
+              { label: 'Department', value: borrower.department },
+              { label: 'Tenure', value: borrower.tenure_years ? borrower.tenure_years + ' years' : 'N/A' },
+            ].map((item, i) => (
+              <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 14px', background: 'rgba(255,255,255,0.02)', borderRadius: 9 }}>
+                <span style={{ fontSize: 12, color: '#4B5580' }}>{item.label}</span>
+                <span style={{ fontSize: 13, fontWeight: 600, color: '#F0F4FF' }}>{item.value || 'N/A'}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+      </div>
+    </div>
+  )
+
+  // ── PAYMENT HISTORY PAGE ───────────────────────────────────────
+  if (borrower && page === 'payment-history') return (
+    <div style={{ minHeight: '100vh', background: '#0B0F1A', fontFamily: 'DM Sans, sans-serif' }}>
+      <div style={{ background: 'linear-gradient(135deg,#0d1226,#141B2D)', borderBottom: '1px solid rgba(59,130,246,0.2)', padding: '16px 20px', display: 'flex', alignItems: 'center', gap: 12 }}>
+        <button onClick={() => setPage('home')} style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 8, padding: '7px 14px', color: '#F0F4FF', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>← Back</button>
+        <div style={{ fontFamily: 'Space Grotesk', fontWeight: 700, fontSize: 16, color: '#F0F4FF' }}>Payment History</div>
+      </div>
+      <div style={{ maxWidth: 480, margin: '0 auto', padding: '24px 20px' }}>
+
+        {allLoans.length === 0 ? (
+          <div style={{ textAlign: 'center', padding: '60px 20px' }}>
+            <div style={{ fontSize: 48, marginBottom: 16 }}>📭</div>
+            <div style={{ fontFamily: 'Space Grotesk', fontWeight: 700, fontSize: 18, color: '#F0F4FF', marginBottom: 8 }}>No Payment History</div>
+            <div style={{ fontSize: 14, color: '#7A8AAA' }}>Your confirmed payments will appear here.</div>
+          </div>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            {allLoans.map((l, li) => {
+              const confirmedProofs = proofs.filter(p => p.loan_id === l.id && p.status === 'Confirmed')
+              const loanDate = new Date(l.created_at).toLocaleDateString('en-PH', { month: 'long', day: 'numeric', year: 'numeric' })
+              return (
+                <div key={l.id} style={{ background: '#141B2D', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 16, overflow: 'hidden' }}>
+                  {/* Loan header */}
+                  <div style={{ padding: '16px 20px', borderBottom: '1px solid rgba(255,255,255,0.04)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div>
+                      <div style={{ fontFamily: 'Space Grotesk', fontWeight: 700, fontSize: 14, color: '#F0F4FF' }}>
+                        Loan #{allLoans.length - li} — P{Number(l.loan_amount).toLocaleString()}
+                      </div>
+                      <div style={{ fontSize: 11, color: '#4B5580', marginTop: 2 }}>{loanDate}</div>
+                    </div>
+                    <div style={{ padding: '4px 12px', borderRadius: 20, fontSize: 11, fontWeight: 700,
+                      background: l.status === 'Completed' ? 'rgba(34,197,94,0.1)' : l.status === 'Active' ? 'rgba(59,130,246,0.1)' : 'rgba(139,92,246,0.1)',
+                      color: l.status === 'Completed' ? '#22C55E' : l.status === 'Active' ? '#3B82F6' : '#8B5CF6'
+                    }}>{l.status}</div>
+                  </div>
+
+                  {/* Summary row */}
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 1, background: 'rgba(255,255,255,0.03)' }}>
+                    {[
+                      { label: 'Total Repayment', value: 'P' + Number(l.total_repayment).toLocaleString('en-PH', { minimumFractionDigits: 2 }) },
+                      { label: 'Payments Made', value: `${l.payments_made || 0} of 4` },
+                      { label: 'Remaining', value: 'P' + Number(l.remaining_balance || 0).toLocaleString('en-PH', { minimumFractionDigits: 2 }) },
+                    ].map((s, i) => (
+                      <div key={i} style={{ padding: '12px 14px', background: '#141B2D' }}>
+                        <div style={{ fontSize: 10, color: '#4B5580', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>{s.label}</div>
+                        <div style={{ fontSize: 12, fontWeight: 700, color: '#F0F4FF' }}>{s.value}</div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Confirmed payments */}
+                  {confirmedProofs.length > 0 ? (
+                    <div style={{ padding: '14px 20px' }}>
+                      <div style={{ fontSize: 11, color: '#4B5580', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 10 }}>Confirmed Payments</div>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                        {confirmedProofs.map((proof, pi) => (
+                          <div key={pi} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px', background: 'rgba(34,197,94,0.05)', border: '1px solid rgba(34,197,94,0.15)', borderRadius: 10 }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                              <div style={{ width: 28, height: 28, borderRadius: '50%', background: 'rgba(34,197,94,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13 }}>✅</div>
+                              <div>
+                                <div style={{ fontSize: 13, fontWeight: 600, color: '#F0F4FF' }}>Installment {proof.installment_number}</div>
+                                <div style={{ fontSize: 11, color: '#4B5580' }}>
+                                  {new Date(proof.reviewed_at || proof.created_at).toLocaleDateString('en-PH', { month: 'short', day: 'numeric', year: 'numeric' })}
+                                </div>
+                              </div>
+                            </div>
+                            <div style={{ textAlign: 'right' }}>
+                              <div style={{ fontSize: 13, fontWeight: 800, color: '#22C55E' }}>P{Number(l.installment_amount).toLocaleString('en-PH', { minimumFractionDigits: 2 })}</div>
+                              <div style={{ fontSize: 10, color: '#22C55E' }}>Confirmed</div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ) : (
+                    <div style={{ padding: '16px 20px', textAlign: 'center', fontSize: 13, color: '#4B5580' }}>
+                      No confirmed payments yet for this loan.
+                    </div>
+                  )}
+                </div>
+              )
+            })}
+          </div>
+        )}
+      </div>
+    </div>
+  )
+
   if (borrower && page === 'payment-methods') return (
     <div style={{ minHeight: '100vh', background: '#0B0F1A', fontFamily: 'DM Sans, sans-serif' }}>
       <div style={{ background: 'linear-gradient(135deg,#0d1226,#141B2D)', borderBottom: '1px solid rgba(139,92,246,0.2)', padding: '16px 24px' }}>
@@ -614,6 +809,20 @@ export default function BorrowerPortalPage() {
             </div>
 
             {/* Payment Methods link */}
+            {/* Quick access cards */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 16 }}>
+              {[
+                { icon: '👤', label: 'My Profile', sub: 'Score & level', page: 'profile', color: '#8B5CF6', border: 'rgba(139,92,246,0.25)', bg: 'rgba(139,92,246,0.08)' },
+                { icon: '🧾', label: 'Payment History', sub: 'Confirmed payments', page: 'payment-history', color: '#22C55E', border: 'rgba(34,197,94,0.25)', bg: 'rgba(34,197,94,0.06)' },
+              ].map(card => (
+                <div key={card.page} onClick={() => setPage(card.page)} style={{ background: card.bg, border: `1px solid ${card.border}`, borderRadius: 14, padding: '16px 14px', cursor: 'pointer', transition: 'all 0.2s' }}>
+                  <div style={{ fontSize: 26, marginBottom: 8 }}>{card.icon}</div>
+                  <div style={{ fontFamily: 'Space Grotesk', fontWeight: 700, fontSize: 13, color: '#F0F4FF', marginBottom: 2 }}>{card.label}</div>
+                  <div style={{ fontSize: 11, color: '#4B5580' }}>{card.sub}</div>
+                </div>
+              ))}
+            </div>
+
             <div onClick={() => setPage('payment-methods')} style={{ background: '#141B2D', border: '1px solid rgba(139,92,246,0.2)', borderRadius: 16, padding: '16px 20px', marginBottom: 16, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', transition: 'border-color 0.2s' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
                 <div style={{ display: 'flex', gap: -4 }}>
