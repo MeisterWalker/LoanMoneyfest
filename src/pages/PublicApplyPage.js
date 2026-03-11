@@ -164,16 +164,39 @@ export default function PublicApplyPage() {
         <p style={{ color: '#7A8AAA', fontSize: 15, lineHeight: 1.7, marginBottom: 24 }}>
           Thank you <strong style={{ color: '#F0F4FF' }}>{form.full_name}</strong>! Your loan application has been received and is now under review. Our admin will get back to you shortly.
         </p>
-        <div style={{ background: 'rgba(34,197,94,0.08)', border: '1px solid rgba(34,197,94,0.2)', borderRadius: 12, padding: '16px 20px' }}>
-          <div style={{ fontSize: 13, color: '#22C55E', fontWeight: 600 }}>📋 Application Details</div>
-          <div style={{ fontSize: 13, color: '#7A8AAA', marginTop: 8 }}>
+        <div style={{ background: 'rgba(34,197,94,0.08)', border: '1px solid rgba(34,197,94,0.2)', borderRadius: 12, padding: '16px 20px', marginBottom: 16 }}>
+          <div style={{ fontSize: 13, color: '#22C55E', fontWeight: 600, marginBottom: 8 }}>📋 Application Details</div>
+          <div style={{ fontSize: 13, color: '#7A8AAA', marginTop: 4 }}>
             Amount Requested: <strong style={{ color: '#F0F4FF' }}>₱{parseFloat(form.loan_amount).toLocaleString()}</strong>
           </div>
           <div style={{ fontSize: 13, color: '#7A8AAA', marginTop: 4 }}>
-            Release Method: <strong style={{ color: '#F0F4FF' }}>{form.release_method}</strong>
+            Release Method: <strong style={{ color: '#F0F4FF' }}>{form.release_method || 'Not specified'}</strong>
           </div>
           <div style={{ fontSize: 13, color: '#7A8AAA', marginTop: 4 }}>
             Status: <strong style={{ color: '#F59E0B' }}>Pending Review</strong>
+          </div>
+        </div>
+
+        <div style={{ background: 'rgba(59,130,246,0.06)', border: '1px solid rgba(59,130,246,0.15)', borderRadius: 12, padding: '16px 20px' }}>
+          <div style={{ fontSize: 13, color: '#60A5FA', fontWeight: 600, marginBottom: 10 }}>💬 Need to follow up?</div>
+          <div style={{ fontSize: 13, color: '#7A8AAA', marginBottom: 12, lineHeight: 1.6 }}>
+            Contact any of the following admins via <strong style={{ color: '#F0F4FF' }}>Microsoft Teams Chat</strong>:
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'rgba(255,255,255,0.03)', borderRadius: 8, padding: '10px 14px' }}>
+              <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'linear-gradient(135deg,#3B82F6,#8B5CF6)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 700, color: '#fff', flexShrink: 0 }}>JP</div>
+              <div>
+                <div style={{ fontSize: 13, fontWeight: 600, color: '#F0F4FF' }}>John Paul Lacaron</div>
+                <div style={{ fontSize: 11, color: '#4B5580' }}>Admin · Teams Chat</div>
+              </div>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'rgba(255,255,255,0.03)', borderRadius: 8, padding: '10px 14px' }}>
+              <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'linear-gradient(135deg,#14B8A6,#3B82F6)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 700, color: '#fff', flexShrink: 0 }}>CJ</div>
+              <div>
+                <div style={{ fontSize: 13, fontWeight: 600, color: '#F0F4FF' }}>Charlou John Ramil</div>
+                <div style={{ fontSize: 11, color: '#4B5580' }}>Admin · Teams Chat</div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
