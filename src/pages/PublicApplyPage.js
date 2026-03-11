@@ -391,9 +391,9 @@ export default function PublicApplyPage() {
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                     {[
                       { value: 'Physical Cash', logo: '/cash-logo.png', desc: 'Receive your loan in cash. No transaction fee.', fee: null },
-                      { value: 'GCash', logo: '/gcash-logo.png', desc: 'Sent to your GCash number. GCash to GCash is free.', fee: null },
+                      { value: 'GCash', logo: '/gcash-logo.png', desc: 'Sent to your GCash number.', fee: 'Fee: ₱15 or 1% (whichever is higher)' },
                       { value: 'RCBC', logo: '/rcbc-logo.png', desc: 'Transferred to your RCBC account. Free if RCBC to RCBC.', fee: null },
-                      { value: 'Other Bank Transfer', logo: '/bank-logo.png', desc: 'Instapay/PESONet to any non-RCBC bank. Transfer fees are on your end.', fee: 'Borrower covers transfer fee' },
+                      { value: 'Other Bank Transfer', logo: '/bank-logo.png', desc: 'Instapay/PESONet to any non-RCBC bank. You must send the exact amount due — transfer fees are on your end.', fee: 'Borrower covers transfer fee' },
                     ].map(opt => (
                       <button key={opt.value} onClick={() => set('release_method', opt.value)} style={{ padding: '12px 14px', borderRadius: 10, border: `2px solid ${form.release_method === opt.value ? '#3B82F6' : 'rgba(255,255,255,0.07)'}`, background: form.release_method === opt.value ? 'rgba(59,130,246,0.1)' : 'rgba(255,255,255,0.02)', cursor: 'pointer', textAlign: 'left', transition: 'all 0.15s', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 10 }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -469,6 +469,119 @@ export default function PublicApplyPage() {
                   )}
                 </div>
 
+
+                {/* Interest Calculator */}
+                {form.loan_amount && form.release_method && (() => {
+                  const principal = parseFloat(form.loan_amount)
+                  const interest = principal * 0.08
+                  const totalRepayment = principal + interest
+                  const perInstallment = totalRepayment / 4
+
+                  // Release fee calculation
+                  let feeAmount = 0
+                  let feeLabel = ''
+                  if (form.release_method === 'GCash') {
+                    feeAmount = Math.max(15, principal * 0.01)
+                    feeLabel = 'GCash fee (P15 or 1%, whichever is higher)'
+                  } else if (form.release_method === 'Other Bank Transfer') {
+                    feeAmount = null // variable
+                    feeLabel = 'Transfer fee varies (Instapay/PESONet)'
+                  }
+                  const amountReceived = feeAmount !== null ? principal - feeAmount : null
+
+                  // Due dates
+                  const today = new Date()
+                  const day = today.getDate()
+                  const month = today.getMonth()
+                  const year = today.getFullYear()
+                  let release
+                  if (day <= 5) release = new Date(year, month, 5)
+                  else if (day <= 20) release = new Date(year, month, 20)
+                  else release = new Date(year, month + 1, 5)
+
+                  const dueDates = []
+                  for (let i = 1; i <= 4; i++) {
+                    const d = new Date(release)
+                    if (release.getDate() <= 5) {
+                      d.setMonth(d.getMonth() + Math.floor((i - 1) / 2))
+                      d.setDate(i % 2 === 1 ? 20 : 5)
+                    } else {
+                      d.setMonth(d.getMonth() + Math.ceil(i / 2))
+                      d.setDate(i % 2 === 1 ? 5 : 20)
+                    }
+                    dueDates.push(d)
+                  }
+
+                  return (
+                    <div style={{ background: 'linear-gradient(135deg,#0f1729,#141B2D)', border: '1px solid rgba(34,197,94,0.25)', borderRadius: 14, overflow: 'hidden', marginBottom: 4 }}>
+                      {/* Header */}
+                      <div style={{ padding: '14px 18px', borderBottom: '1px solid rgba(255,255,255,0.06)', display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <div style={{ width: 28, height: 28, borderRadius: 8, background: 'rgba(34,197,94,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14 }}>🧮</div>
+                        <div>
+                          <div style={{ fontFamily: 'Space Grotesk', fontWeight: 700, fontSize: 13, color: '#F0F4FF' }}>Loan Summary</div>
+                          <div style={{ fontSize: 11, color: '#4B5580' }}>Based on your selections</div>
+                        </div>
+                      </div>
+
+                      {/* Main figures */}
+                      <div style={{ padding: '16px 18px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+                        {[
+                          { label: 'Loan Amount', value: 'P' + principal.toLocaleString('en-PH', { minimumFractionDigits: 2 }), color: '#F0F4FF', sub: 'Principal' },
+                          { label: 'Interest (8% flat)', value: 'P' + interest.toLocaleString('en-PH', { minimumFractionDigits: 2 }), color: '#F59E0B', sub: 'One-time' },
+                          { label: 'Total Repayment', value: 'P' + totalRepayment.toLocaleString('en-PH', { minimumFractionDigits: 2 }), color: '#EF4444', sub: 'Over 4 payments' },
+                          { label: 'Per Installment', value: 'P' + perInstallment.toLocaleString('en-PH', { minimumFractionDigits: 2 }), color: '#22C55E', sub: 'Every cutoff' },
+                        ].map((item, i) => (
+                          <div key={i} style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 10, padding: '10px 12px' }}>
+                            <div style={{ fontSize: 10, color: '#4B5580', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>{item.label}</div>
+                            <div style={{ fontFamily: 'Space Grotesk', fontWeight: 800, fontSize: 16, color: item.color }}>{item.value}</div>
+                            <div style={{ fontSize: 10, color: '#4B5580', marginTop: 2 }}>{item.sub}</div>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Release fee */}
+                      {form.release_method !== 'Physical Cash' && form.release_method !== 'RCBC' && (
+                        <div style={{ margin: '0 18px', padding: '10px 14px', background: 'rgba(245,158,11,0.07)', border: '1px solid rgba(245,158,11,0.2)', borderRadius: 9, marginBottom: 12 }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 6 }}>
+                            <div style={{ fontSize: 12, color: '#F59E0B' }}>
+                              ⚠️ {feeLabel}
+                            </div>
+                            {feeAmount !== null && (
+                              <div style={{ fontSize: 12, fontWeight: 700, color: '#F59E0B' }}>
+                                -P{feeAmount.toLocaleString('en-PH', { minimumFractionDigits: 2 })}
+                              </div>
+                            )}
+                          </div>
+                          {amountReceived !== null && (
+                            <div style={{ marginTop: 6, fontSize: 13, color: '#F0F4FF', fontWeight: 700 }}>
+                              You will receive: <span style={{ color: '#22C55E' }}>P{amountReceived.toLocaleString('en-PH', { minimumFractionDigits: 2 })}</span>
+                            </div>
+                          )}
+                        </div>
+                      )}
+
+                      {/* Payment schedule */}
+                      <div style={{ padding: '0 18px 16px' }}>
+                        <div style={{ fontSize: 11, color: '#4B5580', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 10 }}>Payment Schedule</div>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                          {dueDates.map((date, i) => (
+                            <div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 12px', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 8 }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                                <div style={{ width: 20, height: 20, borderRadius: '50%', background: 'rgba(139,92,246,0.15)', border: '1px solid rgba(139,92,246,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 800, color: '#8B5CF6', flexShrink: 0 }}>{i + 1}</div>
+                                <span style={{ fontSize: 12, color: '#CBD5F0' }}>Installment {i + 1}</span>
+                              </div>
+                              <div style={{ textAlign: 'right' }}>
+                                <div style={{ fontSize: 12, fontWeight: 700, color: '#22C55E' }}>P{perInstallment.toLocaleString('en-PH', { minimumFractionDigits: 2 })}</div>
+                                <div style={{ fontSize: 10, color: '#4B5580' }}>{date.toLocaleDateString('en-PH', { month: 'short', day: 'numeric', year: 'numeric' })}</div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  )
+                })()}
+
                 {/* Terms */}
                 <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 10, padding: '14px', fontSize: 12, color: '#7A8AAA', lineHeight: 1.7, maxHeight: 120, overflowY: 'auto' }}>
                   <strong style={{ color: '#F0F4FF' }}>Terms & Conditions:</strong> By submitting this application, I confirm that all information provided is accurate. I understand that loans are subject to 8% flat interest rate, repayable in 4 equal installments every 5th and 20th of the month. Late payments will result in credit score deductions. I authorize LM Management to verify my information and contact my trustee if necessary.
@@ -534,7 +647,7 @@ export default function PublicApplyPage() {
 
             <FAQItem question="What happens if I miss a payment?" answer="Missed payments will negatively affect your credit score and may freeze your loan limit increase. Consistent late payments may result in your loan being flagged as defaulted." />
 
-            <FAQItem question="How will my loan be released and are there fees?" answer="Once approved, your loan will be released via your chosen method — Physical Cash, GCash, RCBC, or Other Bank Transfer. Release fees vary: Physical Cash and RCBC-to-RCBC are free, GCash to GCash is free, and other bank transfers (Instapay/PESONet) require the borrower to cover the transfer fee. Fees are deducted from your approved amount before release." />
+            <FAQItem question="How will my loan be released and are there fees?" answer="Once approved, your loan will be released via your chosen method — Physical Cash, GCash, RCBC, or Other Bank Transfer. Release fees vary: Physical Cash and RCBC-to-RCBC are free, GCash charges ₱15 or 1% (whichever is higher), and other bank transfers (Instapay/PESONet) require the borrower to cover the transfer fee. Fees are deducted from your approved amount before release." />
 
             <FAQItem question="What are the accepted repayment methods?" answer="You can repay your loan using any of the following methods. Always upload your proof of payment through the Borrower Portal after every transaction.">
               <div style={{ marginTop: 12, display: 'flex', flexDirection: 'column', gap: 10 }}>
