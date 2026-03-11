@@ -293,8 +293,8 @@ export default function ApplicationsPage() {
   useEffect(() => { fetchData() }, [fetchData])
 
   const handleApprove = async (app) => {
-    // 1. Generate unique access code
-    const accessCode = 'LM-' + Math.random().toString(36).substring(2, 6).toUpperCase()
+    // 1. Use existing access code from application, or generate one if missing
+    const accessCode = app.access_code || ('LM-' + Math.random().toString(36).substring(2, 6).toUpperCase())
 
     // 2. Create borrower with access code
     const { data: borrower, error: bErr } = await supabase.from('borrowers').insert({

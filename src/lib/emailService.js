@@ -372,3 +372,81 @@ export async function sendApprovalEmail({ to, borrowerName, accessCode, loanAmou
   }
 }
 
+
+export async function sendPendingEmail({ to, borrowerName, accessCode, loanAmount }) {
+  if (!to || !to.includes('@')) return { success: false, error: 'Invalid email' }
+  const portalUrl = 'https://loan-manifest.vercel.app/portal'
+  const html = `
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8" /><title>Application Received — Loan Manifest</title></head>
+<body style="margin:0;padding:0;background:#0B0F1A;font-family:'Segoe UI',Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#0B0F1A;padding:40px 20px;">
+    <tr><td align="center">
+      <table width="100%" style="max-width:560px;" cellpadding="0" cellspacing="0">
+
+        <tr><td style="background:linear-gradient(135deg,#0d1226,#141B2D);border-radius:16px 16px 0 0;padding:32px 36px;border-bottom:1px solid rgba(245,158,11,0.3);">
+          <div style="display:inline-block;width:42px;height:42px;background:linear-gradient(135deg,#3B82F6,#8B5CF6);border-radius:10px;text-align:center;line-height:42px;font-size:20px;margin-bottom:12px;">💼</div>
+          <div style="font-size:26px;font-weight:900;color:#F0F4FF;letter-spacing:-1px;margin-bottom:2px;">Loan<span style="background:linear-gradient(90deg,#60a5fa,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">Manifest</span></div>
+          <div style="font-size:12px;color:#4B5580;letter-spacing:0.08em;text-transform:uppercase;">Workplace Lending System</div>
+        </td></tr>
+
+        <tr><td style="background:#141B2D;padding:28px 36px 0;">
+          <div style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.3);border-radius:12px;padding:20px;text-align:center;margin-bottom:24px;">
+            <div style="font-size:36px;margin-bottom:8px;">📋</div>
+            <div style="font-size:20px;font-weight:900;color:#F59E0B;margin-bottom:4px;">Application Received!</div>
+            <div style="font-size:14px;color:#8892B0;">Hi <strong style="color:#F0F4FF;">${borrowerName}</strong>, your application for <strong style="color:#F0F4FF;">P${Number(loanAmount).toLocaleString()}</strong> is now under review.</div>
+          </div>
+        </td></tr>
+
+        <tr><td style="background:#141B2D;padding:0 36px 24px;">
+          <div style="background:linear-gradient(135deg,#0f1729,#1a1040);border:2px solid rgba(139,92,246,0.4);border-radius:14px;padding:24px;text-align:center;">
+            <div style="font-size:12px;text-transform:uppercase;letter-spacing:0.1em;color:#4B5580;margin-bottom:10px;">Your Portal Access Code</div>
+            <div style="font-size:36px;font-weight:900;letter-spacing:8px;color:#F0F4FF;font-family:monospace;margin-bottom:10px;">${accessCode}</div>
+            <div style="font-size:12px;color:#4B5580;margin-bottom:16px;">Use this to track your application status</div>
+            <a href="${portalUrl}" style="display:inline-block;background:linear-gradient(135deg,#3B82F6,#8B5CF6);color:#fff;text-decoration:none;padding:12px 28px;border-radius:10px;font-size:14px;font-weight:700;">Check Status in Portal</a>
+          </div>
+        </td></tr>
+
+        <tr><td style="background:#141B2D;padding:0 36px 28px;">
+          <div style="background:rgba(59,130,246,0.07);border-left:3px solid #3B82F6;border-radius:0 8px 8px 0;padding:14px 16px;">
+            <p style="font-size:13px;color:#8892B0;margin:0;line-height:1.8;">
+              <strong style="color:#CBD5F0;">What happens next?</strong><br/>
+              1. Our admin will review your application<br/>
+              2. You will receive an email once approved or rejected<br/>
+              3. Check your status anytime using your access code at the portal<br/>
+              4. For follow-ups, contact <strong style="color:#F0F4FF;">John Paul Lacaron</strong> or <strong style="color:#F0F4FF;">Charlou John Ramil</strong> via Microsoft Teams Chat
+            </p>
+          </div>
+        </td></tr>
+
+        <tr><td style="background:#0d1226;border-top:1px solid #1E2640;border-radius:0 0 16px 16px;padding:24px 36px;text-align:center;">
+          <p style="font-size:13px;color:#CBD5F0;margin:0 0 4px;font-weight:600;">From LM Management</p>
+          <p style="font-size:11px;color:#4B5580;margin:0;">MySource Solutions - Workplace Lending Program</p>
+        </td></tr>
+
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`
+
+  try {
+    const SUPABASE_URL = 'https://swwedyfgbqhtavxmbmhv.supabase.co'
+    const SUPABASE_ANON_KEY = process.env.REACT_APP_SUPABASE_ANON_KEY
+    const response = await fetch(`${SUPABASE_URL}/functions/v1/send-email`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` },
+      body: JSON.stringify({
+        to,
+        subject: `Application Received - Your access code is ${accessCode}`,
+        html
+      })
+    })
+    const data = await response.json()
+    if (!response.ok) return { success: false, error: data.message || 'Failed' }
+    return { success: true }
+  } catch (err) {
+    return { success: false, error: err.message }
+  }
+}

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { supabase } from '../lib/supabase'
+import { sendPendingEmail } from '../lib/emailService'
 
 const DEPARTMENTS = ['Minto Money', 'Greyhound']
 const LOAN_AMOUNTS = [5000, 7000, 9000, 10000]
@@ -25,6 +26,7 @@ function FAQItem({ question, answer, children }) {
 export default function PublicApplyPage() {
   const [step, setStep] = useState(1)
   const [submitted, setSubmitted] = useState(false)
+  const [accessCode, setAccessCode] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [form, setForm] = useState({
@@ -117,6 +119,10 @@ export default function PublicApplyPage() {
     if (err) { setError(err); return }
     setError('')
     setLoading(true)
+
+    // Generate access code for this applicant
+    const code = 'LM-' + Math.random().toString(36).substring(2, 6).toUpperCase()
+
     const { error: dbErr } = await supabase.from('applications').insert({
       full_name: form.full_name.trim(),
       department: form.department,
@@ -135,10 +141,23 @@ export default function PublicApplyPage() {
       bank_account_number: form.bank_account_number.trim() || null,
       bank_name: form.bank_name.trim() || null,
       status: 'Pending',
+      access_code: code,
       created_at: new Date().toISOString()
     })
     setLoading(false)
     if (dbErr) { setError('Submission failed. Please try again.'); return }
+
+    // Send pending confirmation email with access code
+    if (form.email.trim()) {
+      await sendPendingEmail({
+        to: form.email.trim(),
+        borrowerName: form.full_name.trim(),
+        accessCode: code,
+        loanAmount: parseFloat(form.loan_amount)
+      })
+    }
+
+    setAccessCode(code)
     setSubmitted(true)
   }
 
@@ -161,9 +180,17 @@ export default function PublicApplyPage() {
       <div style={{ textAlign: 'center', maxWidth: 420 }}>
         <div style={{ fontSize: 64, marginBottom: 20 }}>🎉</div>
         <h2 style={{ fontFamily: 'Space Grotesk', fontWeight: 800, fontSize: 28, color: '#F0F4FF', marginBottom: 12 }}>Application Submitted!</h2>
-        <p style={{ color: '#7A8AAA', fontSize: 15, lineHeight: 1.7, marginBottom: 24 }}>
+        <p style={{ color: '#7A8AAA', fontSize: 15, lineHeight: 1.7, marginBottom: 16 }}>
           Thank you <strong style={{ color: '#F0F4FF' }}>{form.full_name}</strong>! Your loan application has been received and is now under review. Our admin will get back to you shortly.
         </p>
+        <div style={{ background: 'linear-gradient(135deg,#0f1729,#1a1040)', border: '2px solid rgba(139,92,246,0.4)', borderRadius: 14, padding: '20px 24px', marginBottom: 20, textAlign: 'center' }}>
+          <div style={{ fontSize: 12, textTransform: 'uppercase', letterSpacing: '0.1em', color: '#4B5580', marginBottom: 8 }}>Your Portal Access Code</div>
+          <div style={{ fontSize: 32, fontWeight: 900, letterSpacing: 8, color: '#F0F4FF', fontFamily: 'monospace', marginBottom: 8 }}>{accessCode}</div>
+          <div style={{ fontSize: 12, color: '#4B5580', marginBottom: 14 }}>Use this to check your application status at the Borrower Portal</div>
+          <a href="/portal" style={{ display: 'inline-block', background: 'linear-gradient(135deg,#3B82F6,#8B5CF6)', color: '#fff', textDecoration: 'none', padding: '10px 24px', borderRadius: 9, fontSize: 13, fontWeight: 700 }}>
+            Check Application Status →
+          </a>
+        </div>
         <div style={{ background: 'rgba(34,197,94,0.08)', border: '1px solid rgba(34,197,94,0.2)', borderRadius: 12, padding: '16px 20px', marginBottom: 16 }}>
           <div style={{ fontSize: 13, color: '#22C55E', fontWeight: 600, marginBottom: 8 }}>📋 Application Details</div>
           <div style={{ fontSize: 13, color: '#7A8AAA', marginTop: 4 }}>

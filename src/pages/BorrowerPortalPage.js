@@ -164,36 +164,56 @@ export default function BorrowerPortalPage() {
   const [uploadModal, setUploadModal] = useState(null)
   const [uploadSuccess, setUploadSuccess] = useState(false)
   const [page, setPage] = useState('home') // 'home' | 'payment-methods'
+  const [pendingApp, setPendingApp] = useState(null)
 
   const fetchPortalData = useCallback(async (accessCode) => {
     setLoading(true)
     setError('')
+    const cleanCode = accessCode.toUpperCase().trim()
 
+    // First check approved borrowers
     const { data: b } = await supabase
       .from('borrowers')
       .select('*')
-      .eq('access_code', accessCode.toUpperCase().trim())
+      .eq('access_code', cleanCode)
       .single()
 
-    if (!b) { setError('Invalid access code. Please check and try again.'); setLoading(false); return }
+    if (b) {
+      const { data: l } = await supabase
+        .from('loans')
+        .select('*')
+        .eq('borrower_id', b.id)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .single()
 
-    const { data: l } = await supabase
-      .from('loans')
+      const { data: p } = await supabase
+        .from('payment_proofs')
+        .select('*')
+        .eq('borrower_id', b.id)
+        .order('created_at', { ascending: false })
+
+      setBorrower(b)
+      setLoan(l || null)
+      setProofs(p || [])
+      setLoading(false)
+      return
+    }
+
+    // Check pending/rejected applications
+    const { data: app } = await supabase
+      .from('applications')
       .select('*')
-      .eq('borrower_id', b.id)
-      .order('created_at', { ascending: false })
-      .limit(1)
+      .eq('access_code', cleanCode)
       .single()
 
-    const { data: p } = await supabase
-      .from('payment_proofs')
-      .select('*')
-      .eq('borrower_id', b.id)
-      .order('created_at', { ascending: false })
+    if (app) {
+      setPendingApp(app)
+      setLoading(false)
+      return
+    }
 
-    setBorrower(b)
-    setLoan(l || null)
-    setProofs(p || [])
+    setError('Invalid access code. Please check and try again.')
     setLoading(false)
   }, [])
 
@@ -212,6 +232,90 @@ export default function BorrowerPortalPage() {
 
   const dueDates = loan ? getDueDates(loan.release_date, loan.payments_made || 0) : []
   const progressPct = loan ? ((loan.payments_made || 0) / 4) * 100 : 0
+
+  // Pending / Rejected application screen
+  if (pendingApp && !borrower) return (
+    <div style={{ minHeight: '100vh', background: '#0B0F1A', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20, fontFamily: 'DM Sans, sans-serif' }}>
+      <div style={{ width: '100%', maxWidth: 460 }}>
+        <div style={{ textAlign: 'center', marginBottom: 28 }}>
+          <img src="/favicon-96x96.png" alt="Loan Manifest" style={{ width: 48, height: 48, objectFit: 'contain', marginBottom: 10 }} />
+          <div style={{ fontFamily: 'Space Grotesk', fontWeight: 900, fontSize: 24, color: '#F0F4FF' }}>
+            Loan<span style={{ background: 'linear-gradient(90deg,#60a5fa,#a78bfa)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Manifest</span>
+          </div>
+        </div>
+
+        <div style={{ background: '#141B2D', border: `1px solid ${pendingApp.status === 'Rejected' ? 'rgba(239,68,68,0.25)' : 'rgba(245,158,11,0.25)'}`, borderRadius: 16, padding: 28 }}>
+          <div style={{ textAlign: 'center', marginBottom: 24 }}>
+            <div style={{ fontSize: 48, marginBottom: 12 }}>{pendingApp.status === 'Rejected' ? '❌' : '⏳'}</div>
+            <div style={{ fontFamily: 'Space Grotesk', fontWeight: 800, fontSize: 20, color: pendingApp.status === 'Rejected' ? '#EF4444' : '#F59E0B', marginBottom: 8 }}>
+              {pendingApp.status === 'Rejected' ? 'Application Not Approved' : 'Application Under Review'}
+            </div>
+            <div style={{ fontSize: 14, color: '#7A8AAA', lineHeight: 1.7 }}>
+              {pendingApp.status === 'Rejected'
+                ? 'Unfortunately your application was not approved at this time.'
+                : 'Your application has been received and is currently being reviewed by our admin.'}
+            </div>
+          </div>
+
+          {/* Application summary */}
+          <div style={{ background: '#0B0F1A', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 12, padding: '14px 18px', marginBottom: 20 }}>
+            <div style={{ fontSize: 11, color: '#4B5580', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 10 }}>Application Details</div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13 }}>
+                <span style={{ color: '#4B5580' }}>Name</span>
+                <span style={{ color: '#F0F4FF', fontWeight: 600 }}>{pendingApp.full_name}</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13 }}>
+                <span style={{ color: '#4B5580' }}>Amount Requested</span>
+                <span style={{ color: '#F0F4FF', fontWeight: 600 }}>P{Number(pendingApp.loan_amount).toLocaleString()}</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13 }}>
+                <span style={{ color: '#4B5580' }}>Submitted</span>
+                <span style={{ color: '#F0F4FF', fontWeight: 600 }}>{new Date(pendingApp.created_at).toLocaleDateString('en-PH', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13 }}>
+                <span style={{ color: '#4B5580' }}>Status</span>
+                <span style={{ fontWeight: 700, color: pendingApp.status === 'Rejected' ? '#EF4444' : '#F59E0B' }}>{pendingApp.status}</span>
+              </div>
+              {pendingApp.status === 'Rejected' && pendingApp.reject_reason && (
+                <div style={{ marginTop: 4, padding: '8px 12px', background: 'rgba(239,68,68,0.06)', border: '1px solid rgba(239,68,68,0.15)', borderRadius: 8, fontSize: 12, color: '#EF4444' }}>
+                  Reason: {pendingApp.reject_reason}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Contact / instructions */}
+          {pendingApp.status !== 'Rejected' && (
+            <div style={{ background: 'rgba(59,130,246,0.06)', border: '1px solid rgba(59,130,246,0.15)', borderRadius: 10, padding: '14px 16px', marginBottom: 20, fontSize: 13, color: '#8892B0', lineHeight: 1.8 }}>
+              📧 <strong style={{ color: '#CBD5F0' }}>Please check your email</strong> from time to time for updates on your application.<br/>
+              For follow-ups, contact the following admins via <strong style={{ color: '#F0F4FF' }}>Microsoft Teams Chat</strong>:
+            </div>
+          )}
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {[
+              { initials: 'JP', name: 'John Paul Lacaron', gradient: 'linear-gradient(135deg,#3B82F6,#8B5CF6)' },
+              { initials: 'CJ', name: 'Charlou John Ramil', gradient: 'linear-gradient(135deg,#14B8A6,#3B82F6)' },
+            ].map(a => (
+              <div key={a.name} style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'rgba(255,255,255,0.03)', borderRadius: 10, padding: '10px 14px' }}>
+                <div style={{ width: 32, height: 32, borderRadius: '50%', background: a.gradient, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 800, color: '#fff', flexShrink: 0 }}>{a.initials}</div>
+                <div>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: '#F0F4FF' }}>{a.name}</div>
+                  <div style={{ fontSize: 11, color: '#4B5580' }}>Admin - Teams Chat</div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <button onClick={() => { setPendingApp(null); setInputCode(''); setCode('') }}
+            style={{ width: '100%', marginTop: 20, padding: '11px', borderRadius: 9, border: '1px solid rgba(255,255,255,0.08)', background: 'transparent', color: 'var(--text-muted)', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
+            Back
+          </button>
+        </div>
+      </div>
+    </div>
+  )
 
   // Login screen
   if (!borrower) return (
