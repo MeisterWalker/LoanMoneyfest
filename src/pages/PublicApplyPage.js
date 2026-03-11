@@ -19,6 +19,75 @@ function FAQItem({ question, answer, children }) {
           {children}
         </div>
       )}
+    {/* Loan Amount Disclaimer Modal */}
+    {showDisclaimer && (
+      <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.85)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999, padding: 20 }}>
+        <div style={{ background: '#141B2D', border: '1px solid rgba(245,158,11,0.3)', borderRadius: 20, padding: 32, width: '100%', maxWidth: 460, fontFamily: 'DM Sans, sans-serif' }}>
+
+          {/* Icon + title */}
+          <div style={{ textAlign: 'center', marginBottom: 24 }}>
+            <div style={{ fontSize: 44, marginBottom: 12 }}>⚠️</div>
+            <div style={{ fontFamily: 'Space Grotesk', fontWeight: 800, fontSize: 20, color: '#F59E0B', marginBottom: 6 }}>
+              Important Loan Disclaimer
+            </div>
+            <div style={{ fontSize: 13, color: '#7A8AAA' }}>
+              Please read carefully before proceeding
+            </div>
+          </div>
+
+          {/* Disclaimer content */}
+          <div style={{ background: '#0B0F1A', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 12, padding: '18px 20px', marginBottom: 20, fontSize: 13, color: '#CBD5F0', lineHeight: 1.8 }}>
+            <p style={{ margin: '0 0 12px' }}>
+              You have selected <strong style={{ color: '#22C55E', fontFamily: 'Space Grotesk' }}>₱{pendingAmount?.toLocaleString()}</strong> as your requested loan amount.
+            </p>
+            <p style={{ margin: '0 0 12px' }}>
+              Please be aware that <strong style={{ color: '#F0F4FF' }}>all first-time borrowers are approved at a starting loan amount of ₱5,000</strong>, regardless of the amount requested. This is part of our <strong style={{ color: '#8B5CF6' }}>Level Attainment System</strong>:
+            </p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6, margin: '0 0 12px', paddingLeft: 4 }}>
+              {[
+                { level: 'Level 1', amount: 'P5,000', desc: 'New borrower (starting limit)' },
+                { level: 'Level 2', amount: 'P7,000', desc: 'After 1 clean loan' },
+                { level: 'Level 3', amount: 'P9,000', desc: 'After 2 clean loans' },
+                { level: 'Level 4', amount: 'P10,000', desc: 'After 3 clean loans (maximum)' },
+              ].map((l, i) => (
+                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '6px 10px', background: 'rgba(139,92,246,0.06)', borderRadius: 7, border: '1px solid rgba(139,92,246,0.12)' }}>
+                  <span style={{ fontSize: 11, fontWeight: 700, color: '#8B5CF6', minWidth: 50 }}>{l.level}</span>
+                  <span style={{ fontWeight: 700, color: '#22C55E', minWidth: 56 }}>{l.amount}</span>
+                  <span style={{ fontSize: 12, color: '#4B5580' }}>{l.desc}</span>
+                </div>
+              ))}
+            </div>
+            <p style={{ margin: 0, fontSize: 12, color: '#7A8AAA', lineHeight: 1.7 }}>
+              In some cases, the admin may approve a higher starting amount based on their review of your application — however, <strong style={{ color: '#F0F4FF' }}>this is not guaranteed</strong> and is entirely at the admin's discretion. Submitting a higher amount does not guarantee you will receive it.
+            </p>
+          </div>
+
+          {/* Countdown + button */}
+          <button
+            onClick={disclaimerCountdown === 0 ? confirmDisclaimer : undefined}
+            disabled={disclaimerCountdown > 0}
+            style={{
+              width: '100%', padding: '14px', borderRadius: 12, border: 'none',
+              background: disclaimerCountdown > 0 ? 'rgba(255,255,255,0.05)' : 'linear-gradient(135deg,#F59E0B,#EF4444)',
+              color: disclaimerCountdown > 0 ? '#4B5580' : '#fff',
+              fontSize: 14, fontWeight: 700, cursor: disclaimerCountdown > 0 ? 'not-allowed' : 'pointer',
+              fontFamily: 'Space Grotesk', transition: 'all 0.3s',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8
+            }}
+          >
+            {disclaimerCountdown > 0 ? (
+              <>
+                <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 24, height: 24, borderRadius: '50%', background: 'rgba(255,255,255,0.08)', fontSize: 13, fontWeight: 800 }}>{disclaimerCountdown}</span>
+                Please read the above carefully...
+              </>
+            ) : (
+              'I Understand - Continue with ₱' + pendingAmount?.toLocaleString()
+            )}
+          </button>
+        </div>
+      </div>
+    )}
+
     </div>
   )
 }
@@ -27,6 +96,9 @@ export default function PublicApplyPage() {
   const [step, setStep] = useState(1)
   const [submitted, setSubmitted] = useState(false)
   const [accessCode, setAccessCode] = useState('')
+  const [showDisclaimer, setShowDisclaimer] = useState(false)
+  const [disclaimerCountdown, setDisclaimerCountdown] = useState(4)
+  const [pendingAmount, setPendingAmount] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [form, setForm] = useState({
@@ -112,6 +184,26 @@ export default function PublicApplyPage() {
     if (err) { setError(err); return }
     setError('')
     setStep(s => s + 1)
+  }
+
+  // Disclaimer countdown timer
+  const startDisclaimer = (amt) => {
+    setPendingAmount(amt)
+    setDisclaimerCountdown(4)
+    setShowDisclaimer(true)
+    const interval = setInterval(() => {
+      setDisclaimerCountdown(prev => {
+        if (prev <= 1) { clearInterval(interval); return 0 }
+        return prev - 1
+      })
+    }, 1000)
+  }
+
+  const confirmDisclaimer = () => {
+    set('loan_amount', pendingAmount)
+    setShowDisclaimer(false)
+    setPendingAmount(null)
+    setDisclaimerCountdown(4)
   }
 
   const handleSubmit = async () => {
@@ -367,7 +459,7 @@ export default function PublicApplyPage() {
                   <label style={labelStyle}>Loan Amount Requested *</label>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 10 }}>
                     {LOAN_AMOUNTS.map(amt => (
-                      <button key={amt} onClick={() => set('loan_amount', amt)} style={{ padding: '14px', borderRadius: 10, border: `2px solid ${form.loan_amount === amt ? '#3B82F6' : 'rgba(255,255,255,0.08)'}`, background: form.loan_amount === amt ? 'rgba(59,130,246,0.15)' : 'rgba(255,255,255,0.03)', color: form.loan_amount === amt ? '#F0F4FF' : '#7A8AAA', cursor: 'pointer', textAlign: 'center', transition: 'all 0.15s' }}>
+                      <button key={amt} onClick={() => form.loan_amount === amt ? null : startDisclaimer(amt)} style={{ padding: '14px', borderRadius: 10, border: `2px solid ${form.loan_amount === amt ? '#3B82F6' : 'rgba(255,255,255,0.08)'}`, background: form.loan_amount === amt ? 'rgba(59,130,246,0.15)' : 'rgba(255,255,255,0.03)', color: form.loan_amount === amt ? '#F0F4FF' : '#7A8AAA', cursor: 'pointer', textAlign: 'center', transition: 'all 0.15s' }}>
                         <div style={{ fontFamily: 'Space Grotesk', fontWeight: 800, fontSize: 20, color: form.loan_amount === amt ? '#22C55E' : '#7A8AAA' }}>₱{amt.toLocaleString()}</div>
                         <div style={{ fontSize: 11, marginTop: 2 }}>₱{(amt * 1.08 / 4).toFixed(2)}/cutoff</div>
                       </button>
@@ -393,7 +485,7 @@ export default function PublicApplyPage() {
                       { value: 'Physical Cash', logo: '/cash-logo.png', desc: 'Receive your loan in cash. No transaction fee.', fee: null },
                       { value: 'GCash', logo: '/gcash-logo.png', desc: 'Sent to your GCash number.', fee: 'Fee: ₱15 or 1% (whichever is higher)' },
                       { value: 'RCBC', logo: '/rcbc-logo.png', desc: 'Transferred to your RCBC account. Free if RCBC to RCBC.', fee: null },
-                      { value: 'Other Bank Transfer', logo: '/bank-logo.png', desc: 'Instapay/PESONet to any non-RCBC bank. You must send the exact amount due — transfer fees are on your end.', fee: 'Borrower covers transfer fee' },
+                      { value: 'Other Bank Transfer', logo: '/bank-logo.png', desc: 'Instapay/PESONet to any non-RCBC bank. You must send the exact amount due - transfer fees are on your end.', fee: 'Borrower covers transfer fee' },
                     ].map(opt => (
                       <button key={opt.value} onClick={() => set('release_method', opt.value)} style={{ padding: '12px 14px', borderRadius: 10, border: `2px solid ${form.release_method === opt.value ? '#3B82F6' : 'rgba(255,255,255,0.07)'}`, background: form.release_method === opt.value ? 'rgba(59,130,246,0.1)' : 'rgba(255,255,255,0.02)', cursor: 'pointer', textAlign: 'left', transition: 'all 0.15s', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 10 }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -471,7 +563,7 @@ export default function PublicApplyPage() {
 
 
                 {/* Interest Calculator */}
-                {form.loan_amount && form.release_method && (() => {
+                {form.loan_amount && (() => {
                   const principal = parseFloat(form.loan_amount)
                   const interest = principal * 0.08
                   const totalRepayment = principal + interest
@@ -484,10 +576,10 @@ export default function PublicApplyPage() {
                     feeAmount = Math.max(15, principal * 0.01)
                     feeLabel = 'GCash fee (P15 or 1%, whichever is higher)'
                   } else if (form.release_method === 'Other Bank Transfer') {
-                    feeAmount = null // variable
+                    feeAmount = null
                     feeLabel = 'Transfer fee varies (Instapay/PESONet)'
                   }
-                  const amountReceived = feeAmount !== null ? principal - feeAmount : null
+                  const amountReceived = feeAmount > 0 ? principal - feeAmount : null
 
                   // Due dates
                   const today = new Date()
@@ -519,8 +611,18 @@ export default function PublicApplyPage() {
                         <div style={{ width: 28, height: 28, borderRadius: 8, background: 'rgba(34,197,94,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14 }}>🧮</div>
                         <div>
                           <div style={{ fontFamily: 'Space Grotesk', fontWeight: 700, fontSize: 13, color: '#F0F4FF' }}>Loan Summary</div>
-                          <div style={{ fontSize: 11, color: '#4B5580' }}>Based on your selections</div>
+                          <div style={{ fontSize: 11, color: '#4B5580' }}>Estimated breakdown based on your selections</div>
                         </div>
+                      </div>
+
+                      {/* Disclaimer */}
+                      <div style={{ margin: '14px 18px 0', padding: '12px 14px', background: 'rgba(59,130,246,0.06)', border: '1px solid rgba(59,130,246,0.15)', borderRadius: 10, fontSize: 12, color: '#8892B0', lineHeight: 1.7 }}>
+                        <div style={{ fontWeight: 700, color: '#CBD5F0', marginBottom: 4 }}>📌 Why do we start at P5,000?</div>
+                        New borrowers start with a <strong style={{ color: '#F0F4FF' }}>P5,000 limit</strong> so we can establish trust and assess repayment reliability. This is not a reflection of your credibility — it's our standard starting point for everyone.
+                        <br /><br />
+                        <span style={{ color: '#60A5FA' }}>Your limit increases</span> as you build a good repayment history — up to <strong style={{ color: '#F0F4FF' }}>P10,000</strong> over time (Level 1: P5,000 → Level 2: P7,000 → Level 3: P9,000 → Level 4: P10,000).
+                        <br /><br />
+                        <span style={{ color: '#F59E0B' }}>⚠️ Note:</span> In some cases, the admin may approve a higher amount than P5,000 for first-time borrowers based on their assessment. However, <strong style={{ color: '#F0F4FF' }}>this is not guaranteed</strong> and is subject to the admin's sole discretion and review.
                       </div>
 
                       {/* Main figures */}
@@ -653,9 +755,9 @@ export default function PublicApplyPage() {
               <div style={{ marginTop: 12, display: 'flex', flexDirection: 'column', gap: 10 }}>
                 {[
                   { logo: '/cash-logo.png', label: 'Physical Cash', fee: '✓ Free', desc: 'Pay your admin directly in person. No fees, no transfer needed.', freebie: true, border: 'rgba(34,197,94,0.25)' },
-                  { logo: '/gcash-logo.png', label: 'GCash', fee: '₱15 or 1%', desc: 'Send to the admin GCash number. Fee is whichever is higher.', freebie: false, border: 'rgba(0,163,255,0.25)' },
+                  { logo: '/gcash-logo.png', label: 'GCash', fee: 'P15 or 1%', desc: 'Send to the admin GCash number. Fee is whichever is higher.', freebie: false, border: 'rgba(0,163,255,0.25)' },
                   { logo: '/rcbc-logo.png', label: 'RCBC to RCBC', fee: '✓ Free', desc: 'Transfer directly to the admin RCBC account. Same-bank transfers are free.', freebie: true, border: 'rgba(220,38,38,0.25)' },
-                  { logo: '/bank-logo.png', label: 'Other Bank (Instapay/PESONet)', fee: 'You cover fee', desc: 'Transfer from any other bank. You must send the exact amount due — transfer fees are on your end.', freebie: false, border: 'rgba(139,92,246,0.25)' },
+                  { logo: '/bank-logo.png', label: 'Other Bank (Instapay/PESONet)', fee: 'You cover fee', desc: 'Transfer from any other bank. You must send the exact amount due - transfer fees are on your end.', freebie: false, border: 'rgba(139,92,246,0.25)' },
                 ].map((item, i) => (
                   <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 14, background: '#0B0F1A', border: `1px solid ${item.border}`, borderRadius: 12, padding: '14px 16px' }}>
                     <img src={item.logo} alt={item.label} style={{ width: 40, height: 40, objectFit: 'contain', flexShrink: 0 }} />
