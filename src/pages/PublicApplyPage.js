@@ -71,12 +71,33 @@ export default function PublicApplyPage() {
     setDisclaimerCountdown(4)
   }
 
+  const ALLOWED_DOMAINS = [
+    'gmail.com', 'yahoo.com', 'outlook.com', 'hotmail.com', 'icloud.com',
+    'live.com', 'msn.com', 'protonmail.com', 'mail.com', 'mysource.com',
+    'ymail.com', 'googlemail.com'
+  ]
+
+  const validateEmail = (email) => {
+    const trimmed = email.trim().toLowerCase()
+    // Basic format check
+    const emailRegex = /^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/
+    if (!emailRegex.test(trimmed)) return 'Please enter a valid email address'
+    // Domain check
+    const domain = trimmed.split('@')[1]
+    if (!ALLOWED_DOMAINS.includes(domain)) {
+      return `Please use a valid email provider (e.g. @gmail.com, @yahoo.com, @outlook.com)`
+    }
+    return null
+  }
+
   const validateStep1 = () => {
     if (!form.full_name.trim()) return 'Please enter your full name'
     if (!form.department) return 'Please select your department'
     if (!form.tenure_years) return 'Please enter your tenure'
     if (!form.phone.trim()) return 'Please enter your phone number'
     if (!form.email.trim()) return 'Please enter your email'
+    const emailErr = validateEmail(form.email)
+    if (emailErr) return emailErr
     if (!form.address.trim()) return 'Please enter your address'
     return null
   }
@@ -307,7 +328,29 @@ export default function PublicApplyPage() {
               </div>
               <div><label style={labelStyle}>Years of Tenure *</label><input value={form.tenure_years} onChange={e => set('tenure_years', e.target.value)} placeholder="e.g. 2.5" type="number" min="0" step="0.5" style={inputStyle} /></div>
               <div><label style={labelStyle}>Phone Number *</label><input value={form.phone} onChange={e => set('phone', e.target.value)} placeholder="09XX XXX XXXX" style={inputStyle} /></div>
-              <div><label style={labelStyle}>Email Address *</label><input value={form.email} onChange={e => set('email', e.target.value)} placeholder="your@email.com" type="email" style={inputStyle} /></div>
+              <div>
+                <label style={labelStyle}>Email Address *</label>
+                <input
+                  value={form.email}
+                  onChange={e => set('email', e.target.value)}
+                  placeholder="your@gmail.com or your@yahoo.com"
+                  type="email"
+                  style={{
+                    ...inputStyle,
+                    borderColor: form.email && validateEmail(form.email) ? 'rgba(239,68,68,0.5)' : form.email && !validateEmail(form.email) ? 'rgba(34,197,94,0.4)' : 'rgba(255,255,255,0.08)'
+                  }}
+                />
+                {form.email && validateEmail(form.email) && (
+                  <div style={{ fontSize: 11, color: '#EF4444', marginTop: 5 }}>
+                    ⚠️ {validateEmail(form.email)}
+                  </div>
+                )}
+                {form.email && !validateEmail(form.email) && (
+                  <div style={{ fontSize: 11, color: '#22C55E', marginTop: 5 }}>
+                    ✓ Valid email address
+                  </div>
+                )}
+              </div>
               <div><label style={labelStyle}>Home Address *</label><textarea value={form.address} onChange={e => set('address', e.target.value)} placeholder="Enter your complete address" rows={2} style={{ ...inputStyle, resize: 'none' }} /></div>
             </div>
           )}
