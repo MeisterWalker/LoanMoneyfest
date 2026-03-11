@@ -490,6 +490,50 @@ export default function BorrowerPortalPage() {
                 <StatusBadge status={loan.status} />
               </div>
 
+              {/* Release Date Banner — shown when loan is Pending Release */}
+              {loan.status === 'Pending' && loan.release_date && (() => {
+                const [y, m, d] = loan.release_date.split('-').map(Number)
+                const releaseDate = new Date(y, m - 1, d)
+                const today = new Date()
+                today.setHours(0, 0, 0, 0)
+                const diffMs = releaseDate - today
+                const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24))
+                const isPast = diffDays < 0
+                const isToday = diffDays === 0
+                const formattedDate = releaseDate.toLocaleDateString('en-PH', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })
+
+                return (
+                  <div style={{ background: 'linear-gradient(135deg,rgba(245,158,11,0.08),rgba(239,68,68,0.05))', border: '1px solid rgba(245,158,11,0.3)', borderRadius: 14, padding: '18px 20px', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 16 }}>
+                    <div style={{ width: 48, height: 48, borderRadius: 12, background: 'rgba(245,158,11,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24, flexShrink: 0 }}>
+                      {isToday ? '🎉' : isPast ? '⏳' : '📅'}
+                    </div>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#F59E0B', fontWeight: 700, marginBottom: 4 }}>
+                        {isToday ? 'Release Day!' : isPast ? 'Processing Release' : 'Scheduled Fund Release'}
+                      </div>
+                      <div style={{ fontFamily: 'Space Grotesk', fontWeight: 800, fontSize: 16, color: '#F0F4FF', marginBottom: 4 }}>
+                        {formattedDate}
+                      </div>
+                      <div style={{ fontSize: 12, color: '#7A8AAA', lineHeight: 1.6 }}>
+                        {isToday
+                          ? 'Your funds are being processed today. Please wait for admin confirmation.'
+                          : isPast
+                          ? 'Your release is being processed. Please contact your admin for updates.'
+                          : diffDays === 1
+                          ? 'Your funds will be released tomorrow. Please make sure your details are correct.'
+                          : `Your funds will be released in ${diffDays} days. Please make sure your release details are correct.`}
+                      </div>
+                    </div>
+                    {!isPast && !isToday && (
+                      <div style={{ textAlign: 'center', flexShrink: 0 }}>
+                        <div style={{ fontFamily: 'Space Grotesk', fontWeight: 900, fontSize: 28, color: '#F59E0B', lineHeight: 1 }}>{diffDays}</div>
+                        <div style={{ fontSize: 10, color: '#7A8AAA', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{diffDays === 1 ? 'day' : 'days'}</div>
+                      </div>
+                    )}
+                  </div>
+                )
+              })()}
+
               {/* Progress bar */}
               <div style={{ marginBottom: 16 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, color: '#4B5580', marginBottom: 8 }}>
