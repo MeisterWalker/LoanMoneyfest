@@ -736,7 +736,14 @@ export default function BorrowerPortalPage() {
               <div style={{ fontSize: 11, color: '#4B5580' }}>Borrower Portal</div>
             </div>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <a href="/apply" style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '6px 12px', borderRadius: 8, background: 'rgba(34,197,94,0.08)', border: '1px solid rgba(34,197,94,0.2)', color: '#22C55E', fontSize: 12, fontWeight: 700, textDecoration: 'none', whiteSpace: 'nowrap' }}>
+              📝 Apply
+            </a>
+            <a href="/faq" style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '6px 12px', borderRadius: 8, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)', color: '#7A8AAA', fontSize: 12, fontWeight: 600, textDecoration: 'none', whiteSpace: 'nowrap' }}>
+              ❓ FAQ
+            </a>
+            <div style={{ width: 1, height: 20, background: 'rgba(255,255,255,0.08)' }} />
             <div style={{ textAlign: 'right' }}>
               <div style={{ fontSize: 13, fontWeight: 600, color: '#F0F4FF' }}>{borrower.full_name}</div>
               <div style={{ fontSize: 11, color: '#4B5580' }}>{borrower.department}</div>
