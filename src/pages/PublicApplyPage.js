@@ -70,6 +70,7 @@ export default function PublicApplyPage() {
 
   const validateStep2 = () => {
     if (!form.loan_amount) return 'Please select a loan amount'
+    if (!form.loan_purpose.trim()) return 'Please enter your loan purpose'
     if (!form.release_method) return 'Please select a preferred release method'
     if (form.release_method === 'GCash') {
       if (!form.gcash_number.trim()) return 'Please enter your GCash number'
@@ -343,7 +344,7 @@ export default function PublicApplyPage() {
                     </button>
                   ))}
                 </div>
-                <div><label style={lbl}>Loan Purpose (optional)</label><textarea value={form.loan_purpose} onChange={e => set('loan_purpose', e.target.value)} placeholder="Briefly describe what this loan is for..." rows={2} style={{ ...inp, resize: 'none' }} /></div>
+                <div><label style={lbl}>Loan Purpose *</label><textarea value={form.loan_purpose} onChange={e => set('loan_purpose', e.target.value)} placeholder="e.g. Bills payment, Emergency, Allowance, Tuition, Medical, Rent..." rows={2} style={{ ...inp, resize: 'none' }} /></div>
               </div>
 
               {/* Release Method */}
