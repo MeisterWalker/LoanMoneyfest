@@ -84,7 +84,7 @@ function LoanConfigSection({ settings, onSave }) {
       {/* Live preview */}
       <div style={{ background: 'rgba(59,130,246,0.06)', border: '1px solid rgba(59,130,246,0.15)', borderRadius: 10, padding: '14px 18px', marginBottom: 18, display: 'flex', gap: 30, flexWrap: 'wrap' }}>
         <div>
-          <div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 3 }}>Profit per full capital cycle</div>
+          <div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 3, display: 'flex', alignItems: 'center', gap: 4 }}><img src="/philippine-peso.png" alt="peso" style={{ width: 13, height: 13, objectFit: 'contain' }} />Profit per full capital cycle</div>
           <div style={{ fontFamily: 'Space Grotesk', fontWeight: 700, fontSize: 18, color: 'var(--blue)' }}>{formatCurrency(previewProfit)}</div>
         </div>
         <div>

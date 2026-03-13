@@ -210,7 +210,7 @@ export default function ForecastPage() {
       {/* Break-even */}
       {breakEvenMonth && (
         <div style={{ background: 'rgba(34,197,94,0.06)', border: '1px solid rgba(34,197,94,0.2)', borderRadius: 10, padding: '14px 20px', marginBottom: 24, display: 'flex', alignItems: 'center', gap: 12 }}>
-          <span style={{ fontSize: 20 }}>🎯</span>
+          <img src="/summary-check.png" alt="summary" style={{ width: 24, height: 24, objectFit: 'contain' }} />
           <div>
             <div style={{ fontWeight: 600, fontSize: 14 }}>Capital Doubles in Month {breakEvenMonth}</div>
             <div style={{ fontSize: 13, color: 'var(--text-muted)' }}>
@@ -239,7 +239,7 @@ export default function ForecastPage() {
 
       {/* Compounding Table */}
       <div className="card" style={{ padding: '22px 24px', marginBottom: 24 }}>
-        <div style={{ fontFamily: 'Space Grotesk', fontWeight: 700, fontSize: 15, marginBottom: 18 }}>📊 5-Year Compounding Table</div>
+        <div style={{ fontFamily: 'Space Grotesk', fontWeight: 700, fontSize: 15, marginBottom: 18 }}><div style={{ display: 'flex', alignItems: 'center', gap: 8 }}><img src="/summary-check.png" alt="summary-check" style={{ width: 16, height: 16, objectFit: 'contain' }} />5-Year Compounding Table</div></div>
         <div style={{ overflowX: 'auto' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 14 }}>
             <thead>
@@ -272,7 +272,7 @@ export default function ForecastPage() {
 
       {/* Break-even analysis */}
       <div className="card" style={{ padding: '22px 24px' }}>
-        <div style={{ fontFamily: 'Space Grotesk', fontWeight: 700, fontSize: 15, marginBottom: 16 }}>🔍 Break-Even Analysis</div>
+        <div style={{ fontFamily: 'Space Grotesk', fontWeight: 700, fontSize: 15, marginBottom: 16 }}><div style={{ display: 'flex', alignItems: 'center', gap: 8 }}><img src="/summary-check.png" alt="summary-check" style={{ width: 16, height: 16, objectFit: 'contain' }} />Break-Even Analysis</div></div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16 }}>
           {[
             { label: 'Months to break even', value: breakEvenMonth ? `${breakEvenMonth} months` : '>12 months', color: 'var(--blue)' },

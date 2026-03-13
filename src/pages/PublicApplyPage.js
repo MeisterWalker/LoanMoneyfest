@@ -471,7 +471,7 @@ export default function PublicApplyPage() {
               {/* Loan Amount */}
               <div style={{ background: '#141B2D', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 18, padding: 28 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 20 }}>
-                  <div style={{ width: 36, height: 36, borderRadius: 10, background: 'rgba(34,197,94,0.1)', border: '1px solid rgba(34,197,94,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16 }}>💰</div>
+                  <div style={{ width: 36, height: 36, borderRadius: 10, background: 'rgba(34,197,94,0.08)', border: '1px solid rgba(34,197,94,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 4 }}><img src="/philippine-peso.png" alt="philippine-peso" style={{ width: 24, height: 24, objectFit: 'contain' }} /></div>
                   <div>
                     <div style={{ fontFamily: 'Space Grotesk', fontWeight: 700, fontSize: 16, color: '#F0F4FF' }}>Loan Amount</div>
                     <div style={{ fontSize: 11, color: '#4B5580' }}>Select how much you need</div>
@@ -492,7 +492,7 @@ export default function PublicApplyPage() {
               {/* Release Method */}
               <div style={{ background: '#141B2D', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 18, padding: 28 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 20 }}>
-                  <div style={{ width: 36, height: 36, borderRadius: 10, background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16 }}>🏦</div>
+                  <div style={{ width: 40, height: 40, borderRadius: 10, background: 'rgba(245,158,11,0.06)', border: '1px solid rgba(245,158,11,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 4 }}><img src="/payment-method.png" alt="payment" style={{ width: 30, height: 30, objectFit: 'contain' }} /></div>
                   <div>
                     <div style={{ fontFamily: 'Space Grotesk', fontWeight: 700, fontSize: 16, color: '#F0F4FF' }}>Release Method</div>
                     <div style={{ fontSize: 11, color: '#4B5580' }}>How you want to receive your loan</div>
@@ -529,13 +529,13 @@ export default function PublicApplyPage() {
                 )}
                 {form.release_method === 'RCBC' && (
                   <div style={{ marginTop: 14, padding: 16, background: 'rgba(220,38,38,0.05)', border: '1px solid rgba(220,38,38,0.2)', borderRadius: 12 }}>
-                    <div style={{ fontSize: 12, fontWeight: 700, color: '#F87171', marginBottom: 12 }}>🏦 RCBC Account Details</div>
+                    <div style={{ fontSize: 12, fontWeight: 700, color: '#F87171', marginBottom: 12, display: 'flex', alignItems: 'center', gap: 6 }}><img src="/payment-method.png" alt="payment" style={{ width: 14, height: 14, objectFit: 'contain' }} /> RCBC Account Details</div>
                     <div><label style={lbl}>Account Number *</label><input value={form.bank_account_number} onChange={e => set('bank_account_number', e.target.value)} placeholder="Enter RCBC account number" style={inp} /></div>
                   </div>
                 )}
                 {form.release_method === 'Other Bank Transfer' && (
                   <div style={{ marginTop: 14, padding: 16, background: 'rgba(139,92,246,0.05)', border: '1px solid rgba(139,92,246,0.2)', borderRadius: 12, display: 'flex', flexDirection: 'column', gap: 12 }}>
-                    <div style={{ fontSize: 12, fontWeight: 700, color: '#A78BFA', marginBottom: 0 }}>🏦 Bank Account Details</div>
+                    <div style={{ fontSize: 12, fontWeight: 700, color: '#A78BFA', marginBottom: 0, display: 'flex', alignItems: 'center', gap: 6 }}><img src="/payment-method.png" alt="payment" style={{ width: 14, height: 14, objectFit: 'contain' }} /> Bank Account Details</div>
                     <div><label style={lbl}>Bank Name *</label><input value={form.bank_name} onChange={e => set('bank_name', e.target.value)} placeholder="e.g. BDO, BPI, Metrobank" style={inp} /></div>
                     <div><label style={lbl}>Account Number *</label><input value={form.bank_account_number} onChange={e => set('bank_account_number', e.target.value)} placeholder="Enter your account number" style={inp} /></div>
                   </div>
@@ -560,7 +560,7 @@ export default function PublicApplyPage() {
                 return (
                   <div style={{ background: 'linear-gradient(135deg,#0f1a2e,#141B2D)', border: '1px solid rgba(34,197,94,0.2)', borderRadius: 18, overflow: 'hidden' }}>
                     <div style={{ padding: '18px 22px', borderBottom: '1px solid rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', gap: 10 }}>
-                      <div style={{ width: 34, height: 34, borderRadius: 9, background: 'rgba(34,197,94,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16 }}>🧮</div>
+                      <div style={{ width: 34, height: 34, borderRadius: 9, background: 'rgba(59,130,246,0.1)', border: '1px solid rgba(59,130,246,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 3 }}><img src="/summary-check.png" alt="summary" style={{ width: 24, height: 24, objectFit: 'contain' }} /></div>
                       <div>
                         <div style={{ fontFamily: 'Space Grotesk', fontWeight: 700, fontSize: 15, color: '#F0F4FF' }}>Loan Summary</div>
                         <div style={{ fontSize: 11, color: '#4B5580' }}>Based on your selections</div>
@@ -607,7 +607,7 @@ export default function PublicApplyPage() {
                 )
               })() : (
                 <div style={{ background: '#141B2D', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 18, padding: 32, textAlign: 'center' }}>
-                  <div style={{ fontSize: 40, marginBottom: 12 }}>🧮</div>
+                  <img src="/summary-check.png" alt="summary" style={{ width: 48, height: 48, objectFit: 'contain', marginBottom: 12, opacity: 0.5 }} />
                   <div style={{ fontFamily: 'Space Grotesk', fontWeight: 700, fontSize: 15, color: '#F0F4FF', marginBottom: 6 }}>Loan Calculator</div>
                   <div style={{ fontSize: 13, color: '#4B5580' }}>Select a loan amount on the left to see your payment breakdown and schedule.</div>
                 </div>
