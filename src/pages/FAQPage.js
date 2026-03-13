@@ -43,6 +43,7 @@ export default function FAQPage() {
       { q: 'Who can apply for a loan?', a: 'This lending program is exclusively available to active employees of MySource Solutions. You must be currently employed and in good standing to be eligible. Applicants from outside the company will not be processed.' },
       { q: 'Do I need a trustee to apply?', a: 'Yes. Every applicant is required to provide a trustee or guarantor — someone who can vouch for you and may be contacted for follow-up. Your trustee should be someone who knows you personally, such as a spouse, parent, or close colleague.' },
       { q: 'Can I apply if I already have an active loan?', a: 'No. You must fully settle your current loan before applying for a new one. No rollovers or loan stacking is allowed under any circumstance.' },
+      { q: 'Do I need to submit a valid ID?', a: 'Yes. All applicants are required to upload at least 1 valid government-issued ID as part of the application process. Accepted IDs include SSS, GSIS, PhilHealth, Pag-IBIG, Passport, Driver\'s License, Postal ID, Voter\'s ID, or any other government-issued photo ID. Applications without a valid ID submission will not be processed.' },
     ],
     amounts: [
       { q: 'How much can I borrow?', a: 'First-time borrowers start at ₱5,000. Your borrowing limit increases as you build a clean repayment history — all the way up to ₱10,000 at Level 4.' },
