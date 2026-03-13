@@ -22,11 +22,11 @@ function FAQItem({ question, answer, children }) {
 }
 
 const CATEGORIES = [
-  { id: 'eligibility', label: '👤 Eligibility', icon: '👤' },
-  { id: 'amounts', label: '💰 Amounts', icon: '💰' },
-  { id: 'payments', label: '📅 Payments', icon: '📅' },
-  { id: 'release', label: '🏦 Release', icon: '🏦' },
-  { id: 'other', label: '💬 Other', icon: '💬' },
+  { id: 'eligibility', label: 'Eligibility', img: '/candidate.png' },
+  { id: 'amounts',     label: 'Amounts',     img: '/money.png' },
+  { id: 'payments',    label: 'Payments',    img: '/calendar.png' },
+  { id: 'release',     label: 'Release',     img: '/payment-method.png' },
+  { id: 'other',       label: 'Other',       img: '/boxes.png' },
 ]
 
 export default function FAQPage() {
@@ -167,7 +167,8 @@ export default function FAQPage() {
             <div style={{ fontSize: 11, color: '#4B5580', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 700, padding: '4px 10px 10px' }}>Categories</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
               {CATEGORIES.map(cat => (
-                <button key={cat.id} onClick={() => setActiveCategory(cat.id)} style={{ width: '100%', padding: '10px 12px', borderRadius: 10, border: 'none', background: activeCategory === cat.id ? 'rgba(59,130,246,0.12)' : 'transparent', color: activeCategory === cat.id ? '#60A5FA' : '#7A8AAA', fontSize: 13, fontWeight: activeCategory === cat.id ? 700 : 400, cursor: 'pointer', textAlign: 'left', transition: 'all 0.15s', borderLeft: `3px solid ${activeCategory === cat.id ? '#3B82F6' : 'transparent'}` }}>
+                <button key={cat.id} onClick={() => setActiveCategory(cat.id)} style={{ width: '100%', padding: '10px 12px', borderRadius: 10, border: 'none', background: activeCategory === cat.id ? 'rgba(59,130,246,0.12)' : 'transparent', color: activeCategory === cat.id ? '#60A5FA' : '#7A8AAA', fontSize: 13, fontWeight: activeCategory === cat.id ? 700 : 400, cursor: 'pointer', textAlign: 'left', transition: 'all 0.15s', borderLeft: `3px solid ${activeCategory === cat.id ? '#3B82F6' : 'transparent'}`, display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <img src={cat.img} alt={cat.label} style={{ width: 18, height: 18, objectFit: 'contain', flexShrink: 0 }} />
                   {cat.label}
                 </button>
               ))}
