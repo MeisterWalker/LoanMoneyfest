@@ -191,8 +191,23 @@ export default function FAQPage() {
             <div style={{ fontFamily: 'Space Grotesk', fontWeight: 800, fontSize: 20, color: '#F0F4FF', marginBottom: 6 }}>Ready to apply?</div>
             <div style={{ fontSize: 14, color: '#7A8AAA' }}>Fill out the form and get your access code instantly.</div>
           </div>
-          <a href="/apply" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '13px 28px', borderRadius: 12, background: 'linear-gradient(135deg,#3B82F6,#8B5CF6)', color: '#fff', textDecoration: 'none', fontSize: 14, fontWeight: 700, fontFamily: 'Space Grotesk', whiteSpace: 'nowrap' }}>
-            <img src="/startup.png" alt="launch" style={{ width: 18, height: 18, objectFit: 'contain', marginRight: 7 }} />Start Application
+          <style>{`
+            @keyframes rocketFly {
+              0%   { transform: translate(0, 0) rotate(-45deg); }
+              25%  { transform: translate(3px, -4px) rotate(-45deg); }
+              50%  { transform: translate(6px, -8px) rotate(-45deg); }
+              75%  { transform: translate(3px, -4px) rotate(-45deg); }
+              100% { transform: translate(0, 0) rotate(-45deg); }
+            }
+            .rocket-btn:hover .rocket-icon {
+              animation: rocketFly 0.6s ease-in-out infinite;
+            }
+            .rocket-btn .rocket-icon {
+              transition: transform 0.3s ease;
+            }
+          `}</style>
+          <a href="/apply" className="rocket-btn" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '13px 28px', borderRadius: 12, background: 'linear-gradient(135deg,#3B82F6,#8B5CF6)', color: '#fff', textDecoration: 'none', fontSize: 14, fontWeight: 700, fontFamily: 'Space Grotesk', whiteSpace: 'nowrap' }}>
+            <img src="/startup.png" alt="launch" className="rocket-icon" style={{ width: 18, height: 18, objectFit: 'contain', marginRight: 7 }} />Start Application
           </a>
         </div>
 

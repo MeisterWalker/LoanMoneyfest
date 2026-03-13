@@ -626,8 +626,8 @@ export default function PublicApplyPage() {
                   <div style={{ padding: '10px 14px', background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.2)', borderRadius: 8, fontSize: 13, color: '#EF4444', marginBottom: 14 }}><span style={{ display: "flex", alignItems: "center", gap: 4 }}><img src="/warning.png" alt="warning" style={{ width: 13, height: 13, objectFit: "contain" }} />{error}</span></div>
                 )}
                 <button onClick={handleSubmit} disabled={loading}
-                  style={{ width: '100%', padding: '14px', borderRadius: 12, border: 'none', background: loading ? 'rgba(255,255,255,0.05)' : 'linear-gradient(135deg,#22C55E,#3B82F6)', color: loading ? '#4B5580' : '#fff', fontSize: 14, fontWeight: 700, cursor: loading ? 'not-allowed' : 'pointer', fontFamily: 'Space Grotesk', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
-                  {loading ? 'Submitting...' : <><img src="/startup.png" alt="launch" style={{ width: 18, height: 18, objectFit: 'contain', marginRight: 7 }} />Submit Application</>}
+                  className="submit-btn" style={{ width: '100%', padding: '14px', borderRadius: 12, border: 'none', background: loading ? 'rgba(255,255,255,0.05)' : 'linear-gradient(135deg,#22C55E,#3B82F6)', color: loading ? '#4B5580' : '#fff', fontSize: 14, fontWeight: 700, cursor: loading ? 'not-allowed' : 'pointer', fontFamily: 'Space Grotesk', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+                  {loading ? 'Submitting...' : <><style>{`@keyframes rocketFly2{0%{transform:translate(0,0) rotate(-45deg)}25%{transform:translate(3px,-4px) rotate(-45deg)}50%{transform:translate(6px,-8px) rotate(-45deg)}75%{transform:translate(3px,-4px) rotate(-45deg)}100%{transform:translate(0,0) rotate(-45deg)}}.submit-btn:hover .rocket-icon2{animation:rocketFly2 0.6s ease-in-out infinite}`}</style><img src="/startup.png" alt="launch" className="rocket-icon2" style={{ width: 18, height: 18, objectFit: 'contain', marginRight: 7 }} />Submit Application</>}
                 </button>
               </div>
 
