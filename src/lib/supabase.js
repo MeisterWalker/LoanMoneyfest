@@ -48,7 +48,7 @@ CREATE TABLE IF NOT EXISTS loans (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   borrower_id UUID REFERENCES borrowers(id) ON DELETE CASCADE,
   loan_amount NUMERIC(10,2) NOT NULL,
-  interest_rate NUMERIC(4,2) DEFAULT 0.08,
+  interest_rate NUMERIC(4,2) DEFAULT 0.07,
   total_repayment NUMERIC(10,2),
   installment_amount NUMERIC(10,2),
   release_date DATE NOT NULL,
@@ -77,7 +77,7 @@ CREATE TABLE IF NOT EXISTS installments (
 CREATE TABLE IF NOT EXISTS settings (
   id INTEGER PRIMARY KEY DEFAULT 1,
   starting_capital NUMERIC(10,2) DEFAULT 30000,
-  interest_rate NUMERIC(4,2) DEFAULT 0.08,
+  interest_rate NUMERIC(4,2) DEFAULT 0.07,
   max_loan_amount INTEGER DEFAULT 10000,
   reinvestment_mode BOOLEAN DEFAULT TRUE,
   updated_at TIMESTAMPTZ DEFAULT NOW(),
@@ -86,7 +86,7 @@ CREATE TABLE IF NOT EXISTS settings (
 
 -- Insert default settings
 INSERT INTO settings (id, starting_capital, interest_rate, max_loan_amount, reinvestment_mode)
-VALUES (1, 30000, 0.08, 10000, TRUE)
+VALUES (1, 30000, 0.07, 10000, TRUE)
 ON CONFLICT (id) DO NOTHING;
 
 -- Audit logs table

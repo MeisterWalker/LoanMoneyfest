@@ -55,7 +55,7 @@ export default function ForecastPage() {
     setLoans(l || [])
     if (s) {
       setCapital(s.starting_capital || 30000)
-      setRate(Math.round((s.interest_rate || 0.08) * 100))
+      setRate(Math.round((s.interest_rate || 0.07) * 100))
     }
     setLoading(false)
   }, [])

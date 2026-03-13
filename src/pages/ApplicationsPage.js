@@ -98,7 +98,7 @@ function ApplicationCard({ app, onApprove, onReject }) {
               </div>
               <div style={{ textAlign: 'right' }}>
                 <div style={{ fontSize: 11, color: '#4B5580', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Est. Installment</div>
-                <div style={{ fontFamily: 'Space Grotesk', fontWeight: 700, fontSize: 18, color: '#F0F4FF' }}>₱{(app.loan_amount * 1.08 / 4).toFixed(2)}/cutoff</div>
+                <div style={{ fontFamily: 'Space Grotesk', fontWeight: 700, fontSize: 18, color: '#F0F4FF' }}>₱{(app.loan_amount * 1.07 / 4).toFixed(2)}/cutoff</div>
               </div>
             </div>
             {app.loan_purpose && (
