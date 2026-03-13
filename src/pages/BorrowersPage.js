@@ -121,7 +121,7 @@ function BorrowerCard({ borrower, departments, onEdit, onDelete }) {
               </div>
             )}
             <div style={{ gridColumn: '1 / -1' }}>
-              <div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Portal Access Code</div>
+              <div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.05em', display: 'flex', alignItems: 'center', gap: 5 }}><img src="/padlock.png" alt="access" style={{ width: 13, height: 13, objectFit: 'contain' }} />Portal Access Code</div>
               {borrower.access_code ? (
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                   <div style={{ fontFamily: 'monospace', fontSize: 18, fontWeight: 900, letterSpacing: 6, color: '#F0F4FF', background: 'rgba(139,92,246,0.08)', border: '1px solid rgba(139,92,246,0.25)', borderRadius: 8, padding: '8px 16px' }}>

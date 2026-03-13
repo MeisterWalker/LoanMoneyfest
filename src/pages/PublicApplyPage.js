@@ -187,7 +187,7 @@ export default function PublicApplyPage() {
           Thank you <strong style={{ color: '#F0F4FF' }}>{form.full_name}</strong>! Your application is now under review. Our admin will get back to you shortly.
         </p>
         <div style={{ background: 'linear-gradient(135deg,#0f1729,#1a1040)', border: '2px solid rgba(139,92,246,0.4)', borderRadius: 16, padding: '22px 28px', marginBottom: 16 }}>
-          <div style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.12em', color: '#4B5580', marginBottom: 8 }}>Your Portal Access Code</div>
+          <div style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.12em', color: '#4B5580', marginBottom: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}><img src="/padlock.png" alt="access" style={{ width: 14, height: 14, objectFit: 'contain' }} />Your Portal Access Code</div>
           <div style={{ fontSize: 34, fontWeight: 900, letterSpacing: 8, color: '#F0F4FF', fontFamily: 'monospace', marginBottom: 10 }}>{accessCode}</div>
           <div style={{ fontSize: 12, color: '#4B5580', marginBottom: 16 }}>Use this to track your application in the Borrower Portal</div>
           <a href="/portal" style={{ display: 'inline-block', background: 'linear-gradient(135deg,#3B82F6,#8B5CF6)', color: '#fff', textDecoration: 'none', padding: '11px 28px', borderRadius: 10, fontSize: 13, fontWeight: 700, fontFamily: 'Space Grotesk' }}>

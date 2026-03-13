@@ -427,8 +427,8 @@ export default function BorrowerPortalPage() {
 
         <div style={{ background: '#141B2D', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 16, padding: 28 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 20 }}>
-            <div style={{ width: 36, height: 36, borderRadius: 10, background: 'rgba(139,92,246,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Lock size={16} color="#8B5CF6" />
+            <div style={{ width: 36, height: 36, borderRadius: 10, background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 4 }}>
+              <img src="/padlock.png" alt="access" style={{ width: 24, height: 24, objectFit: 'contain' }} />
             </div>
             <div>
               <div style={{ fontFamily: 'Space Grotesk', fontWeight: 700, fontSize: 15, color: '#F0F4FF' }}>Enter Access Code</div>
