@@ -54,6 +54,7 @@ export default function PublicApplyPage() {
 
   const confirmDisclaimer = () => { set('loan_amount', pendingAmount); setShowDisclaimer(false); setPendingAmount(null) }
 
+
   const validateStep1 = () => {
     if (!form.full_name.trim()) return 'Please enter your full name'
     if (!form.department) return 'Please select your department'
