@@ -360,7 +360,7 @@ export default function PublicApplyPage() {
           <div style={{ maxWidth: 560, margin: '0 auto', width: '100%' }}>
             <div style={{ background: '#141B2D', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 18, padding: 28 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 22 }}>
-                <div style={{ width: 36, height: 36, borderRadius: 10, background: 'rgba(139,92,246,0.12)', border: '1px solid rgba(139,92,246,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16 }}>🪪</div>
+                <div style={{ width: 36, height: 36, borderRadius: 10, background: 'rgba(139,92,246,0.12)', border: '1px solid rgba(139,92,246,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16 }}>🆔</div>
                 <div>
                   <div style={{ fontFamily: 'Space Grotesk', fontWeight: 700, fontSize: 16, color: '#F0F4FF' }}>ID Verification</div>
                   <div style={{ fontSize: 11, color: '#4B5580' }}>Upload at least 1 valid government-issued ID</div>
@@ -385,7 +385,7 @@ export default function PublicApplyPage() {
                   background: idFile ? 'rgba(34,197,94,0.04)' : 'rgba(255,255,255,0.02)',
                   cursor: 'pointer', transition: 'all 0.2s'
                 }}>
-                  <div style={{ fontSize: 36 }}>{idFile ? '✅' : '🪪'}</div>
+                  <div style={{ fontSize: 36 }}>{idFile ? '✅' : '🆔'}</div>
                   <div style={{ textAlign: 'center' }}>
                     <div style={{ fontSize: 14, fontWeight: 600, color: idFile ? '#22C55E' : '#F0F4FF', marginBottom: 4 }}>
                       {idFile ? idFile.name : 'Click to upload your ID'}
