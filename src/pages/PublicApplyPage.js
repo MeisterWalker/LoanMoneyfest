@@ -171,7 +171,7 @@ export default function PublicApplyPage() {
 
   const inp = {
     width: '100%', boxSizing: 'border-box', padding: '10px 13px',
-    background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)',
+    background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)',
     borderRadius: 9, color: '#F0F4FF', fontSize: 13.5, outline: 'none',
     fontFamily: 'DM Sans, sans-serif', transition: 'border-color 0.2s'
   }
@@ -357,8 +357,8 @@ export default function PublicApplyPage() {
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, alignItems: 'start' }}>
 
             {/* Left: Personal Info */}
-            <div style={{ background: 'linear-gradient(135deg,#1a2236,#1e2a40)', border: '1px solid rgba(59,130,246,0.18)', borderRadius: 18, padding: 32, boxShadow: '0 4px 24px rgba(0,0,0,0.3)' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24, paddingBottom: 18, borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+            <div style={{ background: 'linear-gradient(145deg,#1c2d4a,#1a2640)', border: '1px solid rgba(59,130,246,0.4)', borderRadius: 18, padding: 32, boxShadow: '0 0 0 1px rgba(59,130,246,0.1), 0 8px 32px rgba(59,130,246,0.15)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24, paddingBottom: 18, borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
                 <div style={{ width: 42, height: 42, borderRadius: 12, background: 'rgba(59,130,246,0.15)', border: '1px solid rgba(59,130,246,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 5 }}><img src="/list.png" alt="info" style={{ width: 26, height: 26, objectFit: 'contain' }} /></div>
                 <div>
                   <div style={{ fontFamily: 'Space Grotesk', fontWeight: 700, fontSize: 17, color: '#F0F4FF' }}>Personal Information</div>
@@ -391,8 +391,8 @@ export default function PublicApplyPage() {
 
             {/* Right: Trustee + Info */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-              <div style={{ background: 'linear-gradient(135deg,#1a2236,#1e2a40)', border: '1px solid rgba(99,102,241,0.2)', borderRadius: 18, padding: 32, boxShadow: '0 4px 24px rgba(0,0,0,0.3)' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24, paddingBottom: 18, borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+              <div style={{ background: 'linear-gradient(145deg,#221c40,#1e1a3a)', border: '1px solid rgba(139,92,246,0.4)', borderRadius: 18, padding: 32, boxShadow: '0 0 0 1px rgba(139,92,246,0.1), 0 8px 32px rgba(139,92,246,0.15)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24, paddingBottom: 18, borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
                   <div style={{ width: 42, height: 42, borderRadius: 12, background: 'rgba(99,102,241,0.15)', border: '1px solid rgba(99,102,241,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 5 }}><img src="/handshake.png" alt="trustee" style={{ width: 26, height: 26, objectFit: 'contain' }} /></div>
                   <div>
                     <div style={{ fontFamily: 'Space Grotesk', fontWeight: 700, fontSize: 17, color: '#F0F4FF' }}>Trustee / Guarantor</div>
@@ -407,7 +407,7 @@ export default function PublicApplyPage() {
               </div>
 
               {/* Info blurb */}
-              <div style={{ background: 'linear-gradient(135deg,rgba(59,130,246,0.08),rgba(139,92,246,0.06))', border: '1px solid rgba(59,130,246,0.2)', borderRadius: 14, padding: '20px 22px' }}>
+              <div style={{ background: 'linear-gradient(135deg,rgba(59,130,246,0.12),rgba(139,92,246,0.1))', border: '1px solid rgba(59,130,246,0.35)', borderRadius: 14, padding: '20px 22px', boxShadow: '0 4px 16px rgba(59,130,246,0.1)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
                   <img src="/list.png" alt="info" style={{ width: 15, height: 15, objectFit: 'contain' }} />
                   <span style={{ fontSize: 13, color: '#60A5FA', fontWeight: 700 }}>What to expect</span>
