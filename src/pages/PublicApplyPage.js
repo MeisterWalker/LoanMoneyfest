@@ -344,7 +344,7 @@ export default function PublicApplyPage() {
                 },
                 {
                   title: '4. Late Payments & Default',
-                  body: 'Missed or late payments will result in a deduction to your credit score within the LoanMoneyfest system. Consistent non-payment may result in your loan being marked as defaulted, which will affect your eligibility for future loans. The program administrators reserve the right to contact your designated trustee or guarantor in case of default.'
+                  body: 'A late payment penalty of ₱20 per day will be charged for each installment not paid by its due date (the 5th or 20th of the month). The penalty is capped at 20% of the installment amount — for example, a ₱1,337.50 installment has a maximum penalty of ₱267.50 regardless of how many days late. In addition, late payments result in a -10 point deduction to your credit score per missed installment, compared to the +15 points earned for on-time payment. Consistent non-payment may result in your loan being marked as defaulted, which will affect your eligibility for future loans. The program administrators reserve the right to contact your designated trustee or guarantor in case of default.'
                 },
                 {
                   title: '5. Early Payoff Rebate',

@@ -94,7 +94,7 @@ export default function FAQPage() {
           </div>
         </div>
       )},
-      { q: 'What happens if I miss a payment?', a: 'Missed payments will negatively affect your credit score and may freeze your loan limit increase. Consistent late payments may result in your loan being flagged as defaulted, which affects your eligibility for future loans.' },
+      { q: 'What happens if I miss a payment?', a: 'A late penalty of ₱20 per day is charged starting the day after the due date (5th or 20th of the month). The penalty is capped at 20% of your installment amount — so no matter how late, you will never be charged more than that cap per installment. Late payments also deduct 10 points from your credit score. Consistent non-payment may result in your loan being flagged as defaulted.' },
       { q: 'Can I earn rewards for paying early?', a: 'Yes! If you pay your final (4th) installment ahead of its due date, you earn an early payoff rebate credited to your Rebate Credits. Paying 7 to 13 days early earns 1% of your loan amount. Paying 14 or more days early earns 1.5%. The rebate only applies to the last installment and is automatically added to your Rebate Credits when the admin records your payment.' },
     ],
     release: [

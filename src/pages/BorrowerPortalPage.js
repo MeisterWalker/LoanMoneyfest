@@ -155,6 +155,47 @@ function UploadModal({ installmentNum, loan, borrower, onClose, onUploaded }) {
   )
 }
 
+function PenaltySection({ loanId, supabase }) {
+  const [penalties, setPenalties] = useState([])
+  useEffect(() => {
+    if (!loanId) return
+    supabase.from('penalty_charges').select('*')
+      .eq('loan_id', loanId).order('created_at', { ascending: false })
+      .then(({ data }) => setPenalties(data || []))
+  }, [loanId])
+
+  if (penalties.length === 0) return null
+
+  const total = penalties.reduce((sum, p) => sum + Number(p.penalty_amount), 0)
+  return (
+    <div style={{ background: 'rgba(239,68,68,0.05)', border: '1px solid rgba(239,68,68,0.2)', borderRadius: 16, padding: 20, marginBottom: 16 }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <img src="/warning.png" alt="penalty" style={{ width: 16, height: 16, objectFit: 'contain' }} />
+          <div style={{ fontFamily: 'Space Grotesk', fontWeight: 700, fontSize: 14, color: '#F0F4FF' }}>Late Payment Penalties</div>
+        </div>
+        <div style={{ fontFamily: 'Space Grotesk', fontWeight: 800, fontSize: 15, color: '#EF4444' }}>
+          Total: ₱{total.toLocaleString('en-PH', { minimumFractionDigits: 2 })}
+        </div>
+      </div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+        {penalties.map((p, i) => (
+          <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 12px', background: 'rgba(239,68,68,0.05)', borderRadius: 8, border: '1px solid rgba(239,68,68,0.1)' }}>
+            <div>
+              <div style={{ fontSize: 12, fontWeight: 600, color: '#F0F4FF' }}>Installment {p.installment_number} — {p.days_late} day{p.days_late > 1 ? 's' : ''} late</div>
+              <div style={{ fontSize: 11, color: '#7A8AAA', marginTop: 2 }}>₱{p.penalty_per_day}/day{p.cap_applied ? ' · cap applied' : ''} · {new Date(p.created_at).toLocaleDateString('en-PH', { month: 'short', day: 'numeric', year: 'numeric' })}</div>
+            </div>
+            <div style={{ fontFamily: 'Space Grotesk', fontWeight: 700, fontSize: 14, color: '#EF4444' }}>₱{Number(p.penalty_amount).toLocaleString('en-PH', { minimumFractionDigits: 2 })}</div>
+          </div>
+        ))}
+      </div>
+      <div style={{ marginTop: 12, fontSize: 11, color: '#7A8AAA', lineHeight: 1.6 }}>
+        Penalties are charged at ₱20/day per installment, capped at 20% of the installment amount. Settle penalties directly with your admin.
+      </div>
+    </div>
+  )
+}
+
 function LottieHourglass() {
   const ref = useRef(null)
   const animRef = useRef(null)
@@ -1146,6 +1187,29 @@ export default function BorrowerPortalPage() {
                           </div>
                         )}
                       </div>
+                      {/* Live penalty counter for overdue */}
+                      {due.current && !due.paid && (() => {
+                        const today = new Date(); today.setHours(0,0,0,0)
+                        const dueD = new Date(due.date); dueD.setHours(0,0,0,0)
+                        const daysLate = Math.max(0, Math.ceil((today - dueD) / (1000 * 60 * 60 * 24)))
+                        if (daysLate <= 0) return null
+                        const PENALTY_PER_DAY = 20
+                        const cap = Number(loan.installment_amount) * 0.20
+                        const penalty = Math.min(daysLate * PENALTY_PER_DAY, cap)
+                        const capped = penalty === cap
+                        return (
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 10px', background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.25)', borderRadius: 8, flexShrink: 0 }}>
+                            <img src="/warning.png" alt="penalty" style={{ width: 13, height: 13, objectFit: 'contain' }} />
+                            <div style={{ fontSize: 11, color: '#EF4444', fontWeight: 700 }}>
+                              +₱{penalty.toLocaleString('en-PH', { minimumFractionDigits: 2 })} penalty
+                              <span style={{ fontWeight: 400, color: '#F87171', marginLeft: 4 }}>
+                                ({daysLate}d late{capped ? ' · capped' : ''})
+                              </span>
+                            </div>
+                          </div>
+                        )
+                      })()}
+
                       {/* Upload button */}
                       {due.current && !due.paid && (
                         <button
@@ -1166,6 +1230,45 @@ export default function BorrowerPortalPage() {
                 })}
               </div>
             </div>
+
+            {/* Loan Disclosure Statement — RA 3765 Truth in Lending Act */}
+            {(() => {
+              const principal = Number(loan.loan_amount)
+              const totalRepayment = Number(loan.total_repayment)
+              const financeCharge = totalRepayment - principal
+              const flatRate = Number(loan.interest_rate || 0.07) * 100
+              // Effective annual rate: loan is 2 months, so annualize
+              const effectiveAnnual = ((financeCharge / principal) / 2 * 12 * 100).toFixed(2)
+              return (
+                <div style={{ background: '#141B2D', border: '1px solid rgba(99,102,241,0.2)', borderRadius: 16, padding: 20, marginBottom: 16 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16, paddingBottom: 12, borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+                    <img src="/verified.png" alt="disclosure" style={{ width: 18, height: 18, objectFit: 'contain' }} />
+                    <div style={{ fontFamily: 'Space Grotesk', fontWeight: 700, fontSize: 14, color: '#F0F4FF' }}>Loan Disclosure Statement</div>
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 16 }}>
+                    {[
+                      { label: 'Principal Amount', value: '₱' + principal.toLocaleString('en-PH', { minimumFractionDigits: 2 }), color: '#F0F4FF' },
+                      { label: 'Finance Charge', value: '₱' + financeCharge.toLocaleString('en-PH', { minimumFractionDigits: 2 }), color: '#F59E0B' },
+                      { label: 'Flat Interest Rate', value: flatRate.toFixed(0) + '% of principal', color: '#60A5FA' },
+                      { label: 'Effective Interest Rate (per annum)', value: effectiveAnnual + '% p.a.', color: '#a78bfa' },
+                      { label: 'Total Amount Payable', value: '₱' + totalRepayment.toLocaleString('en-PH', { minimumFractionDigits: 2 }), color: '#22C55E' },
+                      { label: 'Number of Installments', value: '4 payments every 5th and 20th of the month', color: '#F0F4FF' },
+                      { label: 'Per Installment Amount', value: '₱' + Number(loan.installment_amount).toLocaleString('en-PH', { minimumFractionDigits: 2 }), color: '#F0F4FF' },
+                    ].map((row, i) => (
+                      <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 12px', background: 'rgba(255,255,255,0.02)', borderRadius: 8, gap: 12 }}>
+                        <span style={{ fontSize: 12, color: '#7A8AAA', flex: 1 }}>{row.label}</span>
+                        <span style={{ fontSize: 13, fontWeight: 700, color: row.color, textAlign: 'right' }}>{row.value}</span>
+                      </div>
+                    ))}
+                  </div>
+                  <div style={{ padding: '10px 12px', background: 'rgba(99,102,241,0.06)', border: '1px solid rgba(99,102,241,0.15)', borderRadius: 8, fontSize: 11, color: '#4B5580', lineHeight: 1.7 }}>
+                    <strong style={{ color: '#818CF8' }}>RA 3765 — Truth in Lending Act Disclosure.</strong> This statement discloses all finance charges and terms applicable to your loan in compliance with Republic Act No. 3765 of the Philippines. The effective interest rate is computed based on the loan term of 2 months annualized over 12 months.
+                  </div>
+                </div>
+              )
+            })()}
+
+            <PenaltySection loanId={loan.id} supabase={supabase} />
 
             <div onClick={() => setPage('payment-methods')} style={{ background: '#141B2D', border: '1px solid rgba(139,92,246,0.2)', borderRadius: 16, padding: '16px 20px', marginBottom: 16, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', transition: 'border-color 0.2s' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>

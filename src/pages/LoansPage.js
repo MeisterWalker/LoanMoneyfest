@@ -229,6 +229,22 @@ function LoanCard({ loan, borrowers, onEdit, onDelete, onRecordPayment, onDefaul
           />
         )}
 
+        {/* Live penalty counter for overdue installments */}
+        {(loan.status === 'Active' || loan.status === 'Partially Paid' || loan.status === 'Overdue') && nextDue && (() => {
+          const todayP = new Date(); todayP.setHours(0,0,0,0)
+          const dueDateP = new Date(nextDue); dueDateP.setHours(0,0,0,0)
+          const daysLateP = Math.max(0, Math.ceil((todayP - dueDateP) / (1000 * 60 * 60 * 24)))
+          if (daysLateP <= 0) return null
+          const cap = loan.installment_amount * 0.20
+          const penalty = Math.min(daysLateP * 20, cap)
+          return (
+            <div style={{ marginTop: 10, padding: '10px 14px', background: 'rgba(239,68,68,0.06)', border: '1px solid rgba(239,68,68,0.2)', borderRadius: 8, fontSize: 12, color: 'var(--red)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 }}>
+              <span><AlertTriangle size={12} style={{ display: 'inline', marginRight: 6 }} />Installment {loan.payments_made + 1} is <strong>{daysLateP} day{daysLateP > 1 ? 's' : ''} overdue</strong></span>
+              <span style={{ fontFamily: 'Space Grotesk', fontWeight: 700 }}>Accrued penalty: ₱{penalty.toLocaleString('en-PH', { minimumFractionDigits: 2 })}{penalty === cap ? ' (capped)' : ''}</span>
+            </div>
+          )
+        })()}
+
         {/* Pending status info */}
         {loan.status === 'Pending' && (
           <div style={{ marginTop: 10, padding: '10px 14px', background: 'rgba(59,130,246,0.06)', border: '1px solid rgba(59,130,246,0.15)', borderRadius: 8, fontSize: 12, color: 'var(--blue)' }}>
@@ -429,10 +445,49 @@ export default function LoansPage() {
 
     if (error) { toast('Failed to record payment', 'error'); return }
 
-    // Update credit score (+15 for on-time payment)
+    // ── Penalty calculation ─────────────────────────────────────
     const borrower = borrowers.find(b => b.id === loan.borrower_id)
+    const PENALTY_PER_DAY = 20
+    const PENALTY_CAP_RATE = 0.20 // 20% of installment amount
+    let penaltyAmount = 0
+    let daysLate = 0
+
+    if (nextDue) {
+      const today2 = new Date(); today2.setHours(0,0,0,0)
+      const dueDate = new Date(nextDue); dueDate.setHours(0,0,0,0)
+      daysLate = Math.max(0, Math.ceil((today2 - dueDate) / (1000 * 60 * 60 * 24)))
+      if (daysLate > 0) {
+        const cap = loan.installment_amount * PENALTY_CAP_RATE
+        penaltyAmount = Math.min(daysLate * PENALTY_PER_DAY, cap)
+        penaltyAmount = parseFloat(penaltyAmount.toFixed(2))
+      }
+    }
+
+    if (penaltyAmount > 0) {
+      // Log penalty transaction
+      await supabase.from('penalty_charges').insert({
+        borrower_id: loan.borrower_id,
+        loan_id: loan.id,
+        installment_number: newPaymentsMade,
+        days_late: daysLate,
+        penalty_per_day: PENALTY_PER_DAY,
+        penalty_amount: penaltyAmount,
+        cap_applied: penaltyAmount < (daysLate * PENALTY_PER_DAY),
+        created_at: new Date().toISOString()
+      })
+      await logAudit({
+        action_type: 'PENALTY_CHARGED',
+        module: 'Loan',
+        description: `Late penalty of ₱${penaltyAmount} charged to ${borrower?.full_name} — Installment ${newPaymentsMade} was ${daysLate} day${daysLate > 1 ? 's' : ''} late`,
+        changed_by: user?.email
+      })
+      toast(`⚠️ Late penalty of ₱${penaltyAmount} applied (${daysLate} days late)`, 'error')
+    }
+
+    // Update credit score (+15 on-time, -10 if late)
     if (borrower) {
-      const newScore = Math.min(850, borrower.credit_score + 15)
+      const scoreChange = daysLate > 0 ? -10 : 15
+      const newScore = Math.min(850, Math.max(300, borrower.credit_score + scoreChange))
       const newRisk = newScore >= 650 ? 'Low' : newScore >= 550 ? 'Medium' : 'High'
       await supabase.from('borrowers').update({
         credit_score: newScore,
@@ -443,7 +498,7 @@ export default function LoansPage() {
     await logAudit({
       action_type: 'INSTALLMENT_PAID',
       module: 'Loan',
-      description: `Installment ${newPaymentsMade} of 4 paid for ${borrower?.full_name} — ₱${loan.installment_amount?.toLocaleString('en-PH', { minimumFractionDigits: 2 })}`,
+      description: `Installment ${newPaymentsMade} of 4 paid for ${borrower?.full_name} — ₱${loan.installment_amount?.toLocaleString('en-PH', { minimumFractionDigits: 2 })}${penaltyAmount > 0 ? ` + ₱${penaltyAmount} penalty (${daysLate} days late)` : ' (on time)'}`,
       changed_by: user?.email
     })
 
