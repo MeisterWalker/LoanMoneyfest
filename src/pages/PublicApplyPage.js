@@ -26,6 +26,7 @@ export default function PublicApplyPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [showDisclaimer, setShowDisclaimer] = useState(false)
+  const [showTnC, setShowTnC] = useState(false)
   const [disclaimerCountdown, setDisclaimerCountdown] = useState(4)
   const [pendingAmount, setPendingAmount] = useState(null)
   const [interestRate, setInterestRate] = useState(0.07)
@@ -307,6 +308,97 @@ export default function PublicApplyPage() {
               style={{ width: '100%', padding: 14, borderRadius: 12, border: 'none', background: disclaimerCountdown > 0 ? 'rgba(255,255,255,0.05)' : 'linear-gradient(135deg,#F59E0B,#EF4444)', color: disclaimerCountdown > 0 ? '#4B5580' : '#fff', fontSize: 14, fontWeight: 700, cursor: disclaimerCountdown > 0 ? 'not-allowed' : 'pointer', fontFamily: 'Space Grotesk', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
               {disclaimerCountdown > 0 ? (<><span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 24, height: 24, borderRadius: '50%', background: 'rgba(255,255,255,0.08)', fontSize: 13, fontWeight: 800 }}>{disclaimerCountdown}</span>Please read carefully...</>) : ('I Understand — Continue with ₱' + pendingAmount?.toLocaleString())}
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Terms & Conditions Modal */}
+      {showTnC && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.88)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999, padding: 20 }}>
+          <div style={{ background: '#141B2D', border: '1px solid rgba(99,102,241,0.3)', borderRadius: 20, width: '100%', maxWidth: 560, maxHeight: '85vh', display: 'flex', flexDirection: 'column', boxShadow: '0 24px 64px rgba(0,0,0,0.6)' }}>
+            {/* Modal header */}
+            <div style={{ padding: '22px 28px', borderBottom: '1px solid rgba(255,255,255,0.07)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <img src="/list.png" alt="terms" style={{ width: 22, height: 22, objectFit: 'contain' }} />
+                <div>
+                  <div style={{ fontFamily: 'Space Grotesk', fontWeight: 800, fontSize: 17, color: '#F0F4FF' }}>Terms & Conditions</div>
+                  <div style={{ fontSize: 11, color: '#4B5580', marginTop: 1 }}>LoanMoneyfest Workplace Lending Program</div>
+                </div>
+              </div>
+              <button onClick={() => setShowTnC(false)} style={{ width: 30, height: 30, borderRadius: '50%', border: 'none', background: 'rgba(255,255,255,0.07)', color: '#7A8AAA', fontSize: 16, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>✕</button>
+            </div>
+            {/* Scrollable content */}
+            <div style={{ padding: '24px 28px', overflowY: 'auto', flex: 1, lineHeight: 1.85, fontSize: 13, color: '#8892B0' }}>
+              {[
+                {
+                  title: '1. Eligibility',
+                  body: 'This lending program is exclusively available to active team members in good standing within our office. By submitting an application, you confirm that you are currently employed and eligible to participate. Applications from ineligible individuals will not be processed.'
+                },
+                {
+                  title: '2. Loan Terms & Interest',
+                  body: 
+                },
+                {
+                  title: '3. Repayment Schedule',
+                  body: 'Loans are repaid in 4 equal installments, collected every 5th and 20th of the month. Your repayment schedule begins on the cutoff date following your loan release. It is your responsibility to ensure payments are submitted on time.'
+                },
+                {
+                  title: '4. Late Payments & Default',
+                  body: 'Missed or late payments will result in a deduction to your credit score within the LoanMoneyfest system. Consistent non-payment may result in your loan being marked as defaulted, which will affect your eligibility for future loans. The program administrators reserve the right to contact your designated trustee or guarantor in case of default.'
+                },
+                {
+                  title: '5. Early Payoff Rebate',
+                  body: 'If your final (4th) installment is paid 7 to 13 days before its due date, you will receive a 1% rebate on your loan principal, credited to your Rebate Credits balance. If paid 14 or more days early, the rebate is 1.5%. Rebates apply to the final installment only and are credited automatically. Rebate Credits are withdrawable once your balance reaches ₱500, subject to admin approval.'
+                },
+                {
+                  title: '6. Accuracy of Information',
+                  body: 'By submitting an application, you confirm that all information provided — including personal details, employment information, trustee information, and government-issued ID — is accurate, complete, and truthful. Providing false or misleading information is grounds for immediate rejection or cancellation of your loan.'
+                },
+                {
+                  title: '7. Authorization',
+                  body: 'You authorize LoanMoneyfest administrators to verify your submitted information, contact your designated trustee or guarantor if necessary, and process your personal data in accordance with our Privacy Notice and the Data Privacy Act of 2012 (RA 10173).'
+                },
+                {
+                  title: '8. ID Verification',
+                  body: 'A valid government-issued ID is required for all applications. Accepted IDs include SSS, GSIS, PhilHealth, Pag-IBIG, Passport, Driver's License, Postal ID, Voter's ID, PRC ID, and Senior Citizen ID. Your ID images are stored securely and handled in accordance with our Privacy Notice.'
+                },
+                {
+                  title: '9. Loan Limit & Level System',
+                  body: 'All first-time borrowers are approved at a maximum of ₱5,000 regardless of the amount requested. Subsequent loan limits increase based on your repayment history through our Level Attainment System. The program administrators reserve the right to adjust loan limits at their discretion.'
+                },
+                {
+                  title: '10. Program Rules',
+                  body: 'Only one active loan is permitted per borrower at a time. New applications will not be processed while an existing loan is outstanding. The program administrators reserve the right to reject any application without disclosure of specific reasons.'
+                },
+                {
+                  title: '11. Amendments',
+                  body: 'LoanMoneyfest reserves the right to amend these Terms & Conditions at any time. Continued use of the program constitutes acceptance of any updated terms. Borrowers will be notified of significant changes where possible.'
+                },
+                {
+                  title: '12. Governing Law',
+                  body: 'These Terms & Conditions are governed by the laws of the Republic of the Philippines, including but not limited to Republic Act 3765 (Truth in Lending Act), Republic Act 10173 (Data Privacy Act of 2012), and Republic Act 9474 (Lending Company Regulation Act of 2007).'
+                },
+              ].map((sec, i) => (
+                <div key={i} style={{ marginBottom: 20 }}>
+                  <div style={{ fontFamily: 'Space Grotesk', fontWeight: 700, fontSize: 13, color: '#CBD5F0', marginBottom: 6 }}>{sec.title}</div>
+                  <div style={{ fontSize: 13, color: '#8892B0', lineHeight: 1.85 }}>{sec.body}</div>
+                </div>
+              ))}
+              <div style={{ marginTop: 8, padding: '12px 16px', background: 'rgba(99,102,241,0.06)', border: '1px solid rgba(99,102,241,0.15)', borderRadius: 10, fontSize: 11, color: '#4B5580', lineHeight: 1.7 }}>
+                These Terms & Conditions are issued in compliance with Philippine law. For data privacy concerns, refer to our <a href="/privacy" target="_blank" rel="noreferrer" style={{ color: '#60A5FA', textDecoration: 'none' }}>Privacy Notice</a>.
+              </div>
+            </div>
+            {/* Footer */}
+            <div style={{ padding: '16px 28px', borderTop: '1px solid rgba(255,255,255,0.07)', display: 'flex', gap: 10, flexShrink: 0 }}>
+              <button onClick={() => { set('agreed', true); setShowTnC(false) }}
+                style={{ flex: 1, padding: '12px', borderRadius: 10, border: 'none', background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', color: '#fff', fontSize: 13, fontWeight: 700, cursor: 'pointer', fontFamily: 'Space Grotesk' }}>
+                ✓ I Agree & Close
+              </button>
+              <button onClick={() => setShowTnC(false)}
+                style={{ padding: '12px 20px', borderRadius: 10, border: '1px solid rgba(255,255,255,0.1)', background: 'transparent', color: '#7A8AAA', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
+                Close
+              </button>
+            </div>
           </div>
         </div>
       )}
@@ -675,12 +767,10 @@ export default function PublicApplyPage() {
 
               {/* Terms + Submit */}
               <div style={{ background: '#141B2D', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 18, padding: 24 }}>
-                <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 10, padding: '14px 16px', fontSize: 12, color: '#7A8AAA', lineHeight: 1.7, maxHeight: 100, overflowY: 'auto', marginBottom: 14 }}>
-                  <strong style={{ color: '#F0F4FF' }}>Terms & Conditions:</strong> By submitting, I confirm all information is accurate. I understand loans are subject to {(interestRate * 100).toFixed(0)}% flat interest, repayable in 4 equal installments every 5th and 20th of the month. Late payments result in credit score deductions. I authorize LoanMoneyfest admin to verify my information and contact my trustee if necessary. <strong style={{ color: '#22C55E' }}>Early Payoff Rebate:</strong> Paying your final (4th) installment 7–13 days before its due date earns a <strong style={{ color: '#F0F4FF' }}>1% rebate</strong> on your loan amount, credited to your Rebate Credits. Paying 14 or more days early earns a <strong style={{ color: '#F0F4FF' }}>1.5% rebate</strong>. Rebates are withdrawable once your Rebate Credits balance reaches ₱500.
-                </div>
+
                 <label style={{ display: 'flex', alignItems: 'flex-start', gap: 10, cursor: 'pointer', marginBottom: 14 }}>
                   <input type="checkbox" checked={form.agreed} onChange={e => set('agreed', e.target.checked)} style={{ marginTop: 2, width: 16, height: 16, accentColor: '#3B82F6', flexShrink: 0 }} />
-                  <span style={{ fontSize: 13, color: '#7A8AAA', lineHeight: 1.6 }}>I have read and agree to the <strong style={{ color: '#F0F4FF' }}>Terms & Conditions</strong> and the <a href='/privacy' target='_blank' rel='noreferrer' style={{ color: '#60A5FA', textDecoration: 'none', fontWeight: 600 }}>Privacy Notice</a>.</span>
+                  <span style={{ fontSize: 13, color: '#7A8AAA', lineHeight: 1.6 }}>I have read and agree to the <button onClick={() => setShowTnC(true)} style={{ background: 'none', border: 'none', padding: 0, color: '#F0F4FF', fontWeight: 700, textDecoration: 'underline', cursor: 'pointer', fontSize: 13 }}>Terms & Conditions</button> and the <a href='/privacy' target='_blank' rel='noreferrer' style={{ color: '#60A5FA', textDecoration: 'none', fontWeight: 600 }}>Privacy Notice</a>.</span>
                 </label>
                 {error && (
                   <div style={{ padding: '10px 14px', background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.2)', borderRadius: 8, fontSize: 13, color: '#EF4444', marginBottom: 14 }}><span style={{ display: "flex", alignItems: "center", gap: 4 }}><img src="/warning.png" alt="warning" style={{ width: 13, height: 13, objectFit: "contain" }} />{error}</span></div>
@@ -723,7 +813,7 @@ export default function PublicApplyPage() {
         </div>
 
         <p style={{ textAlign: 'center', fontSize: 12, color: '#4B5580', marginTop: 24, lineHeight: 1.7 }}>
-          Your information is kept private and secure. This is an exclusive internal program for our team members only. · <a href="/faq" style={{ color: '#3B82F6', textDecoration: 'none' }}>View FAQ</a> · <a href="/privacy" style={{ color: '#3B82F6', textDecoration: 'none' }}>Privacy Notice</a>
+          Your information is kept private and secure. This is an exclusive internal program for our team members only. · <a href="/faq" style={{ color: '#3B82F6', textDecoration: 'none' }}>View FAQ</a> · <a href="/privacy" style={{ color: '#3B82F6', textDecoration: 'none' }}>Privacy Notice</a> · <a href="/terms" style={{ color: '#3B82F6', textDecoration: 'none' }}>Terms & Conditions</a>
         </p>
 
       </div>
