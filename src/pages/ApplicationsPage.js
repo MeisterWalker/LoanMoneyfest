@@ -4,7 +4,6 @@ import { CREDIT_CONFIG, calcSecurityHold } from '../lib/creditSystem'
 import { useAuth } from '../context/AuthContext'
 import { useToast } from '../components/Toast'
 import { logAudit } from '../lib/helpers'
-import { calcSecurityHold, CREDIT_CONFIG } from '../lib/creditSystem'
 import { ClipboardList, Check, X, Clock, ChevronDown, ChevronUp, User, Phone, Mail, MapPin, Users, DollarSign, ExternalLink, Image } from 'lucide-react'
 
 const STATUS_COLORS = {
