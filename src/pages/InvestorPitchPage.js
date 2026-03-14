@@ -331,7 +331,7 @@ export default function InvestorPitchPage() {
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 10 }}>
               {[
                 { icon: '/list.png',            label: 'Platform & Tech',     desc: 'The system you are using right now',       color: 'rgba(99,102,241,0.12)',  border: 'rgba(99,102,241,0.25)'  },
-                { icon: '/warning.png',         label: 'Default Risk',        desc: 'We absorb losses if a borrower defaults',  color: 'rgba(239,68,68,0.08)',   border: 'rgba(239,68,68,0.2)'    },
+                { icon: '/warning.png',         label: 'Default Risk',        desc: 'Security Hold & penalties reduce default exposure',  color: 'rgba(239,68,68,0.08)',   border: 'rgba(239,68,68,0.2)'    },
                 { icon: '/summary-check.png',   label: 'Collections',         desc: 'Admin time managing repayments',           color: 'rgba(34,197,94,0.08)',   border: 'rgba(34,197,94,0.2)'    },
                 { icon: '/padlock.png',         label: 'Operations',          desc: 'ID verification, approvals, payouts',      color: 'rgba(245,158,11,0.08)',  border: 'rgba(245,158,11,0.2)'   },
               ].map((item, i) => (
