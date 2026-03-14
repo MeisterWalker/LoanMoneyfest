@@ -360,7 +360,7 @@ export default function PublicApplyPage() {
                 },
                 {
                   title: '8. ID Verification',
-                  body: 'A valid government-issued ID is required for all applications. Accepted IDs include SSS, GSIS, PhilHealth, Pag-IBIG, Passport, Driver's License, Postal ID, Voter's ID, PRC ID, and Senior Citizen ID. Your ID images are stored securely and handled in accordance with our Privacy Notice.'
+                  body: "A valid government-issued ID is required for all applications. Accepted IDs include SSS, GSIS, PhilHealth, Pag-IBIG, Passport, Driver's License, Postal ID, Voter's ID, PRC ID, and Senior Citizen ID. Your ID images are stored securely and handled in accordance with our Privacy Notice."
                 },
                 {
                   title: '9. Loan Limit & Level System',
