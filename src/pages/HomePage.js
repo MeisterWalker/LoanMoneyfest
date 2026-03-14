@@ -321,7 +321,8 @@ export default function HomePage() {
           </div>
           <div style={{ marginTop: 48, fontSize: 12, color: '#4B5580' }}>
             <img src="/padlock.png" alt="" style={{ width: 12, height: 12, objectFit: 'contain', marginRight: 5, verticalAlign: 'middle', opacity: 0.5 }} />
-            Private & exclusive — for our team members only. Not open to the public.
+            Private & exclusive — for our team members only. Not open to the public.{' '}·{' '}
+            <a href="/privacy" style={{ color: '#4B5580', textDecoration: 'underline' }}>Privacy Notice</a>
           </div>
         </div>
       </section>
@@ -334,7 +335,7 @@ export default function HomePage() {
           <span style={{ fontSize: 12, color: '#4B5580' }}>· Workplace Lending Program</span>
         </div>
         <div style={{ display: 'flex', gap: 20 }}>
-          {[{ label: 'Apply', href: '/apply' }, { label: 'My Portal', href: '/portal' }, { label: 'FAQ', href: '/faq' }].map((l, i) => (
+          {[{ label: 'Apply', href: '/apply' }, { label: 'My Portal', href: '/portal' }, { label: 'FAQ', href: '/faq' }, { label: 'Privacy Notice', href: '/privacy' }].map((l, i) => (
             <a key={i} href={l.href} style={{ fontSize: 12, color: '#4B5580', textDecoration: 'none', transition: 'color 0.2s' }}
               onMouseEnter={e => e.currentTarget.style.color = '#7A8AAA'}
               onMouseLeave={e => e.currentTarget.style.color = '#4B5580'}>{l.label}</a>

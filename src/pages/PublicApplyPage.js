@@ -423,7 +423,7 @@ export default function PublicApplyPage() {
                       <img src="/faq.png" alt="faq" style={{ width: 12, height: 12, objectFit: 'contain' }} /> View FAQ →
                     </a>
                     <a href="/privacy" target="_blank" rel="noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '6px 14px', borderRadius: 8, background: 'rgba(99,102,241,0.1)', border: '1px solid rgba(99,102,241,0.25)', fontSize: 12, color: '#a78bfa', textDecoration: 'none', fontWeight: 600 }}>
-                      <img src="/padlock.png" alt="privacy" style={{ width: 12, height: 12, objectFit: 'contain' }} /> Privacy →
+                      <img src="/padlock.png" alt="privacy" style={{ width: 12, height: 12, objectFit: 'contain' }} /> Privacy Notice →
                     </a>
                   </div>
                 </div>

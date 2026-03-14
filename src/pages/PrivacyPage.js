@@ -1,5 +1,4 @@
 export default function PrivacyPage() {
-  const today = new Date()
   const effectiveDate = 'March 14, 2026'
 
   const sections = [
