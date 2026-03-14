@@ -73,13 +73,18 @@ function UploadModal({ installmentNum, loan, borrower, onClose, onUploaded }) {
       .single()
 
     if (existing) {
-      setError(existing.status === 'Pending'
-        ? 'You already submitted proof for this installment. Please wait for admin confirmation.'
-        : existing.status === 'Confirmed'
-        ? 'This installment has already been confirmed. No further upload needed.'
-        : 'A previous proof was rejected. Please contact your admin before re-uploading.')
-      setUploading(false)
-      return
+      if (existing.status === 'Pending') {
+        setError('You already submitted proof for this installment. Please wait for admin confirmation.')
+        setUploading(false)
+        return
+      }
+      if (existing.status === 'Confirmed') {
+        setError('This installment has already been confirmed by the admin.')
+        setUploading(false)
+        return
+      }
+      // If Rejected — delete old record and allow re-upload
+      await supabase.from('payment_proofs').delete().eq('id', existing.id)
     }
 
     setUploading(true)
@@ -1272,15 +1277,25 @@ export default function BorrowerPortalPage() {
                       {due.current && !due.paid && (
                         <button
                           onClick={() => setUploadModal(due.num)}
-                          disabled={!!proof}
+                          disabled={proof && proof.status === 'Pending'}
                           style={{
                             display: 'flex', alignItems: 'center', gap: 6, padding: '8px 14px',
-                            borderRadius: 9, border: 'none', fontSize: 12, fontWeight: 700, cursor: proof ? 'not-allowed' : 'pointer',
-                            background: proof ? 'rgba(245,158,11,0.1)' : 'linear-gradient(135deg,#3B82F6,#8B5CF6)',
-                            color: proof ? '#F59E0B' : '#fff', flexShrink: 0
+                            borderRadius: 9, border: 'none', fontSize: 12, fontWeight: 700,
+                            cursor: proof && proof.status === 'Pending' ? 'not-allowed' : 'pointer',
+                            background: proof && proof.status === 'Pending'
+                              ? 'rgba(245,158,11,0.1)'
+                              : proof && proof.status === 'Rejected'
+                              ? 'rgba(239,68,68,0.15)'
+                              : 'linear-gradient(135deg,#3B82F6,#8B5CF6)',
+                            color: proof && proof.status === 'Pending' ? '#F59E0B' : proof && proof.status === 'Rejected' ? '#EF4444' : '#fff',
+                            flexShrink: 0, border: proof && proof.status === 'Rejected' ? '1px solid rgba(239,68,68,0.3)' : 'none'
                           }}
                         >
-                          {proof ? <><Clock size={12} /> Pending</> : <><Upload size={12} /> Upload Proof</>}
+                          {proof && proof.status === 'Pending'
+                            ? <><Clock size={12} /> Pending</>
+                            : proof && proof.status === 'Rejected'
+                            ? <><Upload size={12} /> Re-upload</>
+                            : <><Upload size={12} /> Upload Proof</>}
                         </button>
                       )}
                     </div>
