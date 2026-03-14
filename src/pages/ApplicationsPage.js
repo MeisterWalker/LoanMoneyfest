@@ -259,6 +259,7 @@ function ApplicationCard({ app, onApprove, onReject }) {
 function ProofReviewSection({ supabase, user, logAudit }) {
   const [proofs, setProofs] = useState([])
   const [expanded, setExpanded] = useState(false)
+  const [signedUrls, setSignedUrls] = useState({})
   const { toast } = useToast()
 
   const fetchProofs = async () => {
@@ -268,6 +269,19 @@ function ProofReviewSection({ supabase, user, logAudit }) {
       .eq('status', 'Pending')
       .order('created_at', { ascending: false })
     setProofs(data || [])
+    // Generate signed URLs for all proofs
+    if (data && data.length > 0) {
+      const urls = {}
+      for (const proof of data) {
+        if (proof.file_path) {
+          const { data: signed } = await supabase.storage
+            .from('payment-proofs')
+            .createSignedUrl(proof.file_path, 3600)
+          if (signed?.signedUrl) urls[proof.id] = signed.signedUrl
+        }
+      }
+      setSignedUrls(urls)
+    }
   }
 
   useEffect(() => { fetchProofs() }, [])
@@ -302,10 +316,7 @@ function ProofReviewSection({ supabase, user, logAudit }) {
     fetchProofs()
   }
 
-  const getFileUrl = (path) => {
-    const { data } = supabase.storage.from('payment-proofs').getPublicUrl(path)
-    return data?.publicUrl
-  }
+
 
   if (proofs.length === 0) return null
 
@@ -336,10 +347,16 @@ function ProofReviewSection({ supabase, user, logAudit }) {
                 <div style={{ fontSize: 11, color: '#4B5580', marginTop: 4 }}>{new Date(proof.created_at).toLocaleDateString('en-PH', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</div>
               </div>
               <div style={{ display: 'flex', gap: 8, flexShrink: 0 }}>
-                <a href={getFileUrl(proof.file_path)} target="_blank" rel="noreferrer"
-                  style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '7px 12px', borderRadius: 8, background: 'rgba(59,130,246,0.1)', border: '1px solid rgba(59,130,246,0.2)', color: '#3B82F6', fontSize: 12, fontWeight: 600, textDecoration: 'none' }}>
-                  <ExternalLink size={12} /> View
-                </a>
+                {signedUrls[proof.id] ? (
+                  <a href={signedUrls[proof.id]} target="_blank" rel="noreferrer"
+                    style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '7px 12px', borderRadius: 8, background: 'rgba(59,130,246,0.1)', border: '1px solid rgba(59,130,246,0.2)', color: '#3B82F6', fontSize: 12, fontWeight: 600, textDecoration: 'none' }}>
+                    <ExternalLink size={12} /> View
+                  </a>
+                ) : (
+                  <span style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '7px 12px', borderRadius: 8, background: 'rgba(255,255,255,0.04)', color: '#4B5580', fontSize: 12 }}>
+                    Loading...
+                  </span>
+                )}
                 <button onClick={() => handleConfirm(proof)}
                   style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '7px 12px', borderRadius: 8, border: 'none', background: 'rgba(34,197,94,0.15)', color: '#22C55E', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}>
                   ✓ Confirm
@@ -573,8 +590,7 @@ export default function ApplicationsPage() {
       {/* Filter tabs */}
       <div style={{ display: 'flex', gap: 6, background: 'rgba(255,255,255,0.03)', borderRadius: 10, padding: 4, marginBottom: 24, width: 'fit-content' }}>
         {/* Payment Proofs Section */}
-      <ProofReviewSection supabase={supabase} user={user} logAudit={logAudit} />
-      <WithdrawalPanel supabase={supabase} user={user} logAudit={logAudit} />
+
 
       {['Pending', 'Approved', 'Rejected', 'All'].map(f => (
           <button key={f} onClick={() => setFilter(f)} style={{ padding: '7px 16px', borderRadius: 7, border: 'none', cursor: 'pointer', fontSize: 13, fontWeight: 600, background: filter === f ? '#3B82F6' : 'transparent', color: filter === f ? '#fff' : '#4B5580', transition: 'all 0.15s' }}>
