@@ -475,100 +475,97 @@ export default function ApplicationsPage() {
   useEffect(() => { fetchData() }, [fetchData])
 
   const handleApprove = async (app) => {
-    // 1. Check if borrower already exists (re-approval guard)
-    const { data: existingBorrower } = await supabase.from('borrowers')
-      .select('*').eq('email', app.email).maybeSingle()
+    try {
+      // 1. Generate access code
+      const accessCode = app.access_code || ('LM-' + Math.random().toString(36).substring(2, 6).toUpperCase())
 
-    let borrower = existingBorrower
-    const accessCode = existingBorrower?.access_code || app.access_code || ('LM-' + Math.random().toString(36).substring(2, 6).toUpperCase())
+      // 2. Check if borrower already exists
+      const { data: existingBorrower } = await supabase.from('borrowers')
+        .select('id, access_code, credit_score').eq('email', app.email).maybeSingle()
 
-    if (!existingBorrower) {
-      // 2. Create new borrower
-      const { data: newBorrower, error: bErr } = await supabase.from('borrowers').insert({
-        full_name: app.full_name, department: app.department,
-        tenure_years: app.tenure_years, phone: app.phone,
-        email: app.email, address: app.address,
-        trustee_name: app.trustee_name, trustee_phone: app.trustee_phone,
-        trustee_relationship: app.trustee_relationship,
-        credit_score: CREDIT_CONFIG.STARTING_SCORE, risk_score: 'Low',
-        loan_limit: 5000, loan_limit_level: 1,
-        loan_limit_override: false, clean_loans: 0,
-        loyalty_badge: 'New', at_risk: false,
-        access_code: accessCode,
-        admin_notes: `Applied via loan application form. Loan purpose: ${app.loan_purpose || 'Not specified'}`
-      }).select().single()
+      let borrowerId = existingBorrower?.id
+      const finalCode = existingBorrower?.access_code || accessCode
 
-      if (bErr) { console.error('Borrower insert error:', bErr); toast('Failed to create borrower: ' + bErr.message, 'error'); return }
-      borrower = newBorrower
-    } else {
-      // Borrower already exists — check if they already have an active/pending loan from this application
-      const { data: existingLoan } = await supabase.from('loans')
-        .select('id').eq('borrower_id', existingBorrower.id)
-        .in('status', ['Pending', 'Active']).maybeSingle()
-      if (existingLoan) {
-        // Loan already exists — just update application status and return
-        await supabase.from('applications').update({ status: 'Approved' }).eq('id', app.id)
-        toast('✅ Application marked approved — borrower and loan already exist', 'success')
-        setApplications(prev => prev.map(a => a.id === app.id ? { ...a, status: 'Approved' } : a))
-        return
+      if (!existingBorrower) {
+        // Create borrower
+        const { data: newB, error: bErr } = await supabase.from('borrowers').insert({
+          full_name: app.full_name,
+          department: app.department || '',
+          tenure_years: app.tenure_years || 0,
+          phone: app.phone || '',
+          email: app.email || '',
+          address: app.address || '',
+          trustee_name: app.trustee_name || '',
+          trustee_phone: app.trustee_phone || '',
+          trustee_relationship: app.trustee_relationship || '',
+          credit_score: 750,
+          risk_score: 'Low',
+          loan_limit: 5000,
+          loan_limit_level: 1,
+          loan_limit_override: false,
+          clean_loans: 0,
+          loyalty_badge: 'New',
+          at_risk: false,
+          access_code: finalCode,
+          admin_notes: 'Applied via loan application form.'
+        }).select('id').single()
+        if (bErr) { toast('Failed to create borrower: ' + bErr.message, 'error'); return }
+        borrowerId = newB.id
       }
+
+      // 3. Check if loan already exists for this borrower
+      const { data: existingLoan } = await supabase.from('loans')
+        .select('id').eq('borrower_id', borrowerId)
+        .in('status', ['Pending', 'Active', 'Partially Paid']).maybeSingle()
+
+      if (!existingLoan) {
+        // 4. Calculate release date
+        const today = new Date()
+        const day = today.getDate()
+        let releaseDate
+        if (day <= 5) releaseDate = new Date(today.getFullYear(), today.getMonth(), 5)
+        else if (day <= 20) releaseDate = new Date(today.getFullYear(), today.getMonth(), 20)
+        else releaseDate = new Date(today.getFullYear(), today.getMonth() + 1, 5)
+        const releaseDateStr = releaseDate.toISOString().split('T')[0]
+
+        // 5. Create loan — use only confirmed existing columns
+        const loanAmount = Number(app.loan_amount) || 5000
+        const rate = 0.07
+        const total = loanAmount * (1 + rate)
+        const installment = total / 4
+        const holdAmt = parseFloat((loanAmount * 0.10).toFixed(2))
+        const released = loanAmount - holdAmt
+
+        const { error: lErr } = await supabase.from('loans').insert({
+          borrower_id: borrowerId,
+          loan_amount: loanAmount,
+          interest_rate: rate,
+          total_repayment: total,
+          installment_amount: installment,
+          remaining_balance: total,
+          payments_made: 0,
+          release_date: releaseDateStr,
+          status: 'Pending'
+        })
+
+        if (lErr) {
+          toast('Loan creation failed: ' + lErr.message, 'error')
+          console.error('LOAN ERROR:', lErr)
+          // Still update application status even if loan failed
+        }
+      }
+
+      // 6. Update application status — always runs
+      await supabase.from('applications').update({ status: 'Approved' }).eq('id', app.id)
+
+      // 7. Update UI immediately
+      setApplications(prev => prev.map(a => a.id === app.id ? { ...a, status: 'Approved' } : a))
+      toast(`✅ ${app.full_name} approved! Code: ${finalCode}`, 'success')
+
+    } catch (err) {
+      console.error('APPROVE ERROR:', err)
+      toast('Error: ' + err.message, 'error')
     }
-
-    // 3. Calculate release date (next upcoming 5th or 20th)
-    const today = new Date()
-    const day = today.getDate()
-    const month = today.getMonth()
-    const year = today.getFullYear()
-    let releaseDate
-    if (day <= 5) releaseDate = new Date(year, month, 5)
-    else if (day <= 20) releaseDate = new Date(year, month, 20)
-    else releaseDate = new Date(year, month + 1, 5)
-    const releaseDateStr = releaseDate.getFullYear() + '-' + String(releaseDate.getMonth()+1).padStart(2,'0') + '-' + String(releaseDate.getDate()).padStart(2,'0')
-    const releaseDateDisplay = releaseDate.toLocaleDateString('en-PH', { month: 'long', day: 'numeric', year: 'numeric' })
-
-    // 4. Create loan
-    // Fetch current interest rate from settings
-    const { data: settingsData } = await supabase.from('settings').select('interest_rate').eq('id', 1).single()
-    const currentRate = settingsData?.interest_rate || 0.07
-
-    const loanAmount = Number(app.loan_amount)
-    // Dynamic security hold based on borrower's credit score
-    const borrowerCreditScore = borrower?.credit_score || CREDIT_CONFIG.STARTING_SCORE
-    const borrowerCleanLoans = borrower?.clean_loans || 0
-    const holdTier = getSecurityHoldRate(borrowerCreditScore)
-    const securityHold = parseFloat((loanAmount * holdTier.rate).toFixed(2))
-    const fundsReleased = parseFloat((loanAmount - securityHold).toFixed(2))
-    const totalRepayment = loanAmount * (1 + currentRate)  // interest on full amount
-    const installmentAmount = totalRepayment / 4
-
-    const { error: lErr } = await supabase.from('loans').insert({
-      borrower_id: borrower.id, loan_amount: loanAmount,
-      interest_rate: currentRate, total_repayment: totalRepayment,
-      installment_amount: installmentAmount, remaining_balance: totalRepayment,
-      security_hold: securityHold, funds_released: fundsReleased,
-      security_hold_returned: false,
-      payments_made: 0, release_date: releaseDateStr,
-      status: 'Pending', created_at: new Date().toISOString()
-    })
-
-    if (lErr) {
-      console.error('Loan insert error:', lErr)
-      toast('Loan failed: ' + lErr.message, 'error')
-      return
-    }
-
-    // 5. Update application status
-    const { error: appErr } = await supabase.from('applications').update({ status: 'Approved' }).eq('id', app.id)
-    if (appErr) console.error('App update error:', appErr)
-
-    // 6. Update UI immediately regardless
-    toast(`✅ Approved! Access code: ${accessCode}`, 'success')
-    setApplications(prev => prev.map(a => a.id === app.id ? { ...a, status: 'Approved' } : a))
-
-    // 7. Fire-and-forget background tasks — won't block UI
-    sendApprovalEmail({ to: app.email, borrowerName: app.full_name, accessCode, loanAmount, totalRepayment, installmentAmount, releaseDate: releaseDateDisplay }).catch(console.error)
-    logAudit({ action_type: 'APPLICATION_APPROVED', module: 'Applications', description: `Approved: ${app.full_name} — ₱${loanAmount.toLocaleString()} loan. Access code: ${accessCode}`, changed_by: user?.email }).catch(console.error)
-    notifyBorrower({ borrower_id: borrower.id, type: 'loan_approved', title: '🎉 Loan Approved!', message: `Your loan of ₱${loanAmount.toLocaleString('en-PH')} has been approved! You will receive ₱${fundsReleased.toLocaleString('en-PH')} on ${releaseDateDisplay}.` }).catch(console.error)
   }
 
   const handleReject = async (app, reason) => {
