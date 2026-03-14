@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '../lib/supabase'
+import { getSecurityHoldRate, getLoyaltyBadge, getRiskScore, CREDIT_CONFIG } from '../lib/creditSystem'
 import { logAudit, formatCurrency, formatDate } from '../lib/helpers'
 import { useAuth } from '../context/AuthContext'
 import { useToast } from '../components/Toast'
@@ -486,12 +487,15 @@ export default function LoansPage() {
 
     // Update credit score (+15 on-time, -10 if late)
     if (borrower) {
-      const scoreChange = daysLate > 0 ? -10 : 15
-      const newScore = Math.min(850, Math.max(300, borrower.credit_score + scoreChange))
-      const newRisk = newScore >= 650 ? 'Low' : newScore >= 550 ? 'Medium' : 'High'
+      const scoreChange = daysLate > 0 ? CREDIT_CONFIG.latePenalty : CREDIT_CONFIG.onTimeBonus
+      const newScore = Math.min(CREDIT_CONFIG.max, Math.max(CREDIT_CONFIG.min, borrower.credit_score + scoreChange))
+      const newRisk = getRiskScore(newScore)
+      const cleanLoans = loans.filter(l => l.borrower_id === borrower.id && l.status === 'Paid').length
+      const newBadgeTemp = getLoyaltyBadge(cleanLoans, newScore)
       await supabase.from('borrowers').update({
         credit_score: newScore,
-        risk_score: newRisk
+        risk_score: newRisk,
+        loyalty_badge: newBadgeTemp
       }).eq('id', borrower.id)
     }
 
@@ -511,12 +515,15 @@ export default function LoansPage() {
         const cleanLoans = loans.filter(l =>
           l.borrower_id === borrower.id && l.status === 'Paid' && l.id !== loan.id
         ).length + 1
-        const newBadge = cleanLoans >= 3 ? 'VIP' : cleanLoans >= 2 ? 'Reliable' : cleanLoans >= 1 ? 'Trusted' : 'New'
-        const bonusScore = Math.min(850, (borrower.credit_score + 15) + (cleanLoans % 2 === 0 ? 25 : 0))
+        // Use already-updated score from payment recording above
+        const { data: freshBorrower } = await supabase.from('borrowers').select('credit_score').eq('id', borrower.id).single()
+        const currentScore = freshBorrower?.credit_score || borrower.credit_score
+        const bonusScore = Math.min(CREDIT_CONFIG.max, currentScore + (cleanLoans % 2 === 0 ? CREDIT_CONFIG.fullPayBonus : 0))
+        const newBadge = getLoyaltyBadge(cleanLoans, bonusScore)
         await supabase.from('borrowers').update({
           loan_limit_level: newLevel, loan_limit: newLimit,
           loyalty_badge: newBadge, credit_score: bonusScore,
-          risk_score: bonusScore >= 650 ? 'Low' : bonusScore >= 550 ? 'Medium' : 'High'
+          risk_score: getRiskScore(bonusScore)
         }).eq('id', borrower.id)
       }
 
@@ -636,10 +643,10 @@ export default function LoansPage() {
     await supabase.from('loans').update({ status: 'Defaulted', updated_at: new Date().toISOString() }).eq('id', loan.id)
     // Deduct credit score -150 for default
     if (borrower) {
-      const newScore = Math.max(300, borrower.credit_score - 150)
+      const newScore = Math.max(CREDIT_CONFIG.min, borrower.credit_score + CREDIT_CONFIG.defaultPenalty)
       await supabase.from('borrowers').update({
         credit_score: newScore,
-        risk_score: newScore >= 650 ? 'Low' : newScore >= 550 ? 'Medium' : 'High'
+        risk_score: getRiskScore(newScore)
       }).eq('id', borrower.id)
     }
     await logAudit({ action_type: 'LOAN_DEFAULTED', module: 'Loan', description: `Loan marked as defaulted for ${borrower?.full_name}`, changed_by: user?.email })

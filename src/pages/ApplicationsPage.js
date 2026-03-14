@@ -1,8 +1,10 @@
 import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '../lib/supabase'
+import { getSecurityHoldRate, getLoyaltyBadge, getRiskScore } from '../lib/creditSystem'
 import { useAuth } from '../context/AuthContext'
 import { useToast } from '../components/Toast'
 import { logAudit } from '../lib/helpers'
+import { calcSecurityHold, CREDIT_CONFIG } from '../lib/creditSystem'
 import { ClipboardList, Check, X, Clock, ChevronDown, ChevronUp, User, Phone, Mail, MapPin, Users, DollarSign, ExternalLink, Image } from 'lucide-react'
 
 const STATUS_COLORS = {
@@ -484,7 +486,7 @@ export default function ApplicationsPage() {
       email: app.email, address: app.address,
       trustee_name: app.trustee_name, trustee_phone: app.trustee_phone,
       trustee_relationship: app.trustee_relationship,
-      credit_score: 750, risk_score: 'Low',
+      credit_score: CREDIT_CONFIG.STARTING_SCORE, risk_score: CREDIT_CONFIG.riskFromScore(CREDIT_CONFIG.STARTING_SCORE),
       loan_limit: 5000, loan_limit_level: 1,
       loan_limit_override: false, clean_loans: 0,
       loyalty_badge: 'New', at_risk: false,
@@ -512,9 +514,12 @@ export default function ApplicationsPage() {
     const currentRate = settingsData?.interest_rate || 0.07
 
     const loanAmount = Number(app.loan_amount)
-    const SECURITY_HOLD_RATE = 0.20  // 20% holdback
-    const securityHold = parseFloat((loanAmount * SECURITY_HOLD_RATE).toFixed(2))
-    const fundsReleased = loanAmount - securityHold
+    // Dynamic security hold based on borrower's credit score
+    const borrowerCreditScore = borrower?.credit_score || CREDIT_CONFIG.STARTING_SCORE
+    const borrowerCleanLoans = borrower?.clean_loans || 0
+    const holdTier = getSecurityHoldRate(borrowerCreditScore, borrowerCleanLoans)
+    const securityHold = parseFloat((loanAmount * holdTier.rate).toFixed(2))
+    const fundsReleased = parseFloat((loanAmount - securityHold).toFixed(2))
     const totalRepayment = loanAmount * (1 + currentRate)  // interest on full amount
     const installmentAmount = totalRepayment / 4
 
@@ -522,7 +527,7 @@ export default function ApplicationsPage() {
       borrower_id: borrower.id, loan_amount: loanAmount,
       interest_rate: currentRate, total_repayment: totalRepayment,
       installment_amount: installmentAmount, remaining_balance: totalRepayment,
-      security_hold: securityHold, funds_released: fundsReleased,
+      security_hold: securityHold, funds_released: fundsReleased, security_hold_rate: holdTier.rate,
       security_hold_returned: false,
       payments_made: 0, release_date: releaseDateStr,
       status: 'Pending', created_at: new Date().toISOString()
@@ -548,13 +553,13 @@ export default function ApplicationsPage() {
     }
 
     // 7. Log audit
-    await logAudit({ action_type: 'APPLICATION_APPROVED', module: 'Applications', description: `Application approved for ${app.full_name} — ₱${loanAmount.toLocaleString()} loan, ₱${fundsReleased.toLocaleString()} released, ₱${securityHold.toLocaleString()} security hold. Access code: ${accessCode}`, changed_by: user?.email })
+    await logAudit({ action_type: 'APPLICATION_APPROVED', module: 'Applications', description: `Application approved for ${app.full_name} — ₱${loanAmount.toLocaleString()} loan, ₱${fundsReleased.toLocaleString()} released, ₱${securityHold.toLocaleString()} security hold (${holdTier.label} rate, score: ${borrowerCreditScore}). Access code: ${accessCode}`, changed_by: user?.email })
 
     await notifyBorrower({
       borrower_id: borrower.id,
       type: 'loan_approved',
       title: '🎉 Loan Approved!',
-      message: `Your loan of ₱${loanAmount.toLocaleString('en-PH')} has been approved! You will receive ₱${fundsReleased.toLocaleString('en-PH')} on ${releaseDateDisplay}. A Security Hold of ₱${securityHold.toLocaleString('en-PH')} will be returned after your 4th installment is paid. Check your loan details in the portal.`
+      message: `Your loan of ₱${loanAmount.toLocaleString('en-PH')} has been approved! You will receive ₱${fundsReleased.toLocaleString('en-PH')} on ${releaseDateDisplay}. A ${holdTier.label} Security Hold of ₱${securityHold.toLocaleString('en-PH')} (${(holdTier.rate*100).toFixed(0)}%) will be returned after your 4th installment is paid. Check your loan details in the portal.`
     })
 
     toast(`✅ Approved! Access code ${accessCode} sent to ${app.email || app.full_name}`, 'success')

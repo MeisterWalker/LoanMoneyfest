@@ -253,10 +253,10 @@ export default function HomePage() {
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 16, position: 'relative', zIndex: 1 }}>
               {[
-                { badge: '🌱', tier: 'New',      hold: '10%', limit: '₱5,000', loans: 'Starting',    color: '#7A8AAA', bg: 'rgba(122,138,170,0.08)',  border: 'rgba(122,138,170,0.2)',  score: '750+',  perks: ['Standard access', 'Apply immediately', '10% Security Hold'] },
-                { badge: '⭐', tier: 'Trusted',   hold: '8%',  limit: '₱7,000', loans: '1 clean loan', color: '#F59E0B', bg: 'rgba(245,158,11,0.08)',  border: 'rgba(245,158,11,0.3)',   score: '650+',  perks: ['Hold reduced to 8%', 'Limit raised to ₱7K', '1 clean loan needed'] },
-                { badge: '🤝', tier: 'Reliable',  hold: '6%',  limit: '₱9,000', loans: '2 clean loans', color: '#3B82F6', bg: 'rgba(59,130,246,0.08)', border: 'rgba(59,130,246,0.3)',   score: '720+',  perks: ['Hold reduced to 6%', 'Limit raised to ₱9K', 'Priority processing'] },
-                { badge: '👑', tier: 'VIP',       hold: '5%',  limit: '₱10,000', loans: '3 clean loans', color: '#8B5CF6', bg: 'rgba(139,92,246,0.1)', border: 'rgba(139,92,246,0.4)',  score: '780+',  perks: ['Lowest hold — just 5%', 'Max limit ₱10K', 'Top borrower status'] },
+                { badge: '🌱', tier: 'New',      hold: '10%', limit: '₱5,000', loans: 'Starting',     color: '#7A8AAA', bg: 'rgba(122,138,170,0.08)',  border: 'rgba(122,138,170,0.2)',  score: '750',   perks: ['Standard access', 'Apply immediately', '10% Security Hold'] },
+                { badge: '⭐', tier: 'Trusted',   hold: '8%',  limit: '₱7,000', loans: '1 clean loan', color: '#F59E0B', bg: 'rgba(245,158,11,0.08)',  border: 'rgba(245,158,11,0.3)',   score: '835+',  perks: ['Hold reduced to 8%', 'Limit raised to ₱7K', '1 clean loan needed'] },
+                { badge: '🤝', tier: 'Reliable',  hold: '6%',  limit: '₱9,000', loans: '2 clean loans', color: '#3B82F6', bg: 'rgba(59,130,246,0.08)', border: 'rgba(59,130,246,0.3)',   score: '920+',  perks: ['Hold reduced to 6%', 'Limit raised to ₱9K', 'Priority processing'] },
+                { badge: '👑', tier: 'VIP',       hold: '5%',  limit: '₱10,000', loans: '3 clean loans', color: '#8B5CF6', bg: 'rgba(139,92,246,0.1)', border: 'rgba(139,92,246,0.4)',  score: '1000',  perks: ['Lowest hold — just 5%', 'Max limit ₱10K', 'Top borrower status'] },
               ].map((t, i) => (
                 <div key={i} style={{ background: t.bg, border: `1px solid ${t.border}`, borderRadius: 20, padding: '28px 20px', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
                   {/* Glow */}
@@ -290,7 +290,7 @@ export default function HomePage() {
 
                   {/* Score badge */}
                   <div style={{ marginTop: 14, display: 'inline-flex', alignItems: 'center', gap: 4, padding: '3px 10px', borderRadius: 20, background: 'rgba(0,0,0,0.25)', border: `1px solid ${t.border}`, fontSize: 10, color: t.color, fontWeight: 700 }}>
-                    Score {t.score}
+                    Score {t.score}{t.score === '750' ? ' (Start)' : '+'}
                   </div>
                 </div>
               ))}

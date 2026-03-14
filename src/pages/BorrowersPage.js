@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '../lib/supabase'
+import { CREDIT_CONFIG, getBadgeConfig } from '../lib/creditSystem'
 import { logAudit, formatDate } from '../lib/helpers'
 import { useAuth } from '../context/AuthContext'
 import { useToast } from '../components/Toast'
@@ -12,10 +13,10 @@ import {
 import BorrowerAvatar from '../components/BorrowerAvatar'
 
 const BADGE_CONFIG = {
-  New: { label: "🆕 New", cls: 'badge-new' },
-  Trusted: { label: "✅ Trusted", cls: 'badge-trusted' },
-  Reliable: { label: "⭐ Reliable", cls: 'badge-reliable' },
-  VIP: { label: "👑 VIP", cls: 'badge-vip' },
+  New:      { label: "🌱 New",      cls: 'badge-new' },
+  Trusted:  { label: "⭐ Trusted",  cls: 'badge-trusted' },
+  Reliable: { label: "🤝 Reliable", cls: 'badge-reliable' },
+  VIP:      { label: "👑 VIP",      cls: 'badge-vip' },
 }
 
 const RISK_CONFIG = {
@@ -30,9 +31,7 @@ function BorrowerCard({ borrower, departments, onEdit, onDelete }) {
   const badge = BADGE_CONFIG[borrower.loyalty_badge] || BADGE_CONFIG.New
   const risk = RISK_CONFIG[borrower.risk_score] || RISK_CONFIG.Low
 
-  const scoreColor = borrower.credit_score >= 700 ? 'var(--green)'
-    : borrower.credit_score >= 550 ? 'var(--gold)'
-    : 'var(--red)'
+  const scoreColor = CREDIT_CONFIG.colorFromScore(borrower.credit_score || CREDIT_CONFIG.STARTING_SCORE)
 
   return (
     <div className="card" style={{ padding: 0, overflow: 'hidden', transition: 'box-shadow 0.2s' }}>

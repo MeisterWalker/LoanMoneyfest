@@ -1,5 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
+import { getSecurityHoldRate, getLoyaltyBadge, getRiskScore, getCreditLabel, BADGE_DISPLAY, getHoldPerksMessage } from '../lib/creditSystem'
 import { supabase } from '../lib/supabase'
+import { CREDIT_CONFIG, BADGE_TIERS, SECURITY_HOLD_TIERS, getBadgeConfig, getBadgeFromScore, getSecurityHoldRate } from '../lib/creditSystem'
 import {
   Lock, CheckCircle, Clock, AlertCircle, Upload,
   FileText, Calendar, CreditCard, ChevronDown, ChevronUp, X
@@ -598,11 +600,11 @@ export default function BorrowerPortalPage() {
           </div>
           <div style={{ fontFamily: 'Space Grotesk', fontWeight: 800, fontSize: 20, color: '#F0F4FF', marginBottom: 4 }}>{borrower.full_name}</div>
           <div style={{ fontSize: 13, color: '#7A8AAA', marginBottom: 12 }}>{borrower.department}</div>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.3)', borderRadius: 20, padding: '4px 14px' }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: (BADGE_DISPLAY[borrower.loyalty_badge] || BADGE_DISPLAY['New']).bg, border: '1px solid ' + (BADGE_DISPLAY[borrower.loyalty_badge] || BADGE_DISPLAY['New']).border, borderRadius: 20, padding: '4px 14px' }}>
             <span style={{ fontSize: 14 }}>
-              {borrower.loyalty_badge === 'New' ? '🌱' : borrower.loyalty_badge === 'Regular' ? '⭐' : borrower.loyalty_badge === 'Trusted' ? '💎' : '👑'}
+              {(BADGE_DISPLAY[borrower.loyalty_badge] || BADGE_DISPLAY['New']).icon}
             </span>
-            <span style={{ fontSize: 12, fontWeight: 700, color: '#F59E0B' }}>{borrower.loyalty_badge || 'New'} Borrower</span>
+            <span style={{ fontSize: 12, fontWeight: 700, color: (BADGE_DISPLAY[borrower.loyalty_badge] || BADGE_DISPLAY['New']).color }}>{borrower.loyalty_badge || 'New'} Borrower</span>
           </div>
         </div>
 
@@ -611,9 +613,8 @@ export default function BorrowerPortalPage() {
           <div style={{ fontFamily: 'Space Grotesk', fontWeight: 700, fontSize: 14, color: '#F0F4FF', marginBottom: 16 }}>Credit Score</div>
           {(() => {
             const score = borrower.credit_score || 750
-            const pct = ((score - 300) / (850 - 300)) * 100
-            const color = score >= 750 ? '#22C55E' : score >= 650 ? '#F59E0B' : '#EF4444'
-            const label = score >= 750 ? 'Excellent' : score >= 700 ? 'Good' : score >= 650 ? 'Fair' : 'Poor'
+            const pct = ((score - CREDIT_CONFIG.MIN_SCORE) / (CREDIT_CONFIG.MAX_SCORE - CREDIT_CONFIG.MIN_SCORE)) * 100
+            const { label, color } = getCreditLabel(score)
             return (
               <div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 10 }}>
@@ -627,12 +628,48 @@ export default function BorrowerPortalPage() {
                   <div style={{ height: '100%', width: pct + '%', background: `linear-gradient(90deg,#EF4444,#F59E0B,#22C55E)`, borderRadius: 5, transition: 'width 1s ease' }} />
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10, color: '#4B5580' }}>
-                  <span>300 Poor</span><span>650 Fair</span><span>750 Good</span><span>850 Excellent</span>
+                  <span>300</span><span>500</span><span>750</span><span>920</span><span>1000 VIP</span>
                 </div>
               </div>
             )
           })()}
         </div>
+
+        {/* Security Hold Tier */}
+        {(() => {
+          const score = borrower.credit_score || 750
+          const cleanLoans = borrower.clean_loans || 0
+          const tier = getSecurityHoldRate(score, cleanLoans)
+          const msg = getHoldPerksMessage(tier.rate, tier.label, score)
+          return (
+            <div style={{ background: '#141B2D', border: `1px solid ${tier.color}33`, borderRadius: 16, padding: '16px 20px', marginBottom: 16 }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+                <div style={{ fontFamily: 'Space Grotesk', fontWeight: 700, fontSize: 14, color: '#F0F4FF' }}>Security Hold Tier</div>
+                <div style={{ fontFamily: 'Space Grotesk', fontWeight: 900, fontSize: 22, color: tier.color }}>{(tier.rate * 100).toFixed(0)}%</div>
+              </div>
+              <div style={{ fontSize: 12, color: '#8892B0', lineHeight: 1.7, marginBottom: 12 }}>{msg}</div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 6 }}>
+                {[
+                  { label: 'High Risk', rate: '20%', minScore: '< 600', color: '#EF4444' },
+                  { label: 'Caution',   rate: '15%', minScore: '600+',  color: '#F97316' },
+                  { label: 'Standard',  rate: '10%', minScore: '750+',  color: '#7A8AAA' },
+                  { label: 'Trusted',   rate: '8%',  minScore: '700+',  color: '#60A5FA' },
+                  { label: 'Reliable',  rate: '6%',  minScore: '750+',  color: '#34D399' },
+                  { label: 'VIP',       rate: '5%',  minScore: '1000',  color: '#8B5CF6' },
+                ].map((t, i) => {
+                  const isActive = tier.label === t.label
+                  return (
+                    <div key={i} style={{ padding: '7px 10px', borderRadius: 8, background: isActive ? t.color + '22' : 'rgba(255,255,255,0.02)', border: `1px solid ${isActive ? t.color + '66' : 'rgba(255,255,255,0.05)'}`, textAlign: 'center' }}>
+                      <div style={{ fontSize: 12, fontWeight: isActive ? 800 : 600, color: isActive ? t.color : '#4B5580' }}>{t.rate}</div>
+                      <div style={{ fontSize: 10, color: isActive ? t.color : '#4B5580', marginTop: 2 }}>{t.label}</div>
+                      <div style={{ fontSize: 9, color: '#4B5580', marginTop: 1 }}>{t.minScore}</div>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+          )
+        })()}
 
         {/* Loan Limit Level */}
         <div style={{ background: '#141B2D', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 16, padding: 24, marginBottom: 16 }}>
