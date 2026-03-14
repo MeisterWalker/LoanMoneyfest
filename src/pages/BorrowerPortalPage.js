@@ -157,38 +157,44 @@ function UploadModal({ installmentNum, loan, borrower, onClose, onUploaded }) {
 
 function LottieHourglass() {
   const ref = useRef(null)
+  const animRef = useRef(null)
+
   useEffect(() => {
-    // Load lottie-web from CDN dynamically
-    const script = document.createElement('script')
-    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js'
-    script.onload = () => {
-      if (ref.current && window.lottie) {
-        window.lottie.loadAnimation({
-          container: ref.current,
-          renderer: 'svg',
-          loop: true,
-          autoplay: true,
-          path: '/gold_hourglass.json'
-        })
-      }
-    }
-    // If already loaded
-    if (window.lottie) {
-      window.lottie.loadAnimation({
+    const initAnim = () => {
+      if (!ref.current || !window.lottie) return
+      // Destroy previous if any
+      if (animRef.current) { animRef.current.destroy(); animRef.current = null }
+      animRef.current = window.lottie.loadAnimation({
         container: ref.current,
         renderer: 'svg',
         loop: true,
         autoplay: true,
         path: '/gold_hourglass.json'
       })
-    } else {
-      document.head.appendChild(script)
     }
+
+    if (window.lottie) {
+      initAnim()
+    } else {
+      // Check if script already loading
+      const existing = document.querySelector('script[data-lottie]')
+      if (existing) {
+        existing.addEventListener('load', initAnim)
+      } else {
+        const script = document.createElement('script')
+        script.src = 'https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js'
+        script.setAttribute('data-lottie', 'true')
+        script.onload = initAnim
+        document.head.appendChild(script)
+      }
+    }
+
     return () => {
-      if (window.lottie) window.lottie.destroy()
+      if (animRef.current) { animRef.current.destroy(); animRef.current = null }
     }
   }, [])
-  return <div ref={ref} style={{ width: 80, height: 80, margin: '0 auto' }} />
+
+  return <div ref={ref} style={{ width: 90, height: 90, margin: '0 auto' }} />
 }
 
 export default function BorrowerPortalPage() {
