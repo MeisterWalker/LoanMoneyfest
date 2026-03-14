@@ -665,11 +665,16 @@ export default function LoansPage() {
 
   const handleDelete = async (loan) => {
     const borrower = borrowers.find(b => b.id === loan.borrower_id)
-    await supabase.from('loans').delete().eq('id', loan.id)
+    // Delete child records first to avoid FK constraint violations
+    await supabase.from('payment_proofs').delete().eq('loan_id', loan.id)
+    await supabase.from('penalty_charges').delete().eq('loan_id', loan.id)
+    await supabase.from('wallet_transactions').delete().eq('loan_id', loan.id)
+    const { error } = await supabase.from('loans').delete().eq('id', loan.id)
+    if (error) { toast('Failed to delete loan: ' + error.message, 'error'); return }
     await logAudit({ action_type: 'LOAN_DELETED', module: 'Loan', description: `Loan deleted for ${borrower?.full_name}`, changed_by: user?.email })
     toast('Loan deleted', 'info')
     setDeleteTarget(null)
-    fetchData()
+    setLoans(prev => prev.filter(l => l.id !== loan.id))
   }
 
   const handleRenew = (loan) => {

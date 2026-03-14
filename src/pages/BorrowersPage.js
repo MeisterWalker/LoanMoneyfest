@@ -254,22 +254,26 @@ export default function BorrowersPage() {
   }
 
   const handleDelete = async (borrower) => {
-    // Check for active loans
-    const { data: activeLoans } = await supabase
-      .from('loans').select('id')
-      .eq('borrower_id', borrower.id)
-      .in('status', ['Pending', 'Active', 'Partially Paid'])
-    if (activeLoans?.length > 0) {
-      toast('Cannot delete borrower with active or pending loans', 'error')
+    // First delete ALL related records to avoid FK constraint errors
+    await supabase.from('loans').delete().eq('borrower_id', borrower.id)
+    await supabase.from('payment_proofs').delete().eq('borrower_id', borrower.id)
+    await supabase.from('penalty_charges').delete().eq('borrower_id', borrower.id)
+    await supabase.from('wallets').delete().eq('borrower_id', borrower.id)
+    await supabase.from('wallet_transactions').delete().eq('borrower_id', borrower.id)
+
+    // Now delete the borrower
+    const { error } = await supabase.from('borrowers').delete().eq('id', borrower.id)
+    if (error) {
+      console.error('Delete borrower error:', error)
+      toast('Failed to delete: ' + error.message, 'error')
       setDeleteTarget(null)
       return
     }
-    const { error } = await supabase.from('borrowers').delete().eq('id', borrower.id)
-    if (error) { toast('Failed to delete borrower', 'error'); return }
-    await logAudit({ action_type: 'BORROWER_DELETED', module: 'Borrower', description: `Borrower deleted: ${borrower.full_name}`, changed_by: user?.email })
+    await logAudit({ action_type: 'BORROWER_DELETED', module: 'Borrower', description: `Borrower and all related records deleted: ${borrower.full_name}`, changed_by: user?.email })
     toast(`${borrower.full_name} removed`, 'info')
     setDeleteTarget(null)
-    fetchData()
+    // Optimistic update — remove from local state immediately
+    setBorrowers(prev => prev.filter(b => b.id !== borrower.id))
   }
 
   const openAdd = () => { setEditingBorrower(null); setModalOpen(true) }

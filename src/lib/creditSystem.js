@@ -19,9 +19,9 @@ export const CREDIT_CONFIG = {
   LOAN_DEFAULT: -150,
 
   riskFromScore: (score) => {
-    if (score >= 835) return 'Low'
-    if (score >= 700) return 'Medium'
-    return 'High'
+    if (score >= 750) return 'Low'      // 750+ = Low (starting score and above)
+    if (score >= 600) return 'Medium'   // 600–749 = Medium (some late payments)
+    return 'High'                        // below 600 = High Risk
   },
 
   labelFromScore: (score) => {

@@ -475,25 +475,44 @@ export default function ApplicationsPage() {
   useEffect(() => { fetchData() }, [fetchData])
 
   const handleApprove = async (app) => {
-    // 1. Use existing access code from application, or generate one if missing
-    const accessCode = app.access_code || ('LM-' + Math.random().toString(36).substring(2, 6).toUpperCase())
+    // 1. Check if borrower already exists (re-approval guard)
+    const { data: existingBorrower } = await supabase.from('borrowers')
+      .select('*').eq('email', app.email).maybeSingle()
 
-    // 2. Create borrower with access code
-    const { data: borrower, error: bErr } = await supabase.from('borrowers').insert({
-      full_name: app.full_name, department: app.department,
-      tenure_years: app.tenure_years, phone: app.phone,
-      email: app.email, address: app.address,
-      trustee_name: app.trustee_name, trustee_phone: app.trustee_phone,
-      trustee_relationship: app.trustee_relationship,
-      credit_score: CREDIT_CONFIG.STARTING_SCORE, risk_score: CREDIT_CONFIG.riskFromScore(CREDIT_CONFIG.STARTING_SCORE),
-      loan_limit: 5000, loan_limit_level: 1,
-      loan_limit_override: false, clean_loans: 0,
-      loyalty_badge: 'New', at_risk: false,
-      access_code: accessCode,
-      admin_notes: `Applied via loan application form. Loan purpose: ${app.loan_purpose || 'Not specified'}`
-    }).select().single()
+    let borrower = existingBorrower
+    const accessCode = existingBorrower?.access_code || app.access_code || ('LM-' + Math.random().toString(36).substring(2, 6).toUpperCase())
 
-    if (bErr) { console.error('Borrower insert error:', bErr); toast('Failed to create borrower: ' + bErr.message, 'error'); return }
+    if (!existingBorrower) {
+      // 2. Create new borrower
+      const { data: newBorrower, error: bErr } = await supabase.from('borrowers').insert({
+        full_name: app.full_name, department: app.department,
+        tenure_years: app.tenure_years, phone: app.phone,
+        email: app.email, address: app.address,
+        trustee_name: app.trustee_name, trustee_phone: app.trustee_phone,
+        trustee_relationship: app.trustee_relationship,
+        credit_score: CREDIT_CONFIG.STARTING_SCORE, risk_score: 'Low',
+        loan_limit: 5000, loan_limit_level: 1,
+        loan_limit_override: false, clean_loans: 0,
+        loyalty_badge: 'New', at_risk: false,
+        access_code: accessCode,
+        admin_notes: `Applied via loan application form. Loan purpose: ${app.loan_purpose || 'Not specified'}`
+      }).select().single()
+
+      if (bErr) { console.error('Borrower insert error:', bErr); toast('Failed to create borrower: ' + bErr.message, 'error'); return }
+      borrower = newBorrower
+    } else {
+      // Borrower already exists — check if they already have an active/pending loan from this application
+      const { data: existingLoan } = await supabase.from('loans')
+        .select('id').eq('borrower_id', existingBorrower.id)
+        .in('status', ['Pending', 'Active']).maybeSingle()
+      if (existingLoan) {
+        // Loan already exists — just update application status and return
+        await supabase.from('applications').update({ status: 'Approved' }).eq('id', app.id)
+        toast('✅ Application marked approved — borrower and loan already exist', 'success')
+        setApplications(prev => prev.map(a => a.id === app.id ? { ...a, status: 'Approved' } : a))
+        return
+      }
+    }
 
     // 3. Calculate release date (next upcoming 5th or 20th)
     const today = new Date()
