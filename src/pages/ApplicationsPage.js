@@ -375,21 +375,21 @@ function WithdrawalPanel({ supabase, user, logAudit }) {
   useEffect(() => { fetchWithdrawals() }, [])
 
   const handleApprove = async (txn) => {
-    // Deduct from wallet
-    const { data: wallet } = await supabase.from('wallets').select('id, balance').eq('borrower_id', txn.borrower_id).single()
-    if (wallet) {
-      const newBalance = Math.max(0, wallet.balance - txn.amount)
-      await supabase.from('wallets').update({ balance: newBalance, updated_at: new Date().toISOString() }).eq('id', wallet.id)
+    // Deduct from Rebate Credits
+    const { data: creditsRecord } = await supabase.from('wallets').select('id, balance').eq('borrower_id', txn.borrower_id).single()
+    if (creditsRecord) {
+      const newBalance = Math.max(0, rebateCredits.balance - txn.amount)
+      await supabase.from('wallets').update({ balance: newBalance, updated_at: new Date().toISOString() }).eq('id', creditsRecord.id)
     }
     await supabase.from('wallet_transactions').update({ status: 'completed' }).eq('id', txn.id)
-    await logAudit({ action_type: 'WALLET_WITHDRAWAL_APPROVED', module: 'Applications', description: `Withdrawal of ₱${txn.amount} approved for ${txn.borrowers?.full_name}`, changed_by: user?.email })
+    await logAudit({ action_type: 'CREDITS_WITHDRAWAL_APPROVED', module: 'Applications', description: `Withdrawal of ₱${txn.amount} approved for ${txn.borrowers?.full_name}`, changed_by: user?.email })
     toast(`Withdrawal approved for ${txn.borrowers?.full_name}`, 'success')
     fetchWithdrawals()
   }
 
   const handleReject = async (txn) => {
     await supabase.from('wallet_transactions').update({ status: 'rejected' }).eq('id', txn.id)
-    await logAudit({ action_type: 'WALLET_WITHDRAWAL_REJECTED', module: 'Applications', description: `Withdrawal of ₱${txn.amount} rejected for ${txn.borrowers?.full_name}`, changed_by: user?.email })
+    await logAudit({ action_type: 'CREDITS_WITHDRAWAL_REJECTED', module: 'Applications', description: `Withdrawal of ₱${txn.amount} rejected for ${txn.borrowers?.full_name}`, changed_by: user?.email })
     toast(`Withdrawal rejected`, 'info')
     fetchWithdrawals()
   }
@@ -400,7 +400,7 @@ function WithdrawalPanel({ supabase, user, logAudit }) {
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <div style={{ width: 32, height: 32, borderRadius: 9, background: 'rgba(34,197,94,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16 }}>💸</div>
           <div>
-            <div style={{ fontFamily: 'Space Grotesk', fontWeight: 700, fontSize: 14, color: '#F0F4FF' }}>Wallet Withdrawals</div>
+            <div style={{ fontFamily: 'Space Grotesk', fontWeight: 700, fontSize: 14, color: '#F0F4FF' }}>Rebate Credits Withdrawals</div>
             <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>{withdrawals.length === 0 ? 'No pending requests' : withdrawals.length + ' pending approval'}</div>
           </div>
           {withdrawals.length > 0 && <span style={{ background: '#22C55E', color: '#000', fontSize: 11, fontWeight: 800, borderRadius: 20, padding: '2px 10px' }}>{withdrawals.length}</span>}
@@ -412,14 +412,14 @@ function WithdrawalPanel({ supabase, user, logAudit }) {
         <div style={{ marginTop: 16, display: 'flex', flexDirection: 'column', gap: 10 }}>
           {withdrawals.length === 0 && (
             <div style={{ textAlign: 'center', padding: '24px 20px', fontSize: 13, color: '#4B5580' }}>
-              💸 No pending withdrawal requests right now.
+              💸 No pending Rebate Credits withdrawal requests right now.
             </div>
           )}
           {withdrawals.map((txn, i) => (
             <div key={i} style={{ background: '#0B0F1A', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 12, padding: '14px 16px', display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap' }}>
               <div style={{ flex: 1, minWidth: 200 }}>
                 <div style={{ fontSize: 13, fontWeight: 700, color: '#F0F4FF' }}>{txn.borrowers?.full_name}</div>
-                <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 2 }}>Requesting full wallet balance</div>
+                <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 2 }}>Requesting full Rebate Credits balance</div>
                 <div style={{ fontSize: 11, color: '#4B5580', marginTop: 4 }}>{new Date(txn.created_at).toLocaleDateString('en-PH', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</div>
               </div>
               <div style={{ fontFamily: 'Space Grotesk', fontWeight: 800, fontSize: 20, color: '#22C55E' }}>₱{Number(txn.amount).toLocaleString('en-PH', { minimumFractionDigits: 2 })}</div>

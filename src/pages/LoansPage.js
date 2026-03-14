@@ -481,15 +481,15 @@ export default function LoansPage() {
             ? `Early payoff rebate (1.5% — \${daysEarly} days early)`
             : `Early payoff rebate (1% — \${daysEarly} days early)`
 
-          // Upsert wallet
-          const { data: existingWallet } = await supabase
+          // Upsert Rebate Credits
+          const { data: existingCredits } = await supabase
             .from('wallets').select('id, balance').eq('borrower_id', borrower.id).single()
 
-          if (existingWallet) {
+          if (existingCredits) {
             await supabase.from('wallets').update({
-              balance: parseFloat((existingWallet.balance + rebateAmount).toFixed(2)),
+              balance: parseFloat((existingCredits.balance + rebateAmount).toFixed(2)),
               updated_at: new Date().toISOString()
-            }).eq('id', existingWallet.id)
+            }).eq('id', existingCredits.id)
           } else {
             await supabase.from('wallets').insert({
               borrower_id: borrower.id,
@@ -508,13 +508,13 @@ export default function LoansPage() {
           })
 
           await logAudit({
-            action_type: 'WALLET_REBATE',
+            action_type: 'CREDITS_REBATE',
             module: 'Loan',
-            description: `Early payoff rebate of ₱\${rebateAmount} credited to \${borrower.full_name}'s wallet (\${rebateLabel})`,
+            description: `Early payoff rebate of ₱\${rebateAmount} credited to \${borrower.full_name}'s Rebate Credits (\${rebateLabel})`,
             changed_by: user?.email
           })
 
-          toast(`🎉 Loan fully paid by \${borrower?.full_name}! Early rebate of ₱\${rebateAmount} added to wallet!`, 'success')
+          toast(`🎉 Loan fully paid by \${borrower?.full_name}! Early rebate of ₱\${rebateAmount} added to Rebate Credits!`, 'success')
         } else {
           toast(`🎉 Loan fully paid by \${borrower?.full_name}!`, 'success')
         }

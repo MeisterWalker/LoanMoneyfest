@@ -208,8 +208,8 @@ export default function BorrowerPortalPage() {
   const [uploadModal, setUploadModal] = useState(null)
   const [uploadSuccess, setUploadSuccess] = useState(false)
   const [page, setPage] = useState('home') // 'home' | 'payment-methods' | 'profile' | 'payment-history' | 'wallet'
-  const [wallet, setWallet] = useState(null)
-  const [walletTxns, setWalletTxns] = useState([])
+  const [rebateCredits, setRebateCredits] = useState(null)
+  const [creditTxns, setCreditTxns] = useState([])
   const [withdrawing, setWithdrawing] = useState(false)
   const [pendingApp, setPendingApp] = useState(null)
   const [allLoans, setAllLoans] = useState([])
@@ -295,14 +295,14 @@ export default function BorrowerPortalPage() {
 
       setNotifications(notifs || [])
 
-      // Fetch wallet
-      const { data: walletData } = await supabase
+      // Fetch Rebate Credits balance
+      const { data: creditsData } = await supabase
         .from('wallets').select('*').eq('borrower_id', b.id).single()
       const { data: txnData } = await supabase
         .from('wallet_transactions').select('*').eq('borrower_id', b.id)
         .order('created_at', { ascending: false }).limit(20)
-      setWallet(walletData || null)
-      setWalletTxns(txnData || [])
+      setRebateCredits(creditsData || null)
+      setCreditTxns(txnData || [])
 
       setLoading(false)
       return
@@ -754,8 +754,8 @@ export default function BorrowerPortalPage() {
         <div style={{ maxWidth: 480, margin: '0 auto', display: 'flex', alignItems: 'center', gap: 12 }}>
           <button onClick={() => setPage('home')} style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 8, padding: '7px 14px', color: '#F0F4FF', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>← Back</button>
           <div>
-            <div style={{ fontFamily: 'Space Grotesk', fontWeight: 800, fontSize: 16, color: '#F0F4FF' }}>My Wallet</div>
-            <div style={{ fontSize: 11, color: '#4B5580' }}>Rebates & withdrawals</div>
+            <div style={{ fontFamily: 'Space Grotesk', fontWeight: 800, fontSize: 16, color: '#F0F4FF' }}>My Rebate Credits</div>
+            <div style={{ fontSize: 11, color: '#4B5580' }}>Early payoff rewards</div>
           </div>
         </div>
       </div>
@@ -764,19 +764,19 @@ export default function BorrowerPortalPage() {
 
         {/* Balance card */}
         <div style={{ background: 'linear-gradient(135deg,#1a1040,#0f1729)', border: '1px solid rgba(139,92,246,0.35)', borderRadius: 20, padding: '28px 24px', marginBottom: 20, textAlign: 'center', boxShadow: '0 8px 32px rgba(139,92,246,0.15)' }}>
-          <div style={{ fontSize: 12, color: '#7A8AAA', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 8 }}>💰 Wallet Balance</div>
+          <div style={{ fontSize: 12, color: '#7A8AAA', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 8 }}>🎁 Rebate Credits Balance</div>
           <div style={{ fontFamily: 'Space Grotesk', fontWeight: 900, fontSize: 44, color: '#F0F4FF', letterSpacing: -1, marginBottom: 6 }}>
-            ₱{(wallet?.balance || 0).toLocaleString('en-PH', { minimumFractionDigits: 2 })}
+            ₱{(rebateCredits?.balance || 0).toLocaleString('en-PH', { minimumFractionDigits: 2 })}
           </div>
           <div style={{ fontSize: 12, color: '#4B5580', marginBottom: 24 }}>
-            {(wallet?.balance || 0) >= 500
+            {(rebateCredits?.balance || 0) >= 500
               ? '✅ Eligible for withdrawal'
-              : `₱${(500 - (wallet?.balance || 0)).toLocaleString('en-PH', { minimumFractionDigits: 2 })} more needed to withdraw`}
+              : `₱${(500 - (rebateCredits?.balance || 0)).toLocaleString('en-PH', { minimumFractionDigits: 2 })} more needed to withdraw`}
           </div>
 
           {/* Withdraw button */}
           <button
-            disabled={!wallet || wallet.balance < 500 || withdrawing}
+            disabled={!rebateCredits || rebateCredits.balance < 500 || withdrawing}
             onClick={async () => {
               setWithdrawing(true)
               // Check for existing pending withdrawal
@@ -793,23 +793,23 @@ export default function BorrowerPortalPage() {
                 borrower_id: borrower.id,
                 loan_id: null,
                 type: 'withdrawal',
-                amount: wallet.balance,
-                description: `Withdrawal request of ₱${wallet.balance.toLocaleString('en-PH', { minimumFractionDigits: 2 })}`,
+                amount: rebateCredits.balance,
+                description: `Withdrawal request of ₱${rebateCredits.balance.toLocaleString('en-PH', { minimumFractionDigits: 2 })}`,
                 status: 'pending'
               })
-              setWalletTxns(prev => [{ type: 'withdrawal', amount: wallet.balance, description: `Withdrawal request of ₱${wallet.balance.toLocaleString('en-PH', { minimumFractionDigits: 2 })}`, status: 'pending', created_at: new Date().toISOString() }, ...prev])
+              setCreditTxns(prev => [{ type: 'withdrawal', amount: rebateCredits.balance, description: `Withdrawal request of ₱${rebateCredits.balance.toLocaleString('en-PH', { minimumFractionDigits: 2 })}`, status: 'pending', created_at: new Date().toISOString() }, ...prev])
               setWithdrawing(false)
               alert('✅ Withdrawal request submitted! Admin will process it shortly.')
             }}
             style={{
               width: '100%', padding: '14px', borderRadius: 12, border: 'none', fontSize: 14, fontWeight: 700,
-              fontFamily: 'Space Grotesk', cursor: !wallet || wallet.balance < 500 ? 'not-allowed' : 'pointer',
-              background: !wallet || wallet.balance < 500 ? 'rgba(255,255,255,0.05)' : 'linear-gradient(135deg,#8B5CF6,#3B82F6)',
-              color: !wallet || wallet.balance < 500 ? '#4B5580' : '#fff',
+              fontFamily: 'Space Grotesk', cursor: !rebateCredits || rebateCredits.balance < 500 ? 'not-allowed' : 'pointer',
+              background: !rebateCredits || rebateCredits.balance < 500 ? 'rgba(255,255,255,0.05)' : 'linear-gradient(135deg,#8B5CF6,#3B82F6)',
+              color: !rebateCredits || rebateCredits.balance < 500 ? '#4B5580' : '#fff',
               transition: 'all 0.2s'
             }}
           >
-            {withdrawing ? 'Submitting...' : wallet && wallet.balance >= 500 ? `💸 Withdraw ₱${wallet.balance.toLocaleString('en-PH', { minimumFractionDigits: 2 })}` : `🔒 Min. ₱500 required`}
+            {withdrawing ? 'Submitting...' : rebateCredits && rebateCredits.balance >= 500 ? `💸 Withdraw ₱${rebateCredits.balance.toLocaleString('en-PH', { minimumFractionDigits: 2 })}` : `🔒 Min. ₱500 required`}
           </button>
         </div>
 
@@ -838,14 +838,14 @@ export default function BorrowerPortalPage() {
           <div style={{ padding: '14px 18px', borderBottom: '1px solid rgba(255,255,255,0.06)', fontFamily: 'Space Grotesk', fontWeight: 700, fontSize: 14, color: '#F0F4FF' }}>
             Transaction History
           </div>
-          {walletTxns.length === 0 ? (
+          {creditTxns.length === 0 ? (
             <div style={{ padding: '40px 20px', textAlign: 'center', fontSize: 13, color: '#4B5580' }}>
               No transactions yet. Pay off a loan early to earn rebates!
             </div>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column' }}>
-              {walletTxns.map((txn, i) => (
-                <div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 18px', borderBottom: i < walletTxns.length - 1 ? '1px solid rgba(255,255,255,0.04)' : 'none' }}>
+              {creditTxns.map((txn, i) => (
+                <div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 18px', borderBottom: i < creditTxns.length - 1 ? '1px solid rgba(255,255,255,0.04)' : 'none' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                     <div style={{ width: 36, height: 36, borderRadius: '50%', background: txn.type === 'rebate' ? 'rgba(34,197,94,0.15)' : txn.status === 'pending' ? 'rgba(245,158,11,0.15)' : txn.status === 'rejected' ? 'rgba(239,68,68,0.15)' : 'rgba(59,130,246,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16 }}>
                       {txn.type === 'rebate' ? <img src='/giftbox.png' alt='rebate' style={{ width: 18, height: 18, objectFit: 'contain' }} /> : txn.status === 'pending' ? '⏳' : txn.status === 'rejected' ? '❌' : '💸'}
@@ -1029,7 +1029,7 @@ export default function BorrowerPortalPage() {
                 </button>
                 <button onClick={() => setPage('wallet')} style={{ display: 'flex', alignItems: 'center', gap: 5, background: 'linear-gradient(135deg,#0f2a1a,#141B2D)', border: '1px solid rgba(34,197,94,0.35)', borderRadius: 20, padding: '5px 12px', cursor: 'pointer', boxShadow: '0 2px 8px rgba(0,0,0,0.3)', position: 'relative' }}>
                   <img src='/wallet.png' alt='wallet' style={{ width: 16, height: 16, objectFit: 'contain' }} />
-                  <span style={{ fontSize: 11, fontWeight: 700, color: '#22C55E' }}>Wallet {wallet && wallet.balance > 0 ? `₱${wallet.balance.toLocaleString('en-PH', { minimumFractionDigits: 2 })}` : ''}</span>
+                  <span style={{ fontSize: 11, fontWeight: 700, color: '#22C55E' }}>Rebate Credits {rebateCredits && rebateCredits.balance > 0 ? `₱${rebateCredits.balance.toLocaleString('en-PH', { minimumFractionDigits: 2 })}` : ''}</span>
                 </button>
               </div>
             <div style={{ background: 'linear-gradient(135deg,#141B2D,#1a1040)', border: '1px solid rgba(139,92,246,0.2)', borderRadius: 16, padding: 24 }}>
