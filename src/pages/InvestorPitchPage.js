@@ -230,6 +230,126 @@ export default function InvestorPitchPage() {
         </div>
       </section>
 
+
+      {/* ── HOW THE SPREAD WORKS ─────────────────────────────── */}
+      <section style={{ padding: '80px 32px', borderTop: '1px solid rgba(255,255,255,0.04)', background: 'rgba(255,255,255,0.01)' }}>
+        <div style={{ maxWidth: 900, margin: '0 auto' }}>
+
+          <div ref={ref('spread-h')} className={`reveal ${visible['spread-h'] ? 'on' : ''}`} style={{ textAlign: 'center', marginBottom: 48 }}>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 14px', borderRadius: 20, background: 'rgba(99,102,241,0.08)', border: '1px solid rgba(99,102,241,0.2)', marginBottom: 16 }}>
+              <span style={{ fontSize: 11, fontWeight: 700, color: '#818CF8', letterSpacing: '0.08em', textTransform: 'uppercase' }}>Full Transparency</span>
+            </div>
+            <h2 style={{ fontFamily: 'Cormorant Garamond, serif', fontWeight: 700, fontSize: 'clamp(32px,4vw,48px)', color: '#F0F4FF', letterSpacing: -1, margin: '0 0 14px' }}>
+              Where does the <span className="gold-text">money flow?</span>
+            </h2>
+            <p style={{ fontSize: 15, color: '#7A8AAA', maxWidth: 520, margin: '0 auto', lineHeight: 1.7 }}>
+              Borrowers pay 7% flat interest. Here is exactly where every peso goes — no hidden fees, no surprises.
+            </p>
+          </div>
+
+          {/* Flow diagram */}
+          <div ref={ref('spread-cards')} className={`reveal ${visible['spread-cards'] ? 'on' : ''}`}>
+
+            {/* Top — Borrower pays */}
+            <div style={{ textAlign: 'center', marginBottom: 0 }}>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, padding: '10px 24px', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 20, marginBottom: 0 }}>
+                <img src="/list.png" alt="" style={{ width: 16, height: 16, objectFit: 'contain' }} />
+                <span style={{ fontSize: 13, color: '#7A8AAA' }}>Borrower takes a <strong style={{ color: '#F0F4FF' }}>₱10,000 loan</strong></span>
+              </div>
+            </div>
+
+            {/* Arrow down */}
+            <div style={{ textAlign: 'center', fontSize: 24, color: '#4B5580', margin: '8px 0' }}>↓</div>
+
+            {/* Main spread card */}
+            <div style={{ background: 'linear-gradient(135deg, rgba(10,12,20,0.9), rgba(20,15,40,0.9))', border: '1px solid rgba(245,158,11,0.25)', borderRadius: 24, padding: '36px 40px', position: 'relative', overflow: 'hidden', marginBottom: 20 }}>
+
+              {/* Background glow */}
+              <div style={{ position: 'absolute', top: -40, right: -40, width: 200, height: 200, borderRadius: '50%', background: 'radial-gradient(circle, rgba(245,158,11,0.06) 0%, transparent 70%)', pointerEvents: 'none' }} />
+
+              <div style={{ fontSize: 12, fontWeight: 700, color: '#4B5580', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 24, textAlign: 'center' }}>
+                7% interest split
+              </div>
+
+              {/* Three rows */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
+
+                {/* Row 1 — Total */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 20, padding: '18px 24px', background: 'rgba(255,255,255,0.03)', borderRadius: '14px 14px 0 0', border: '1px solid rgba(255,255,255,0.07)', borderBottom: 'none' }}>
+                  <div style={{ width: 42, height: 42, borderRadius: 12, background: 'rgba(255,255,255,0.06)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <img src="/philippine-peso.png" alt="" style={{ width: 24, height: 24, objectFit: 'contain' }} />
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontFamily: 'Cormorant Garamond, serif', fontWeight: 700, fontSize: 18, color: '#F0F4FF' }}>Borrower pays</div>
+                    <div style={{ fontSize: 12, color: '#4B5580', marginTop: 2 }}>Total interest on ₱10,000 loan</div>
+                  </div>
+                  <div style={{ textAlign: 'right' }}>
+                    <div style={{ fontFamily: 'Cormorant Garamond, serif', fontWeight: 700, fontSize: 32, color: '#F0F4FF' }}>7%</div>
+                    <div style={{ fontSize: 12, color: '#4B5580' }}>= ₱700 total</div>
+                  </div>
+                </div>
+
+                {/* Divider with arrow */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 0, position: 'relative' }}>
+                  <div style={{ flex: 1, height: 1, background: 'linear-gradient(90deg, transparent, rgba(245,158,11,0.3), rgba(34,197,94,0.3), transparent)' }} />
+                  <div style={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)', background: '#080A0F', padding: '0 12px', fontSize: 12, color: '#4B5580' }}>split into</div>
+                </div>
+
+                {/* Row 2 — Investor */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 20, padding: '18px 24px', background: 'rgba(245,158,11,0.06)', border: '1px solid rgba(245,158,11,0.2)', borderBottom: 'none', position: 'relative', overflow: 'hidden' }}>
+                  <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: 3, background: '#F59E0B', borderRadius: '0 2px 2px 0' }} />
+                  <div style={{ width: 42, height: 42, borderRadius: 12, background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <img src="/giftbox.png" alt="" style={{ width: 24, height: 24, objectFit: 'contain' }} />
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontFamily: 'Cormorant Garamond, serif', fontWeight: 700, fontSize: 18, color: '#F59E0B' }}>You earn ← </div>
+                    <div style={{ fontSize: 12, color: '#7A8AAA', marginTop: 2 }}>Your return for providing the capital</div>
+                  </div>
+                  <div style={{ textAlign: 'right' }}>
+                    <div style={{ fontFamily: 'Cormorant Garamond, serif', fontWeight: 700, fontSize: 32, color: '#F59E0B' }}>5%</div>
+                    <div style={{ fontSize: 12, color: '#7A8AAA' }}>= ₱500 per cycle</div>
+                  </div>
+                </div>
+
+                {/* Row 3 — Platform */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 20, padding: '18px 24px', background: 'rgba(99,102,241,0.05)', border: '1px solid rgba(99,102,241,0.15)', borderRadius: '0 0 14px 14px', position: 'relative', overflow: 'hidden' }}>
+                  <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: 3, background: '#6366F1', borderRadius: '0 2px 2px 0' }} />
+                  <div style={{ width: 42, height: 42, borderRadius: 12, background: 'rgba(99,102,241,0.1)', border: '1px solid rgba(99,102,241,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <img src="/verified.png" alt="" style={{ width: 24, height: 24, objectFit: 'contain' }} />
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontFamily: 'Cormorant Garamond, serif', fontWeight: 700, fontSize: 18, color: '#818CF8' }}>Platform keeps ←</div>
+                    <div style={{ fontSize: 12, color: '#7A8AAA', marginTop: 2 }}>Covers operations, risk management & technology</div>
+                  </div>
+                  <div style={{ textAlign: 'right' }}>
+                    <div style={{ fontFamily: 'Cormorant Garamond, serif', fontWeight: 700, fontSize: 32, color: '#818CF8' }}>2%</div>
+                    <div style={{ fontSize: 12, color: '#4B5580' }}>= ₱200 per cycle</div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            {/* What the 2% covers */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 10 }}>
+              {[
+                { icon: '/list.png',            label: 'Platform & Tech',     desc: 'The system you are using right now' },
+                { icon: '/warning.png',         label: 'Default Risk',        desc: 'We absorb losses if a borrower defaults' },
+                { icon: '/summary-check.png',   label: 'Collections',         desc: 'Admin time managing repayments' },
+                { icon: '/padlock.png',         label: 'Operations',          desc: 'ID verification, approvals, payouts' },
+              ].map((item, i) => (
+                <div key={i} style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 12, padding: '14px 16px', textAlign: 'center' }}>
+                  <img src={item.icon} alt="" style={{ width: 22, height: 22, objectFit: 'contain', marginBottom: 8, filter: 'brightness(0.7)' }} />
+                  <div style={{ fontSize: 12, fontWeight: 700, color: '#7A8AAA', marginBottom: 4 }}>{item.label}</div>
+                  <div style={{ fontSize: 11, color: '#4B5580', lineHeight: 1.5 }}>{item.desc}</div>
+                </div>
+              ))}
+            </div>
+
+          </div>
+        </div>
+      </section>
+
       {/* ── TIERS ────────────────────────────────────────────── */}
       <section style={{ padding: '80px 32px', borderTop: '1px solid rgba(255,255,255,0.04)' }}>
         <div style={{ maxWidth: 900, margin: '0 auto' }}>
