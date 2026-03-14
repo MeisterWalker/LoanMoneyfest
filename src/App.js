@@ -26,6 +26,7 @@ import { useAutoLogout } from './hooks/useAutoLogout'
 import { useEffect, useState } from 'react'
 import { supabase } from './lib/supabase'
 import './index.css'
+import './mobile.css'
 
 function ProtectedRoute({ children }) {
   const { user, loading } = useAuth()

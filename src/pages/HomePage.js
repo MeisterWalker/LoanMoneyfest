@@ -47,6 +47,21 @@ export default function HomePage() {
     <div style={{ minHeight: '100vh', background: '#07090F', fontFamily: 'DM Sans, sans-serif', overflowX: 'hidden' }}>
 
       <style>{`
+        @media (max-width: 768px) {
+          .hero-stats { grid-template-columns: repeat(2,1fr) !important; }
+          .hero-ctas { flex-direction: column !important; align-items: stretch !important; }
+          .hero-ctas a { justify-content: center !important; }
+          .rewards-tier-grid { grid-template-columns: repeat(2,1fr) !important; }
+          .rewards-bottom-grid { grid-template-columns: 1fr !important; }
+          .how-steps-grid { grid-template-columns: repeat(2,1fr) !important; }
+          .features-grid { grid-template-columns: repeat(2,1fr) !important; }
+        }
+        @media (max-width: 480px) {
+          .hero-stats { grid-template-columns: repeat(2,1fr) !important; }
+          .rewards-tier-grid { grid-template-columns: 1fr !important; }
+          .how-steps-grid { grid-template-columns: 1fr !important; }
+          .features-grid { grid-template-columns: 1fr !important; }
+        }
         @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Syne:wght@700;800;900&display=swap');
 
         @keyframes heroFade { from { opacity: 0; transform: translateY(32px); } to { opacity: 1; transform: translateY(0); } }
@@ -204,7 +219,7 @@ export default function HomePage() {
             </p>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
+          <div className="features-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
             {features.map((f, i) => (
               <div
                 key={i}
@@ -251,7 +266,7 @@ export default function HomePage() {
               <div key={i} style={{ position: 'absolute', top: 44, left: pos + '%', zIndex: 1, fontSize: 16, color: '#4B5580', pointerEvents: 'none' }}>›</div>
             ))}
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 16, position: 'relative', zIndex: 1 }}>
+            <div className="rewards-tier-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 16, position: 'relative', zIndex: 1 }}>
               {[
                 { badge: '🌱', tier: 'New',      hold: '10%', limit: '₱5,000', loans: 'Starting',     color: '#7A8AAA', bg: 'rgba(122,138,170,0.08)',  border: 'rgba(122,138,170,0.2)',  score: '750',   perks: ['Standard access', 'Apply immediately', '10% Security Hold'] },
                 { badge: '⭐', tier: 'Trusted',   hold: '8%',  limit: '₱7,000', loans: '1 clean loan', color: '#F59E0B', bg: 'rgba(245,158,11,0.08)',  border: 'rgba(245,158,11,0.3)',   score: '835+',  perks: ['Hold reduced to 8%', 'Limit raised to ₱7K', '1 clean loan needed'] },
@@ -298,7 +313,7 @@ export default function HomePage() {
           </div>
 
           {/* Bottom callouts */}
-          <div ref={ref('rewards-bottom')} className={`reveal ${visible['rewards-bottom'] ? 'visible' : ''}`} style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 14, marginBottom: 28 }}>
+          <div ref={ref('rewards-bottom')} className={`reveal ${visible['rewards-bottom'] ? 'visible' : ''}`} className="rewards-bottom-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 14, marginBottom: 28 }}>
             {[
               { icon: '/giftbox.png',         text: 'Security Hold drops from 10% down to just 5% as you level up',    color: '#F59E0B' },
               { icon: '/philippine-peso.png', text: 'Loan limit grows from ₱5,000 all the way up to ₱10,000',          color: '#22C55E' },
@@ -334,7 +349,7 @@ export default function HomePage() {
             </h2>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, position: 'relative' }}>
+          <div className="how-steps-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, position: 'relative' }}>
             {/* Connector line */}
             <div style={{ position: 'absolute', top: 36, left: '12.5%', right: '12.5%', height: 1, background: 'linear-gradient(90deg,transparent,rgba(99,102,241,0.3),rgba(139,92,246,0.3),transparent)', pointerEvents: 'none' }} />
             {[

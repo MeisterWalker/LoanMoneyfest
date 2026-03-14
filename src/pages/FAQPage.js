@@ -166,7 +166,7 @@ export default function FAQPage() {
         </div>
 
         {/* Two-column layout: Category tabs left, FAQs right */}
-        <div style={{ display: 'grid', gridTemplateColumns: '200px 1fr', gap: 24, alignItems: 'start' }}>
+        <div className="faq-layout" style={{ display: 'grid', gridTemplateColumns: '200px 1fr', gap: 24, alignItems: 'start' }}>
 
           {/* Category sidebar */}
           <div style={{ background: '#141B2D', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 16, padding: 12, position: 'sticky', top: 24 }}>

@@ -1097,7 +1097,7 @@ export default function BorrowerPortalPage() {
         {/* Loan Limit Level */}
         <div style={{ background: '#141B2D', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 16, padding: 24, marginBottom: 16 }}>
           <div style={{ fontFamily: 'Space Grotesk', fontWeight: 700, fontSize: 14, color: '#F0F4FF', marginBottom: 16 }}>Loan Limit Level</div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 8, marginBottom: 16 }}>
+          <div className="portal-loan-level-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 8, marginBottom: 16 }}>
             {[
               { level: 1, amount: 'P5,000', loans: 0 },
               { level: 2, amount: 'P7,000', loans: 1 },
@@ -1504,6 +1504,14 @@ export default function BorrowerPortalPage() {
 
       <style>{`
         @keyframes portalFadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @media (max-width: 900px) {
+          .portal-two-col { grid-template-columns: 1fr !important; }
+          .portal-sidebar { display: none !important; }
+        }
+        @media (max-width: 600px) {
+          .portal-loan-level-grid { grid-template-columns: repeat(2,1fr) !important; }
+          .portal-tabs { flex-wrap: wrap !important; gap: 6px !important; }
+        }
         .portal-card { animation: portalFadeUp 0.5s ease forwards; opacity: 0; }
         .portal-card:nth-child(1) { animation-delay: 0.05s; }
         .portal-card:nth-child(2) { animation-delay: 0.12s; }
@@ -1534,7 +1542,7 @@ export default function BorrowerPortalPage() {
         ) : (
           <>
             {/* Desktop two-column layout */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 380px', gap: 24, alignItems: 'start' }}>
+            <div className="portal-two-col" style={{ display: 'grid', gridTemplateColumns: '1fr 380px', gap: 24, alignItems: 'start' }}>
             <div>
             {/* Loan summary card with outside quick-access buttons */}
             <div className="portal-card" style={{ position: 'relative', marginBottom: 20 }}>
@@ -1779,7 +1787,7 @@ export default function BorrowerPortalPage() {
             </div>{/* end left column */}
 
             {/* ── Right sidebar ── */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 16, position: 'sticky', top: 24 }}>
+            <div className="portal-sidebar" style={{ display: 'flex', flexDirection: 'column', gap: 16, position: 'sticky', top: 24 }}>
 
               {/* Borrower badge card */}
               <div className="portal-card" style={{ background: 'linear-gradient(135deg,#1a1040,#141B2D)', border: '1px solid rgba(139,92,246,0.25)', borderRadius: 16, padding: 20 }}>

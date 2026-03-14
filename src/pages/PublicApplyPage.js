@@ -451,7 +451,7 @@ export default function PublicApplyPage() {
 
         {/* ── STEP 1: Two-column layout ── */}
         {step === 1 && (
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, alignItems: 'start' }}>
+          <div className="apply-two-col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, alignItems: 'start' }}>
 
             {/* Left: Personal Info */}
             <div style={{ background: 'linear-gradient(145deg,#1c2d4a,#1a2640)', border: '1px solid rgba(59,130,246,0.4)', borderRadius: 18, padding: 32, boxShadow: '0 0 0 1px rgba(59,130,246,0.1), 0 8px 32px rgba(59,130,246,0.15)' }}>
@@ -464,7 +464,7 @@ export default function PublicApplyPage() {
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
                 <div><label style={lbl}>Full Name *</label><input value={form.full_name} onChange={e => set('full_name', e.target.value)} placeholder="Enter your full name" style={inp} /></div>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                <div className="apply-name-row" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
                   <div>
                     <label style={lbl}>Department *</label>
                     <select value={form.department} onChange={e => set('department', e.target.value)} style={{ ...inp, cursor: 'pointer' }}>
@@ -725,7 +725,7 @@ export default function PublicApplyPage() {
                         <div style={{ fontSize: 11, color: '#4B5580' }}>Based on your selections</div>
                       </div>
                     </div>
-                    <div style={{ padding: '18px 22px', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10 }}>
+                    <div className="apply-calc-grid" style={{ padding: '18px 22px', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10 }}>
                       {[
                         { label: 'Approved Amount', value: '₱' + principal.toLocaleString('en-PH', { minimumFractionDigits: 2 }), color: '#F0F4FF', sub: 'Principal' },
                         { label: 'You Will Receive', value: '₱' + fundsReleased.toLocaleString('en-PH', { minimumFractionDigits: 2 }), color: '#22C55E', sub: 'Released to you' },
