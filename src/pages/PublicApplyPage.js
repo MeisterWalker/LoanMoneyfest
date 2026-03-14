@@ -251,7 +251,7 @@ export default function PublicApplyPage() {
           </div>
         </div>
         <div style={{ background: 'rgba(59,130,246,0.06)', border: '1px solid rgba(59,130,246,0.15)', borderRadius: 12, padding: '16px 20px', textAlign: 'left' }}>
-          <div style={{ fontSize: 13, color: '#60A5FA', fontWeight: 700, marginBottom: 10 }}>💬 Need to follow up?</div>
+          <div style={{ fontSize: 13, color: '#60A5FA', fontWeight: 700, marginBottom: 10, display: 'flex', alignItems: 'center', gap: 7 }}><img src='/mail.png' alt='mail' style={{ width: 18, height: 18, objectFit: 'contain' }} />Need to follow up?</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             {[{ i: 'JP', n: 'John Paul Lacaron', g: 'linear-gradient(135deg,#3B82F6,#8B5CF6)' }, { i: 'CJ', n: 'Charlou John Ramil', g: 'linear-gradient(135deg,#14B8A6,#3B82F6)' }].map(a => (
               <div key={a.n} style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'rgba(255,255,255,0.03)', borderRadius: 8, padding: '10px 12px' }}>
