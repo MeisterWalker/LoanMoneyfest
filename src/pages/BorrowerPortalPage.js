@@ -606,9 +606,9 @@ export default function BorrowerPortalPage() {
           <span style={{ fontFamily: 'DM Sans', fontWeight: 400, fontSize: 13, color: '#4B5580', marginLeft: 8 }}>· My Profile</span>
         </div>
       </div>
-      <div style={{ maxWidth: 480, margin: '0 auto', padding: '36px 20px 24px' }}>
+      <div style={{ maxWidth: 860, margin: '0 auto', padding: '36px 28px 24px' }}>
               {/* Floating back button */}
-      <div style={{ position: 'relative', maxWidth: 480, margin: '0 auto', padding: '0 20px' }}>
+      <div style={{ position: 'relative', maxWidth: 860, margin: '0 auto', padding: '0 28px' }}>
         <div style={{ position: 'absolute', top: -16, left: 20, zIndex: 10 }}>
           <button onClick={() => setPage('home')} style={{ display: 'flex', alignItems: 'center', gap: 5, background: 'linear-gradient(135deg,#141B2D,#1a1040)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 20, padding: '5px 14px', cursor: 'pointer', boxShadow: '0 2px 8px rgba(0,0,0,0.3)' }}>
             <span style={{ fontSize: 13, color: '#a78bfa' }}>←</span>
@@ -760,9 +760,9 @@ export default function BorrowerPortalPage() {
           <span style={{ fontFamily: 'DM Sans', fontWeight: 400, fontSize: 13, color: '#4B5580', marginLeft: 8 }}>· Payment History</span>
         </div>
       </div>
-      <div style={{ maxWidth: 480, margin: '0 auto', padding: '36px 20px 24px' }}>
+      <div style={{ maxWidth: 860, margin: '0 auto', padding: '36px 28px 24px' }}>
               {/* Floating back button */}
-      <div style={{ position: 'relative', maxWidth: 480, margin: '0 auto', padding: '0 20px' }}>
+      <div style={{ position: 'relative', maxWidth: 860, margin: '0 auto', padding: '0 28px' }}>
         <div style={{ position: 'absolute', top: -16, left: 20, zIndex: 10 }}>
           <button onClick={() => setPage('home')} style={{ display: 'flex', alignItems: 'center', gap: 5, background: 'linear-gradient(135deg,#141B2D,#1a1040)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 20, padding: '5px 14px', cursor: 'pointer', boxShadow: '0 2px 8px rgba(0,0,0,0.3)' }}>
             <span style={{ fontSize: 13, color: '#a78bfa' }}>←</span>
@@ -853,7 +853,7 @@ export default function BorrowerPortalPage() {
   if (borrower && page === 'wallet') return (
     <div style={{ minHeight: '100vh', background: '#0B0F1A', fontFamily: 'DM Sans, sans-serif' }}>
       <div style={{ background: 'linear-gradient(135deg,#0d1226,#141B2D)', borderBottom: '1px solid rgba(139,92,246,0.2)', padding: '16px 24px' }}>
-        <div style={{ maxWidth: 480, margin: '0 auto', display: 'flex', alignItems: 'center', gap: 12 }}>
+        <div style={{ maxWidth: 860, margin: '0 auto', display: 'flex', alignItems: 'center', gap: 12 }}>
           <button onClick={() => setPage('home')} style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 8, padding: '7px 14px', color: '#F0F4FF', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>← Back</button>
           <div>
             <div style={{ fontFamily: 'Space Grotesk', fontWeight: 800, fontSize: 16, color: '#F0F4FF' }}>My Rebate Credits</div>
@@ -862,7 +862,7 @@ export default function BorrowerPortalPage() {
         </div>
       </div>
 
-      <div style={{ maxWidth: 480, margin: '0 auto', padding: '28px 20px' }}>
+      <div style={{ maxWidth: 860, margin: '0 auto', padding: '28px 28px' }}>
 
         {/* Balance card */}
         <div style={{ background: 'linear-gradient(135deg,#1a1040,#0f1729)', border: '1px solid rgba(139,92,246,0.35)', borderRadius: 20, padding: '28px 24px', marginBottom: 20, textAlign: 'center', boxShadow: '0 8px 32px rgba(139,92,246,0.15)' }}>
@@ -1037,13 +1037,15 @@ export default function BorrowerPortalPage() {
       <div style={{ background: 'linear-gradient(135deg,#0d1226,#141B2D)', borderBottom: '1px solid rgba(139,92,246,0.2)', padding: '16px 24px' }}>
         <div style={{ maxWidth: 640, margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <img src="/favicon-96x96.png" alt="LoanMoneyfest" style={{ width: 36, height: 36, objectFit: 'contain' }} />
-            <div>
-              <div style={{ fontFamily: 'Space Grotesk', fontWeight: 800, fontSize: 16, color: '#F0F4FF' }}>
-                Loan<span style={{ background: 'linear-gradient(90deg,#60a5fa,#a78bfa)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Moneyfest</span>
+<a href="/" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
+              <img src="/favicon-96x96.png" alt="LoanMoneyfest" style={{ width: 36, height: 36, objectFit: 'contain' }} />
+              <div>
+                <div style={{ fontFamily: 'Space Grotesk', fontWeight: 800, fontSize: 16, color: '#F0F4FF' }}>
+                  Loan<span style={{ background: 'linear-gradient(90deg,#60a5fa,#a78bfa)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Moneyfest</span>
+                </div>
+                <div style={{ fontSize: 11, color: '#4B5580' }}>Borrower Portal</div>
               </div>
-              <div style={{ fontSize: 11, color: '#4B5580' }}>Borrower Portal</div>
-            </div>
+            </a>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <div style={{ textAlign: 'right' }}>
@@ -1101,7 +1103,21 @@ export default function BorrowerPortalPage() {
         </div>
       </div>
 
-      <div style={{ maxWidth: 640, margin: '0 auto', padding: '24px 20px' }}>
+      <style>{`
+        @keyframes portalFadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .portal-card { animation: portalFadeUp 0.5s ease forwards; opacity: 0; }
+        .portal-card:nth-child(1) { animation-delay: 0.05s; }
+        .portal-card:nth-child(2) { animation-delay: 0.12s; }
+        .portal-card:nth-child(3) { animation-delay: 0.19s; }
+        .portal-card:nth-child(4) { animation-delay: 0.26s; }
+        .portal-card:nth-child(5) { animation-delay: 0.33s; }
+        .portal-card:nth-child(6) { animation-delay: 0.40s; }
+        .portal-card-hover { transition: transform 0.2s ease, box-shadow 0.2s ease; }
+        .portal-card-hover:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.3); }
+        .nav-btn { transition: all 0.15s ease; }
+        .nav-btn:hover { filter: brightness(1.2); transform: translateY(-1px); }
+      `}</style>
+      <div style={{ maxWidth: 1100, margin: '0 auto', padding: '28px 32px' }}>
 
         {uploadSuccess && (
           <div style={{ background: 'rgba(34,197,94,0.1)', border: '1px solid rgba(34,197,94,0.3)', borderRadius: 12, padding: '14px 18px', marginBottom: 20, display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -1118,22 +1134,12 @@ export default function BorrowerPortalPage() {
           </div>
         ) : (
           <>
+            {/* Desktop two-column layout */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 380px', gap: 24, alignItems: 'start' }}>
+            <div>
             {/* Loan summary card with outside quick-access buttons */}
-            <div style={{ position: 'relative', marginBottom: 20 }}>
-              <div style={{ position: 'absolute', top: -12, right: 12, display: 'flex', gap: 6, zIndex: 10 }}>
-                <button onClick={() => setPage('payment-history')} style={{ display: 'flex', alignItems: 'center', gap: 5, background: 'linear-gradient(135deg,#0f2a1a,#141B2D)', border: '1px solid rgba(34,197,94,0.35)', borderRadius: 20, padding: '5px 12px', cursor: 'pointer', boxShadow: '0 2px 8px rgba(0,0,0,0.3)' }}>
-                  <img src='/history.png' alt='history' style={{ width: 16, height: 16, objectFit: 'contain' }} />
-                  <span style={{ fontSize: 11, fontWeight: 700, color: '#22C55E' }}>History</span>
-                </button>
-                <button onClick={() => setPage('profile')} style={{ display: 'flex', alignItems: 'center', gap: 5, background: 'linear-gradient(135deg,#160f2a,#141B2D)', border: '1px solid rgba(139,92,246,0.35)', borderRadius: 20, padding: '5px 12px', cursor: 'pointer', boxShadow: '0 2px 8px rgba(0,0,0,0.3)' }}>
-                  <img src='/user.png' alt='profile' style={{ width: 16, height: 16, objectFit: 'contain' }} />
-                  <span style={{ fontSize: 11, fontWeight: 700, color: '#8B5CF6' }}>Profile</span>
-                </button>
-                <button onClick={() => setPage('wallet')} style={{ display: 'flex', alignItems: 'center', gap: 5, background: 'linear-gradient(135deg,#0f2a1a,#141B2D)', border: '1px solid rgba(34,197,94,0.35)', borderRadius: 20, padding: '5px 12px', cursor: 'pointer', boxShadow: '0 2px 8px rgba(0,0,0,0.3)', position: 'relative' }}>
-                  <img src='/wallet.png' alt='wallet' style={{ width: 16, height: 16, objectFit: 'contain' }} />
-                  <span style={{ fontSize: 11, fontWeight: 700, color: '#22C55E' }}>Rebate Credits {rebateCredits && rebateCredits.balance > 0 ? `₱${rebateCredits.balance.toLocaleString('en-PH', { minimumFractionDigits: 2 })}` : ''}</span>
-                </button>
-              </div>
+            <div className="portal-card" style={{ position: 'relative', marginBottom: 20 }}>
+
             <div style={{ background: 'linear-gradient(135deg,#141B2D,#1a1040)', border: '1px solid rgba(139,92,246,0.2)', borderRadius: 16, padding: 24 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20, flexWrap: 'wrap', gap: 10 }}>
                 <div>
@@ -1349,39 +1355,89 @@ export default function BorrowerPortalPage() {
             })()}
 
             <PenaltySection loanId={loan.id} supabase={supabase} />
+            </div>{/* end left column */}
 
-            <div onClick={() => setPage('payment-methods')} style={{ background: '#141B2D', border: '1px solid rgba(139,92,246,0.2)', borderRadius: 16, padding: '16px 20px', marginBottom: 16, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', transition: 'border-color 0.2s' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-                <div style={{ width: 44, height: 44, borderRadius: 12, background: 'rgba(245,158,11,0.08)', border: '1px solid rgba(245,158,11,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 6 }}><img src="/payment-method.png" alt="payment" style={{ width: 30, height: 30, objectFit: 'contain' }} /></div>
-                <div>
-                  <div style={{ fontFamily: 'Space Grotesk', fontWeight: 700, fontSize: 14, color: '#F0F4FF' }}>Accepted Payment Methods</div>
-                  <div style={{ fontSize: 12, color: '#4B5580', marginTop: 2 }}>Cash, GCash, RCBC, Bank Transfer</div>
+            {/* ── Right sidebar ── */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16, position: 'sticky', top: 24 }}>
+
+              {/* Borrower badge card */}
+              <div className="portal-card" style={{ background: 'linear-gradient(135deg,#1a1040,#141B2D)', border: '1px solid rgba(139,92,246,0.25)', borderRadius: 16, padding: 20 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 14 }}>
+                  <div style={{ width: 44, height: 44, borderRadius: '50%', background: 'linear-gradient(135deg,#3B82F6,#8B5CF6)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16, fontWeight: 800, color: '#fff', flexShrink: 0 }}>
+                    {borrower.full_name?.charAt(0).toUpperCase()}
+                  </div>
+                  <div>
+                    <div style={{ fontFamily: 'Space Grotesk', fontWeight: 700, fontSize: 14, color: '#F0F4FF' }}>{borrower.full_name}</div>
+                    <div style={{ fontSize: 11, color: '#4B5580', marginTop: 2 }}>{borrower.department}</div>
+                  </div>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', background: 'rgba(139,92,246,0.08)', borderRadius: 10, border: '1px solid rgba(139,92,246,0.15)', marginBottom: 12 }}>
+                  <span style={{ fontSize: 18 }}>{getBadgeConfig(borrower.loyalty_badge || 'New').emoji}</span>
+                  <div>
+                    <div style={{ fontSize: 12, fontWeight: 700, color: getBadgeConfig(borrower.loyalty_badge || 'New').color }}>{getBadgeConfig(borrower.loyalty_badge || 'New').label}</div>
+                    <div style={{ fontSize: 10, color: '#4B5580' }}>Score: {borrower.credit_score || 750} / 1,000</div>
+                  </div>
+                </div>
+                {/* Mini score bar */}
+                <div style={{ height: 4, background: '#1E2640', borderRadius: 2, overflow: 'hidden' }}>
+                  <div style={{ height: '100%', width: (((borrower.credit_score || 750) - 300) / 700 * 100) + '%', background: 'linear-gradient(90deg,#EF4444,#F59E0B,#22C55E,#8B5CF6)', borderRadius: 2, transition: 'width 1s ease' }} />
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 9, color: '#4B5580', marginTop: 4 }}>
+                  <span>300</span><span>750</span><span>1000 VIP</span>
                 </div>
               </div>
-              <div style={{ color: '#8B5CF6', fontSize: 16 }}>›</div>
-            </div>
 
-            {/* Contact admin */}
-            <div style={{ background: '#141B2D', border: '1px solid rgba(59,130,246,0.15)', borderRadius: 16, padding: 20 }}>
-              <div style={{ fontFamily: 'Space Grotesk', fontWeight: 700, fontSize: 14, color: '#F0F4FF', marginBottom: 14, display: 'flex', alignItems: 'center', gap: 8 }}>
-                <span style={{ display: "flex", alignItems: "center", gap: 7 }}><img src="/faq.png" alt="faq" style={{ width: 16, height: 16, objectFit: 'contain', marginRight: 6, verticalAlign: 'middle' }} />Need Help?</span>
+              {/* Quick actions */}
+              <div className="portal-card" style={{ background: '#141B2D', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 16, padding: 16 }}>
+                <div style={{ fontSize: 11, color: '#4B5580', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 10 }}>Quick Actions</div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                  {[
+                    { icon: '/history.png', label: 'Payment History', page: 'payment-history', color: '#22C55E', border: 'rgba(34,197,94,0.2)' },
+                    { icon: '/user.png', label: 'My Profile', page: 'profile', color: '#8B5CF6', border: 'rgba(139,92,246,0.2)' },
+                    { icon: '/wallet.png', label: `Rebate Credits${rebateCredits && rebateCredits.balance > 0 ? ' — ₱' + rebateCredits.balance.toLocaleString('en-PH', { minimumFractionDigits: 2 }) : ''}`, page: 'wallet', color: '#F59E0B', border: 'rgba(245,158,11,0.2)' },
+                    { icon: '/payment-method.png', label: 'Payment Methods', page: 'payment-methods', color: '#60A5FA', border: 'rgba(59,130,246,0.2)' },
+                  ].map((item, i) => (
+                    <button key={i} onClick={() => setPage(item.page)} className="nav-btn"
+                      style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', borderRadius: 10, border: `1px solid ${item.border}`, background: 'rgba(255,255,255,0.02)', cursor: 'pointer', textAlign: 'left', width: '100%' }}>
+                      <img src={item.icon} alt={item.label} style={{ width: 18, height: 18, objectFit: 'contain', flexShrink: 0 }} />
+                      <span style={{ fontSize: 12, fontWeight: 600, color: item.color }}>{item.label}</span>
+                      <span style={{ marginLeft: 'auto', color: '#4B5580', fontSize: 14 }}>›</span>
+                    </button>
+                  ))}
+                </div>
               </div>
-              <div style={{ fontSize: 13, color: '#7A8AAA', marginBottom: 14 }}>Contact any of the following admins via <strong style={{ color: '#F0F4FF' }}>Microsoft Teams Chat</strong>:</div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                {[
-                  { initials: 'JP', name: 'John Paul Lacaron', gradient: 'linear-gradient(135deg,#3B82F6,#8B5CF6)' },
-                  { initials: 'CJ', name: 'Charlou June Ramil', gradient: 'linear-gradient(135deg,#14B8A6,#3B82F6)' },
-                ].map(a => (
-                  <div key={a.name} style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'rgba(255,255,255,0.03)', borderRadius: 10, padding: '10px 14px' }}>
-                    <div style={{ width: 32, height: 32, borderRadius: '50%', background: a.gradient, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 800, color: '#fff', flexShrink: 0 }}>{a.initials}</div>
-                    <div>
-                      <div style={{ fontSize: 13, fontWeight: 600, color: '#F0F4FF' }}>{a.name}</div>
-                      <div style={{ fontSize: 11, color: '#4B5580' }}>Admin · Teams Chat</div>
+
+              {/* Need Help */}
+              <div className="portal-card" style={{ background: '#141B2D', border: '1px solid rgba(59,130,246,0.15)', borderRadius: 16, padding: 16 }}>
+                <div style={{ fontFamily: 'Space Grotesk', fontWeight: 700, fontSize: 13, color: '#F0F4FF', marginBottom: 10, display: 'flex', alignItems: 'center', gap: 7 }}>
+                  <img src="/faq.png" alt="help" style={{ width: 15, height: 15, objectFit: 'contain' }} /> Need Help?
+                </div>
+                <div style={{ fontSize: 12, color: '#7A8AAA', marginBottom: 10, lineHeight: 1.6 }}>Contact your admin via <strong style={{ color: '#F0F4FF' }}>Microsoft Teams</strong>:</div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                  {[
+                    { initials: 'JP', name: 'John Paul Lacaron', gradient: 'linear-gradient(135deg,#3B82F6,#8B5CF6)' },
+                    { initials: 'CJ', name: 'Charlou June Ramil', gradient: 'linear-gradient(135deg,#14B8A6,#3B82F6)' },
+                  ].map(a => (
+                    <div key={a.name} style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'rgba(255,255,255,0.03)', borderRadius: 8, padding: '8px 10px' }}>
+                      <div style={{ width: 28, height: 28, borderRadius: '50%', background: a.gradient, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 800, color: '#fff', flexShrink: 0 }}>{a.initials}</div>
+                      <div>
+                        <div style={{ fontSize: 12, fontWeight: 600, color: '#F0F4FF' }}>{a.name}</div>
+                        <div style={{ fontSize: 10, color: '#4B5580' }}>Admin · Teams Chat</div>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
-            </div>
+
+              {/* FAQ link */}
+              <a href="/faq" className="portal-card nav-btn" style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '12px 16px', background: 'rgba(99,102,241,0.06)', border: '1px solid rgba(99,102,241,0.2)', borderRadius: 14, textDecoration: 'none' }}>
+                <img src="/faq.png" alt="faq" style={{ width: 16, height: 16, objectFit: 'contain' }} />
+                <span style={{ fontSize: 13, fontWeight: 600, color: '#a78bfa' }}>View FAQ & Privacy Notice</span>
+                <span style={{ marginLeft: 'auto', color: '#4B5580' }}>›</span>
+              </a>
+
+            </div>{/* end right sidebar */}
+            </div>{/* end two-column grid */}
           </>
         )}
       </div>

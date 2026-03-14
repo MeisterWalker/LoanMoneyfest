@@ -108,7 +108,7 @@ export default function FAQPage() {
     ],
     other: [
       { q: 'How do I track my application?', a: 'After submitting, you will receive an access code. Use this code to log in to the Borrower Portal at loanmoneyfest.vercel.app/portal — you can track your application status, view your loan schedule, and upload payment proofs from there.' },
-      { q: 'What are Rebate Credits and how do they work?', a: 'Rebate Credits is a built-in rewards balance that stores rebates you earn from paying off loans early. You cannot add funds manually — only the system credits it. Once your balance reaches ₱500, a withdrawal button becomes available in the Borrower Portal under the Rebate Credits section. Withdrawal requests are reviewed and processed by the admin.' },
+      { q: 'What are Rebate Credits and how do they work?', a: 'Rebate Credits is your in-app rewards balance. Two things are credited here automatically by the system: (1) Early Payoff Rebates — if you pay your final installment 7 or more days early, you earn 1% to 1.5% of your loan amount as a rebate. (2) Security Hold Return — once you fully pay your 4th installment, the Security Hold that was withheld when your loan was released is automatically returned here in full. You cannot add funds manually. Once your total Rebate Credits balance reaches ₱500, a withdrawal button becomes available in the Borrower Portal. Withdrawal requests are reviewed and processed by the admin.' },
       { q: 'Who can I contact for questions?', children: (
         <div style={{ marginTop: 12, display: 'flex', flexDirection: 'column', gap: 8 }}>
           {[
