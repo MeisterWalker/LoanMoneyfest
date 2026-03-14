@@ -619,94 +619,169 @@ export default function BorrowerPortalPage() {
     const signedDateStr = new Date(date).toLocaleDateString('en-PH', { year: 'numeric', month: 'long', day: 'numeric' })
     const releaseDateStr = loan.release_date ? new Date(loan.release_date).toLocaleDateString('en-PH', { year: 'numeric', month: 'long', day: 'numeric' }) : 'TBD'
 
+    // Generate payment schedule with actual due dates
+    const dueDatesForPDF = []
+    if (loan.release_date) {
+      const rel = new Date(loan.release_date)
+      let d = new Date(rel)
+      for (let i = 0; i < 4; i++) {
+        if (d.getDate() <= 5) d = new Date(d.getFullYear(), d.getMonth(), 20)
+        else d = new Date(d.getFullYear(), d.getMonth() + 1, 5)
+        dueDatesForPDF.push(new Date(d))
+      }
+    }
+    const maturityDate = dueDatesForPDF.length > 0
+      ? dueDatesForPDF[3].toLocaleDateString('en-PH', { year: 'numeric', month: 'long', day: 'numeric' })
+      : 'TBD'
+    const scheduleRows = dueDatesForPDF.map((d, i) => {
+      const isPaid = (loan.payments_made || 0) > i
+      return `<tr style="background:${isPaid ? '#f0fdf4' : i % 2 === 0 ? '#fafafa' : '#fff'}">
+        <td style="padding:5px 8px;border:1px solid #e5e7eb;text-align:center;font-weight:600;">${i + 1}</td>
+        <td style="padding:5px 8px;border:1px solid #e5e7eb;">${d.toLocaleDateString('en-PH', { year: 'numeric', month: 'long', day: 'numeric' })}</td>
+        <td style="padding:5px 8px;border:1px solid #e5e7eb;text-align:right;font-weight:600;">₱${perInst.toLocaleString('en-PH', { minimumFractionDigits: 2 })}</td>
+        <td style="padding:5px 8px;border:1px solid #e5e7eb;text-align:center;color:${isPaid ? '#16a34a' : '#9CA3AF'}">${isPaid ? '✓ Paid' : 'Pending'}</td>
+      </tr>`
+    }).join('')
+
     const html = `<!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8"/>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;600;700&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Caveat:wght@600&display=swap');
   * { margin:0; padding:0; box-sizing:border-box; }
-  body { font-family:'EB Garamond', Georgia, serif; color:#1a1a2e; background:#fff; font-size:13px; line-height:1.7; padding:60px; }
-  .header { text-align:center; border-bottom:2px solid #1a1a2e; padding-bottom:20px; margin-bottom:28px; }
-  .logo { font-size:26px; font-weight:700; letter-spacing:-0.5px; margin-bottom:4px; }
+  html, body { width:100%; height:100%; }
+  body { font-family:'EB Garamond',Georgia,serif; color:#111827; background:#fff; font-size:11.5px; line-height:1.55; padding:36px 44px; }
+  @media print { body { padding:28px 36px; } @page { size:A4; margin:0; } }
+  .header { display:flex; justify-content:space-between; align-items:flex-start; border-bottom:2px solid #111827; padding-bottom:12px; margin-bottom:16px; }
+  .logo { font-size:22px; font-weight:700; letter-spacing:-0.5px; }
   .logo span { color:#6366F1; }
-  .doc-title { font-size:16px; font-weight:600; color:#4B5580; text-transform:uppercase; letter-spacing:2px; }
-  .section { margin-bottom:22px; }
-  .section-title { font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:1.5px; color:#4B5580; border-bottom:1px solid #e5e7eb; padding-bottom:6px; margin-bottom:12px; }
-  .row { display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #f3f4f6; font-size:13px; }
-  .row .label { color:#6B7280; }
-  .row .value { font-weight:600; color:#1a1a2e; }
-  .highlight { background:#F0F4FF; border:1px solid #C7D2FE; border-radius:8px; padding:14px 18px; margin:16px 0; }
-  .sig-section { margin-top:40px; padding-top:24px; border-top:2px solid #1a1a2e; }
-  .sig-box { display:inline-block; border-bottom:1px solid #1a1a2e; padding-bottom:2px; min-width:260px; }
-  .sig-name { font-size:22px; font-style:italic; color:#1a1a2e; font-family:'Caveat', cursive; }
-  .disclaimer { font-size:10px; color:#9CA3AF; margin-top:24px; line-height:1.6; border-top:1px solid #e5e7eb; padding-top:14px; }
-  .badge { display:inline-block; background:#EEF2FF; color:#4338CA; padding:2px 10px; border-radius:4px; font-size:11px; font-weight:600; }
+  .doc-meta { text-align:right; font-size:10px; color:#6B7280; line-height:1.6; }
+  .two-col { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:14px; }
+  .section { margin-bottom:14px; }
+  .section-title { font-size:9.5px; font-weight:700; text-transform:uppercase; letter-spacing:1.5px; color:#6366F1; border-bottom:1px solid #E5E7EB; padding-bottom:4px; margin-bottom:8px; }
+  .row { display:flex; justify-content:space-between; padding:3px 0; border-bottom:1px solid #F9FAFB; font-size:11px; }
+  .row .lbl { color:#6B7280; }
+  .row .val { font-weight:600; color:#111827; text-align:right; }
+  .schedule-table { width:100%; border-collapse:collapse; font-size:11px; margin-bottom:14px; }
+  .schedule-table th { background:#1e1b4b; color:#fff; padding:5px 8px; text-align:left; font-size:10px; text-transform:uppercase; letter-spacing:0.5px; }
+  .tc { font-size:10.5px; color:#374151; margin-bottom:4px; }
+  .sig-grid { display:grid; grid-template-columns:1fr 1fr; gap:32px; margin-top:14px; padding-top:12px; border-top:2px solid #111827; }
+  .sig-label { font-size:9px; color:#9CA3AF; text-transform:uppercase; letter-spacing:1px; margin-bottom:4px; }
+  .sig-line { border-bottom:1px solid #374151; margin-bottom:4px; }
+  .sig-sub { font-size:9.5px; color:#9CA3AF; }
+  .disclaimer { font-size:9px; color:#9CA3AF; margin-top:12px; padding-top:10px; border-top:1px solid #E5E7EB; line-height:1.55; }
+  .maturity-badge { display:inline-block; background:#FEF3C7; border:1px solid #F59E0B; color:#92400E; padding:2px 10px; border-radius:4px; font-size:10.5px; font-weight:600; }
 </style>
 </head>
 <body>
+
+  <!-- HEADER -->
   <div class="header">
-    <div class="logo">Loan<span>Moneyfest</span></div>
-    <div class="doc-title">Loan Agreement & Disclosure Statement</div>
-    <div style="font-size:11px;color:#9CA3AF;margin-top:6px;">Document Reference: LM-${borrower.id?.slice(-6).toUpperCase()} | Signed: ${signedDateStr}</div>
+    <div>
+      <div class="logo">Loan<span>Moneyfest</span></div>
+      <div style="font-size:10px;color:#6B7280;margin-top:2px;">Private Lending Program — Loan Agreement</div>
+    </div>
+    <div class="doc-meta">
+      <div><strong>Ref:</strong> LM-\${borrower.id?.slice(-6).toUpperCase()}</div>
+      <div><strong>Signed:</strong> \${signedDateStr}</div>
+      <div><strong>Maturity:</strong> <span style="color:#D97706;font-weight:600;">\${maturityDate}</span></div>
+    </div>
   </div>
 
+  <!-- TWO COLUMN: Parties + Disclosure -->
+  <div class="two-col">
+
+    <!-- LEFT: Parties -->
+    <div class="section">
+      <div class="section-title">Parties</div>
+      <div class="row"><span class="lbl">Borrower</span><span class="val">\${borrower.full_name}</span></div>
+      <div class="row"><span class="lbl">Department</span><span class="val">\${borrower.department || 'N/A'}</span></div>
+      <div class="row"><span class="lbl">Access Code</span><span class="val">\${borrower.access_code}</span></div>
+      <div class="row"><span class="lbl">Lender</span><span class="val">LoanMoneyfest</span></div>
+      <div class="row"><span class="lbl">Release Date</span><span class="val">\${releaseDateStr}</span></div>
+      <div class="row"><span class="lbl">Maturity Date</span><span class="val" style="color:#D97706;">\${maturityDate}</span></div>
+    </div>
+
+    <!-- RIGHT: RA 3765 Disclosure -->
+    <div class="section">
+      <div class="section-title">RA 3765 — Truth in Lending Act</div>
+      <div class="row"><span class="lbl">Approved Amount</span><span class="val">₱\${principal.toLocaleString('en-PH',{minimumFractionDigits:2})}</span></div>
+      <div class="row"><span class="lbl">Security Hold (\${holdRate}%)</span><span class="val">₱\${holdAmt.toLocaleString('en-PH',{minimumFractionDigits:2})}</span></div>
+      <div class="row"><span class="lbl">Funds Released</span><span class="val">₱\${released.toLocaleString('en-PH',{minimumFractionDigits:2})}</span></div>
+      <div class="row"><span class="lbl">Finance Charge</span><span class="val">₱\${(total-principal).toLocaleString('en-PH',{minimumFractionDigits:2})}</span></div>
+      <div class="row"><span class="lbl">Flat Rate</span><span class="val">\${rate}% one-time</span></div>
+      <div class="row"><span class="lbl">Effective Annual Rate</span><span class="val">\${((total-principal)/principal/2*12*100).toFixed(2)}% p.a.</span></div>
+      <div class="row"><span class="lbl">Total Payable</span><span class="val" style="color:#111827;">₱\${total.toLocaleString('en-PH',{minimumFractionDigits:2})}</span></div>
+      <div class="row"><span class="lbl">Per Installment</span><span class="val">₱\${perInst.toLocaleString('en-PH',{minimumFractionDigits:2})}</span></div>
+    </div>
+  </div>
+
+  <!-- PAYMENT SCHEDULE -->
   <div class="section">
-    <div class="section-title">Parties</div>
-    <div class="row"><span class="label">Borrower</span><span class="value">${borrower.full_name}</span></div>
-    <div class="row"><span class="label">Department</span><span class="value">${borrower.department || 'N/A'}</span></div>
-    <div class="row"><span class="label">Access Code</span><span class="value">${borrower.access_code}</span></div>
-    <div class="row"><span class="label">Lender</span><span class="value">LoanMoneyfest Private Lending Program</span></div>
-    <div class="row"><span class="label">Release Date</span><span class="value">${releaseDateStr}</span></div>
+    <div class="section-title">Payment Schedule & Maturity Date</div>
+    <table class="schedule-table">
+      <thead>
+        <tr>
+          <th style="width:8%">#</th>
+          <th style="width:40%">Due Date</th>
+          <th style="width:28%;text-align:right">Amount</th>
+          <th style="width:24%;text-align:center">Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        \${scheduleRows}
+        <tr style="background:#1e1b4b;">
+          <td colspan="2" style="padding:5px 8px;border:1px solid #374151;color:#fff;font-weight:700;font-size:11px;">Loan Maturity Date (Final Payment Due)</td>
+          <td style="padding:5px 8px;border:1px solid #374151;color:#FCD34D;font-weight:700;text-align:right;">₱\${perInst.toLocaleString('en-PH',{minimumFractionDigits:2})}</td>
+          <td style="padding:5px 8px;border:1px solid #374151;color:#FCD34D;text-align:center;font-weight:700;">\${maturityDate}</td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 
-  <div class="section">
-    <div class="section-title">RA 3765 — Truth in Lending Act Disclosure</div>
-    <div class="row"><span class="label">Approved Loan Amount</span><span class="value">₱${principal.toLocaleString('en-PH', { minimumFractionDigits: 2 })}</span></div>
-    <div class="row"><span class="label">Security Hold (${holdRate}%)</span><span class="value">₱${holdAmt.toLocaleString('en-PH', { minimumFractionDigits: 2 })}</span></div>
-    <div class="row"><span class="label">Funds Released to Borrower</span><span class="value">₱${released.toLocaleString('en-PH', { minimumFractionDigits: 2 })}</span></div>
-    <div class="row"><span class="label">Finance Charge (Interest)</span><span class="value">₱${(total - principal).toLocaleString('en-PH', { minimumFractionDigits: 2 })}</span></div>
-    <div class="row"><span class="label">Flat Interest Rate</span><span class="value">${rate}% of principal (one-time)</span></div>
-    <div class="row"><span class="label">Effective Annual Rate</span><span class="value">${((total - principal) / principal / 2 * 12 * 100).toFixed(2)}% per annum</span></div>
-    <div class="row"><span class="label">Total Amount Payable</span><span class="value">₱${total.toLocaleString('en-PH', { minimumFractionDigits: 2 })}</span></div>
-    <div class="row"><span class="label">Number of Installments</span><span class="value">4 payments</span></div>
-    <div class="row"><span class="label">Per Installment Amount</span><span class="value">₱${perInst.toLocaleString('en-PH', { minimumFractionDigits: 2 })}</span></div>
-    <div class="row"><span class="label">Payment Schedule</span><span class="value">Every 5th and 20th of the month</span></div>
+  <!-- TWO COLUMN: T&C -->
+  <div class="two-col" style="margin-bottom:12px;">
+    <div>
+      <div class="section-title">Terms & Conditions</div>
+      <p class="tc">1. <strong>Interest</strong> — \${rate}% flat on full amount, charged regardless of early settlement.</p>
+      <p class="tc">2. <strong>Security Hold</strong> — \${holdRate}% withheld on release, returned to Rebate Credits after 4th payment.</p>
+      <p class="tc">3. <strong>Late Penalties</strong> — ₱20/day per missed installment, capped at 10% of installment. -10 credit score per late payment.</p>
+    </div>
+    <div>
+      <div class="section-title" style="margin-top:0">&nbsp;</div>
+      <p class="tc">4. <strong>Default</strong> — 2+ missed installments = default. -150 credit score deduction applies.</p>
+      <p class="tc">5. <strong>Rebate Credits</strong> — Final installment paid 7–13 days early = 1% rebate. 14+ days early = 1.5% rebate.</p>
+      <p class="tc">6. <strong>Privacy</strong> — Data processed under RA 10173 (Data Privacy Act 2012).</p>
+    </div>
   </div>
 
-  <div class="section">
-    <div class="section-title">Terms & Conditions</div>
-    <p style="margin-bottom:8px;color:#374151;">1. <strong>Interest</strong> — A flat interest rate of ${rate}% is charged on the full approved amount regardless of early settlement.</p>
-    <p style="margin-bottom:8px;color:#374151;">2. <strong>Security Hold</strong> — ${holdRate}% of the loan amount is withheld upon release and returned to Rebate Credits after the 4th installment is paid.</p>
-    <p style="margin-bottom:8px;color:#374151;">3. <strong>Late Penalties</strong> — ₱20 per day per missed installment, capped at 10% of the installment amount. Late payments reduce credit score by 10 points.</p>
-    <p style="margin-bottom:8px;color:#374151;">4. <strong>Default</strong> — Non-payment of two or more installments may result in the loan being declared in default. A 150-point credit score deduction applies.</p>
-    <p style="margin-bottom:8px;color:#374151;">5. <strong>Rebate Credits</strong> — Paying the final installment 7–13 days early earns 1% rebate; 14+ days early earns 1.5% rebate, credited to Rebate Credits balance.</p>
-    <p style="margin-bottom:8px;color:#374151;">6. <strong>Privacy</strong> — Personal information is processed in compliance with RA 10173 (Data Privacy Act of 2012).</p>
-  </div>
-
-  <div class="sig-section">
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:end;">
-      <div>
-        <div style="font-size:11px;color:#9CA3AF;margin-bottom:8px;text-transform:uppercase;letter-spacing:1px;">Borrower E-Signature</div>
-        ${img ? `<img src="${img}" style="height:70px;max-width:260px;display:block;margin-bottom:4px;" />` : '<div style="height:70px;"></div>'}
-        <div class="sig-box"><span class="sig-name">${name}</span></div>
-        <div style="font-size:11px;color:#9CA3AF;margin-top:6px;">${name} — Signed electronically on ${signedDateStr}</div>
-      </div>
-      <div>
-        <div style="font-size:11px;color:#9CA3AF;margin-bottom:8px;text-transform:uppercase;letter-spacing:1px;">Admin / Authorized Representative</div>
-        <div style="height:70px;border-bottom:1px solid #1a1a2e;"></div>
-        <div style="font-size:11px;color:#9CA3AF;margin-top:6px;">LoanMoneyfest Administration</div>
-      </div>
+  <!-- SIGNATURES -->
+  <div class="sig-grid">
+    <div>
+      <div class="sig-label">Borrower E-Signature (RA 8792)</div>
+      \${img ? `<img src="\${img}" style="height:52px;max-width:220px;display:block;margin-bottom:2px;" />` : '<div style="height:52px;"></div>'}
+      <div class="sig-line"></div>
+      <div style="font-size:18px;font-style:italic;font-family:'Caveat',cursive;color:#111827;margin-bottom:2px;">\${name}</div>
+      <div class="sig-sub">\${name} · Signed electronically · \${signedDateStr}</div>
+    </div>
+    <div>
+      <div class="sig-label">Admin / Authorized Representative</div>
+      <div style="height:52px;"></div>
+      <div class="sig-line"></div>
+      <div style="height:18px;margin-bottom:2px;"></div>
+      <div class="sig-sub">LoanMoneyfest Administration · \${signedDateStr}</div>
     </div>
   </div>
 
   <div class="disclaimer">
-    This Loan Agreement is executed in compliance with Republic Act No. 3765 (Truth in Lending Act), Republic Act No. 10173 (Data Privacy Act), and Republic Act No. 8792 (E-Commerce Act). The electronic signature affixed herein is legally binding under RA 8792. This document is private and confidential. LoanMoneyfest is a private colleague lending program and is not a bank or financial institution. Returns and terms are subject to program policies.
+    This agreement is executed under RA 3765 (Truth in Lending Act), RA 10173 (Data Privacy Act), and RA 8792 (E-Commerce Act). The e-signature is legally binding. LoanMoneyfest is a private colleague lending program — not a bank or BSP-supervised financial institution. This document is confidential.
   </div>
+
 </body>
 </html>`
 
-    const win = window.open('', '_blank')
+        const win = window.open('', '_blank')
     if (win) {
       win.document.write(html)
       win.document.close()
